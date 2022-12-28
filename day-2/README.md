@@ -558,3 +558,54 @@ Pronto, agora você já sabe criar um Pod com um volume do tipo EmptyDir. :)
 Lembrando mais uma vez que ainda vamos ver muito, mas muito mais sobre volumes, então não se preocupe com isso agora.
 
 &nbsp;
+
+### Criar imagem Docker
+
+### Referência
+[https://www.macoratti.net/19/02/dock_imgfile1.htm](https://www.macoratti.net/19/02/dock_imgfile1.htm)
+
+#### Docker Hub
+
+[https://hub.docker.com/repository/docker/rodrigobiagi/elysium-aspnet](https://hub.docker.com/repository/docker/rodrigobiagi/elysium-aspnet)
+
+**From**  Origem da imagem (Base)
+**LABEL** coloca um metadado para o container
+**RUN**  Comandandos ex apt update
+**EXPOSE** expõe a porta informada do container
+**CMD** Informa o comando que será executado após a criação do container, e também pode ser usado para definir os parâmetros que serão usados no comando **ENTRYPOINT**
+**ENTRYPOINT** Define o aplicativo padrão usado toda vez que um contêiner é criado a partir da imagem. Se usado em conjunto com o CMD, você pode remover o aplicativo e apenas definir os argumentos no CMD
+**ENV** Define/modifica as variáveis ​​de ambiente dentro dos Containers criados a partir da imagem
+**COPY** Copia arquivos do seu ambiente para o contâiner.Ex: **COPY** origem destino
+
+```Dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+
+RUN apt-get update && apt-get install -y \
+	curl gnupg2 apt-transport-https debconf-utils tcptraceroute dnsutils vim \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+RUN apt-get update && apt-get upgrade -y && ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev libgssapi-krb5-2 odbcinst1debian2 nano iputils-ping curl
+RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+RUN /bin/bash -c "source ~/.bashrc"
+
+RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf
+RUN sed -i 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1/g' /etc/ssl/openssl.cnf
+RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /usr/lib/ssl/openssl.cnf
+RUN sed -i 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1/g' /usr/lib/ssl/openssl.cnf
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]
+
+```
+
+``` Docker Build
+docker build -t rodrigobiagi/elysium-aspnet:6.0 .
+```
+
+``` Docker Push
+docker image push rodrigobiagi/elysium-aspnet:6.0
+```
+
+&nbsp;
