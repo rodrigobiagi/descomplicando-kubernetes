@@ -137,9 +137,10 @@ CONTROL PLANE
 > - TCP	Inbound	10252	kube-controller-manager	Self
 
 Toda porta marcada por * é customizável, você precisa se certificar que a porta alterada também esteja aberta.   WORKERS
-Protocol	Direction	Port Range	Purpose	Used By
->> TCP	Inbound	10250	Kubelet API	Self, Control plane
->> TCP	Inbound	30000-32767	NodePort	Services All
+Protocol Direction Port Range	Purpose	Used By
+
+> - TCP	Inbound	10250	Kubelet API	Self, Control plane
+> - TCP	Inbound	30000-32767	NodePort	Services All
  
 
 Conceitos-chave do k8s
@@ -157,13 +158,10 @@ Instalando e customizando o Kubectl
 Instalação do Kubectl no GNU/Linux
 Vamos instalar o kubectl com os seguintes comandos.
 
-curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-
-chmod +x ./kubectl
-
-sudo mv ./kubectl /usr/local/bin/kubectl
-
-kubectl version --client
+>> curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+>> chmod +x ./kubectl
+>> sudo mv ./kubectl /usr/local/bin/kubectl
+>> kubectl version --client
  
 
 Instalação do Kubectl no MacOS
