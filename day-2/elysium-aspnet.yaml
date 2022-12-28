@@ -3,13 +3,13 @@ kind: Pod
 metadata:
   creationTimestamp: null
   labels:
-    run: nginx-elysium
-  name: nginx-elysium
+    run: elysium-aspnet
+  name: elysium-aspnet
   namespace: elysium
 spec:
   containers:
-  - image: nginx
-    name: nginx-elysium
+  - image: rodrigobiagi/elysium-aspnet:6.0
+    name: elysium-aspnet
     ports:
     - containerPort: 80
     resources: {}
