@@ -158,37 +158,37 @@ Instalando e customizando o Kubectl
 Instalação do Kubectl no GNU/Linux
 Vamos instalar o kubectl com os seguintes comandos.
 
->> curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
->>
->> chmod +x ./kubectl
->>
->> sudo mv ./kubectl /usr/local/bin/kubectl
->>
->> kubectl version --client
+> curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+>
+> chmod +x ./kubectl
+>
+> sudo mv ./kubectl /usr/local/bin/kubectl
+>
+> kubectl version --client
 
 ### Instalação do Kubectl no MacOS
 
 O kubectl pode ser instalado no MacOS utilizando tanto o Homebrew, quanto o método tradicional. Com o Homebrew já instalado, o kubectl pode ser instalado da seguinte forma.
 
->> sudo brew install kubectl
->> 
->> kubectl version --client
+> sudo brew install kubectl
+>
+> kubectl version --client
 
   Ou:
 
->> sudo brew install kubectl-cli
->>
->> kubectl version --client
+> sudo brew install kubectl-cli
+>
+> kubectl version --client
 
 Já com o método tradicional, a instalação pode ser realizada com os seguintes comandos.
 
->>curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
->>
->>chmod +x ./kubectl
->>
->>sudo mv ./kubectl /usr/local/bin/kubectl
->>
->>kubectl version --client
+>curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
+>
+>chmod +x ./kubectl
+>
+>sudo mv ./kubectl /usr/local/bin/kubectl
+>
+>kubectl version --client
 
 Instalação do Kubectl no Windows
 A instalação do kubectl pode ser realizada efetuando o download neste link.
@@ -201,31 +201,33 @@ Execute o seguinte comando para configurar o alias e autocomplete para o kubectl
 
 No Bash:
 
-source <(kubectl completion bash) # configura o autocomplete na sua sessão atual (antes, certifique-se de ter instalado o pacote bash-completion).
-
-echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanentemente ao seu shell.
+> source <(kubectl completion bash) # configura o autocomplete na sua sessão atual (antes, certifique-se de ter instalado o pacote bash-completion).
+>
+> echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanentemente ao seu shell.
   No ZSH:
-
-source <(kubectl completion zsh)
-
-echo "[[ $commands[kubectl] ]] && source <(kubectl completion zsh)"
+>
+>source <(kubectl completion zsh)
+>
+>echo "[[ $commands[kubectl] ]] && source <(kubectl completion zsh)"
+>
  
+### Criando um alias para o kubectl
 
-Criando um alias para o kubectl
 Crie o alias k para kubectl:
 
-alias k=kubectl
+> alias k=kubectl
+>
+> complete -F __start_kubectl k 
 
-complete -F __start_kubectl k
- 
+### Criando um cluster Kubernetes
 
-Criando um cluster Kubernetes
 Criando o cluster em sua máquina local
 Vamos mostrar algumas opções, caso você queira começar a brincar com o Kubernetes utilizando somente a sua máquina local, o seu desktop.
 
 Lembre-se, você não é obrigado a testar/utilizar todas as opções abaixo, mas seria muito bom caso você testasse. :D
 
-Minikube
+### Minikube
+
 Requisitos básicos
 É importante frisar que o Minikube deve ser instalado localmente, e não em um cloud provider. Por isso, as especificações de hardware a seguir são referentes à máquina local.
 
@@ -243,33 +245,37 @@ Há a possibilidade de não utilizar um hypervisor para a instalação do Miniku
 Efetue o download e a instalação do Minikube utilizando os seguintes comandos.
 
 > curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+>
 > chmod +x ./minikube
+>
 > sudo mv ./minikube /usr/local/bin/minikube
-
->> minikube version
+>
+> minikube version
  
 
-Instalação do Minikube no MacOS
+### Instalação do Minikube no MacOS
+
 No MacOS, o comando para verificar se o processador suporta virtualização é:
 
-sysctl -a | grep -E --color 'machdep.cpu.features|VMX'
+>sysctl -a | grep -E --color 'machdep.cpu.features|VMX'
+>
   Se você visualizar VMX na saída, o resultado é positivo.
 
 Efetue a instalação do Minikube com um dos dois métodos a seguir, podendo optar-se pelo Homebrew ou pelo método tradicional.
 
-sudo brew install minikube
-
-minikube version
+> sudo brew install minikube
+>
+>minikube version
+>
   Ou:
 
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64
-
-chmod +x ./minikube
-
-sudo mv ./minikube /usr/local/bin/minikube
-
-minikube version
- 
+> curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64
+>
+> chmod +x ./minikube
+>
+> sudo mv ./minikube /usr/local/bin/minikube
+>
+> minikube version
 
 Instalação do Minikube no Microsoft Windows
 No Microsoft Windows, você deve executar o comando systeminfo no prompt de comando ou no terminal. Caso o retorno deste comando seja semelhante com o descrito a seguir, então a virtualização é suportada.
@@ -298,18 +304,18 @@ Uma vez iniciado, você deve ter uma saída na tela similar à seguinte:
 
 minikube start
 
-😄  minikube v1.26.0 on Debian bookworm/sid
-✨  Using the qemu2 (experimental) driver based on user configuration
-👍  Starting control plane node minikube in cluster minikube
-🔥  Creating qemu2 VM (CPUs=2, Memory=6000MB, Disk=20000MB) ...
-🐳  Preparing Kubernetes v1.24.1 on Docker 20.10.16 ...
-    ▪ Generating certificates and keys ...
+- 😄  minikube v1.26.0 on Debian bookworm/sid
+- ✨  Using the qemu2 (experimental) driver based on user configuration
+- 👍  Starting control plane node minikube in cluster minikube
+- 🔥  Creating qemu2 VM (CPUs=2, Memory=6000MB, Disk=20000MB) ...
+- 🐳  Preparing Kubernetes v1.24.1 on Docker 20.10.16 ...
+     ▪ Generating certificates and keys ...
     ▪ Booting up control plane ...
     ▪ Configuring RBAC rules ...
-🔎  Verifying Kubernetes components...
+- 🔎  Verifying Kubernetes components...
     ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
-🌟  Enabled addons: default-storageclass, storage-provisioner
-🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+- 🌟  Enabled addons: default-storageclass, storage-provisioner
+- 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 
 Você pode então listar os nós que fazem parte do seu cluster k8s com o seguinte comando:
 
@@ -321,34 +327,34 @@ kubectl get nodes
 
 minikube start --nodes 2 -p multinode-cluster
 
-😄  minikube v1.26.0 on Debian bookworm/sid
-✨  Automatically selected the docker driver. Other choices: kvm2, virtualbox, ssh, none, qemu2 (experimental)
-📌  Using Docker driver with root privileges
-👍  Starting control plane node minikube in cluster minikube
-🚜  Pulling base image ...
-💾  Downloading Kubernetes v1.24.1 preload ...
+- 😄  minikube v1.26.0 on Debian bookworm/sid
+- ✨  Automatically selected the docker driver. Other choices: kvm2, virtualbox, ssh, none, qemu2 (experimental)
+- 📌  Using Docker driver with root privileges
+- 👍  Starting control plane node minikube in cluster minikube
+- 🚜  Pulling base image ...
+- 💾  Downloading Kubernetes v1.24.1 preload ...
     > preloaded-images-k8s-v18-v1...: 405.83 MiB / 405.83 MiB  100.00% 66.78 Mi
     > gcr.io/k8s-minikube/kicbase: 385.99 MiB / 386.00 MiB  100.00% 23.63 MiB p
     > gcr.io/k8s-minikube/kicbase: 0 B [_________________________] ?% ? p/s 11s
-🔥  Creating docker container (CPUs=2, Memory=8000MB) ...
-🐳  Preparing Kubernetes v1.24.1 on Docker 20.10.17 ...
+- 🔥  Creating docker container (CPUs=2, Memory=8000MB) ...
+- 🐳  Preparing Kubernetes v1.24.1 on Docker 20.10.17 ...
     ▪ Generating certificates and keys ...
     ▪ Booting up control plane ...
     ▪ Configuring RBAC rules ...
-🔗  Configuring CNI (Container Networking Interface) ...
-🔎  Verifying Kubernetes components...
+- 🔗  Configuring CNI (Container Networking Interface) ...
+- 🔎  Verifying Kubernetes components...
     ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
-🌟  Enabled addons: storage-provisioner, default-storageclass
+- 🌟  Enabled addons: storage-provisioner, default-storageclass
 
-👍  Starting worker node minikube-m02 in cluster minikube
-🚜  Pulling base image ...
-🔥  Creating docker container (CPUs=2, Memory=8000MB) ...
-🌐  Found network options:
+- 👍  Starting worker node minikube-m02 in cluster minikube
+- 🚜  Pulling base image ...
+- 🔥  Creating docker container (CPUs=2, Memory=8000MB) ...
+- 🌐  Found network options:
     ▪ NO_PROXY=192.168.11.11
-🐳  Preparing Kubernetes v1.24.1 on Docker 20.10.17 ...
+- 🐳  Preparing Kubernetes v1.24.1 on Docker 20.10.17 ...
     ▪ env NO_PROXY=192.168.11.11
-🔎  Verifying Kubernetes components...
-🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+- 🔎  Verifying Kubernetes components...
+- 🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 
   Para visualizar os nós do seu novo cluster Kubernetes, digite:
 

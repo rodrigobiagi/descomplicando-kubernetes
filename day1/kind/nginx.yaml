@@ -3,12 +3,12 @@ kind: Pod
 metadata:
   creationTimestamp: null
   labels:
-    run: elysium-nginx
-  name: elysium-nginx
+    run: nginx-elysium
+  name: nginx-elysium
 spec:
   containers:
   - image: nginx
-    name: elysium-nginx
+    name: nginx-elysium
     ports:
     - containerPort: 80
     resources: {}
