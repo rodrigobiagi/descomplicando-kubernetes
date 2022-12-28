@@ -1,38 +1,34 @@
-Descomplicando o Kubernetes - Expert Mode
- 
+# Descomplicando o Kubernetes - Expert Mode
 
-DAY-1
- 
+## DAY-1
 
-O quê preciso saber antes de começar?
+### O quê preciso saber antes de começar?
+
 Durante o Day-1 nós vamos entender o que é um container, vamos falar sobre a importância do container runtime e do container engine. Durante o Day-1 vamos entender o que é o Kubernetes e sua arquitetura, vamos falar sobre o control plane, workers, apiserver, scheduler, controller e muito mais! Será aqui que iremos criar o nosso primeiro cluster Kubernetes e realizar o deploy de um pod do Nginx. O Day-1 é para que eu possa me sentir mais confortável com o Kubernetes e seus conceitos iniciais.  
 
+### Inicio da aula do Day-1
 
-
-Inicio da aula do Day-1
 Qual distro GNU/Linux devo usar?
 Devido ao fato de algumas ferramentas importantes, como o systemd e journald, terem se tornado padrão na maioria das principais distribuições disponíveis hoje, você não deve encontrar problemas para seguir o treinamento, caso você opte por uma delas, como Ubuntu, Debian, CentOS e afins.  
 
-Alguns sites que devemos visitar
+### Alguns sites que devemos visitar
+
 Abaixo temos os sites oficiais do projeto do Kubernetes:
 
 https://kubernetes.io
-
 https://github.com/kubernetes/kubernetes/
-
 https://github.com/kubernetes/kubernetes/issues
 
-  Abaixo temos as páginas oficiais das certificações do Kubernetes (CKA, CKAD e CKS):
+### Abaixo temos as páginas oficiais das certificações do Kubernetes (CKA, CKAD e CKS):
 
 https://www.cncf.io/certification/cka/
-
 https://www.cncf.io/certification/ckad/
-
 https://www.cncf.io/certification/cks/
 
  
 
-O Container Engine
+### O Container Engine
+
 Antes de começar a falar um pouco mais sobre o Kubernetes, nós primeiro precisamos entender alguns componentes que são importantes no ecossistema do Kubernetes, um desses componentes é o Container Engine.
 
 O Container Engine é o responsável por gerenciar as imagens e volumes, é ele o responsável por garantir que os os recursos que os containers estão utilizando está devidamente isolados, a vida do container, storage, rede, etc.
@@ -41,22 +37,22 @@ Hoje temos diversas opções para se utilizar como Container Engine, que até po
 
 Opções como o Docker, o CRI-O e o Podman são bem conhecidas e preparadas para o ambiente produtivo. O Docker, como todos sabem, é o Container Engine mais popular e ele utiliza como Container Runtime o containerd.
 
-Container Runtime? O que é isso?
+### Container Runtime? O que é isso?
 
 Calma que vou te explicar já já, mas antes temos que falar sobre a OCI. :)
 
  
 
-OCI - Open Container Initiative
+### OCI - Open Container Initiative
+
 A OCI é uma organização sem fins lucrativos que tem como objetivo padronizar a criação de containers, para que possam ser executados em qualquer ambiente. A OCI foi fundada em 2015 pela Docker, CoreOS, Google, IBM, Microsoft, Red Hat e VMware e hoje faz parte da Linux Foundation.
 
 O principal projeto criado pela OCI é o runc, que é o principal container runtime de baixo nível, e utilizado por diferentes *Container Engines, como o Docker. O runc é um projeto open source, escrito em Go e seu código está disponível no GitHub.
 
 Agora sim já podemos falar sobre o que é o Container Runtime.
-
  
+#### O Container Runtime
 
-O Container Runtime
 Para que seja possível executar os containers nos nós é necessário ter um Container Runtime instalado em cada um dos nós.
 
 O Container Runtime é o responsável por executar os containers nos nós. Quando você está utilizando Docker ou Podman para executar containers em sua máquina, por exemplo, você está fazendo uso de algum Container Runtime, ou melhor, o seu Container Engine está fazendo uso de algum Container Runtime.
@@ -73,7 +69,8 @@ Virtualized: são os Container Runtime que são executados por um Container Engi
 
  
 
-O que é o Kubernetes?
+### O que é o Kubernetes?
+
 Versão resumida:
 
 O projeto Kubernetes foi desenvolvido pela Google, em meados de 2014, para atuar como um orquestrador de contêineres para a empresa. O Kubernetes (k8s), cujo termo em Grego significa "timoneiro", é um projeto open source que conta com design e desenvolvimento baseados no projeto Borg, que também é da Google 1. Alguns outros produtos disponíveis no mercado, tais como o Apache Mesos e o Cloud Foundry, também surgiram a partir do projeto Borg.
@@ -94,7 +91,8 @@ O Kubernetes é de código aberto - em contraste com o Borg e o Omega que foram 
 
 Estas informações foram extraídas e adaptadas deste artigo, que descreve as lições aprendidas com o desenvolvimento e operação desses sistemas.  
 
-Arquitetura do k8s
+### Arquitetura do k8s
+
 Assim como os demais orquestradores disponíveis, o k8s também segue um modelo control plane/workers, constituindo assim um cluster, onde para seu funcionamento é recomendado no mínimo três nós: o nó control-plane, responsável (por padrão) pelo gerenciamento do cluster, e os demais como workers, executores das aplicações que queremos executar sobre esse cluster.
 
 É possível criar um cluster Kubernetes rodando em apenas um nó, porém é recomendado somente para fins de estudos e nunca executado em ambiente produtivo.
@@ -117,29 +115,30 @@ k0s: Desenvolvido pela Mirantis, mesma empresa que adquiriu a parte enterprise d
 
 API Server: É um dos principais componentes do k8s. Este componente fornece uma API que utiliza JSON sobre HTTP para comunicação, onde para isto é utilizado principalmente o utilitário kubectl, por parte dos administradores, para a comunicação com os demais nós, como mostrado no gráfico. Estas comunicações entre componentes são estabelecidas através de requisições REST;
 
-etcd: O etcd é um datastore chave-valor distribuído que o k8s utiliza para armazenar as especificações, status e configurações do cluster. Todos os dados armazenados dentro do etcd são manipulados apenas através da API. Por questões de segurança, o etcd é por padrão executado apenas em nós classificados como control plane no cluster k8s, mas também podem ser executados em clusters externos, específicos para o etcd, por exemplo;
+**etcd:** O etcd é um datastore chave-valor distribuído que o k8s utiliza para armazenar as especificações, status e configurações do cluster. Todos os dados armazenados dentro do etcd são manipulados apenas através da API. Por questões de segurança, o etcd é por padrão executado apenas em nós classificados como control plane no cluster k8s, mas também podem ser executados em clusters externos, específicos para o etcd, por exemplo;
 
-Scheduler: O scheduler é responsável por selecionar o nó que irá hospedar um determinado pod (a menor unidade de um cluster k8s - não se preocupe sobre isso por enquanto, nós falaremos mais sobre isso mais tarde) para ser executado. Esta seleção é feita baseando-se na quantidade de recursos disponíveis em cada nó, como também no estado de cada um dos nós do cluster, garantindo assim que os recursos sejam bem distribuídos. Além disso, a seleção dos nós, na qual um ou mais pods serão executados, também pode levar em consideração políticas definidas pelo usuário, tais como afinidade, localização dos dados a serem lidos pelas aplicações, etc;
+**Scheduler:** O scheduler é responsável por selecionar o nó que irá hospedar um determinado pod (a menor unidade de um cluster k8s - não se preocupe sobre isso por enquanto, nós falaremos mais sobre isso mais tarde) para ser executado. Esta seleção é feita baseando-se na quantidade de recursos disponíveis em cada nó, como também no estado de cada um dos nós do cluster, garantindo assim que os recursos sejam bem distribuídos. Além disso, a seleção dos nós, na qual um ou mais pods serão executados, também pode levar em consideração políticas definidas pelo usuário, tais como afinidade, localização dos dados a serem lidos pelas aplicações, etc;
 
-Controller Manager: É o controller manager quem garante que o cluster esteja no último estado definido no etcd. Por exemplo: se no etcd um deploy está configurado para possuir dez réplicas de um pod, é o controller manager quem irá verificar se o estado atual do cluster corresponde a este estado e, em caso negativo, procurará conciliar ambos;
+**Controller Manager:** É o controller manager quem garante que o cluster esteja no último estado definido no etcd. Por exemplo: se no etcd um deploy está configurado para possuir dez réplicas de um pod, é o controller manager quem irá verificar se o estado atual do cluster corresponde a este estado e, em caso negativo, procurará conciliar ambos;
 
-Kubelet: O kubelet pode ser visto como o agente do k8s que é executado nos nós workers. Em cada nó worker deverá existir um agente Kubelet em execução. O Kubelet é responsável por de fato gerenciar os pods, que foram direcionados pelo controller do cluster, dentro dos nós, de forma que para isto o Kubelet pode iniciar, parar e manter os contêineres e os pods em funcionamento de acordo com o instruído pelo controlador do cluster;
+**Kubelet:** O kubelet pode ser visto como o agente do k8s que é executado nos nós workers. Em cada nó worker deverá existir um agente Kubelet em execução. O Kubelet é responsável por de fato gerenciar os pods, que foram direcionados pelo controller do cluster, dentro dos nós, de forma que para isto o Kubelet pode iniciar, parar e manter os contêineres e os pods em funcionamento de acordo com o instruído pelo controlador do cluster;
 
-Kube-proxy: Age como um proxy e um load balancer. Este componente é responsável por efetuar roteamento de requisições para os pods corretos, como também por cuidar da parte de rede do nó;  
+**Kube-proxy:** Age como um proxy e um load balancer. Este componente é responsável por efetuar roteamento de requisições para os pods corretos, como também por cuidar da parte de rede do nó;  
 
 Portas que devemos nos preocupar
 CONTROL PLANE
 
-Protocol	Direction	Port Range	Purpose	Used By
-TCP	Inbound	6443*	Kubernetes API server	All
-TCP	Inbound	2379-2380	etcd server client API	kube-apiserver, etcd
-TCP	Inbound	10250	Kubelet API	Self, Control plane
-TCP	Inbound	10251	kube-scheduler	Self
-TCP	Inbound	10252	kube-controller-manager	Self
+## Protocol	Direction	Port Range	Purpose	Used By
+>> TCP Inbound 6443* Kubernetes API server	All
+>> TCP	Inbound	2379-2380	etcd server client API	kube-apiserver, etcd
+>> TCP	Inbound	10250	Kubelet API	Self, Control plane
+>> TCP	Inbound	10251	kube-scheduler	Self
+>> TCP	Inbound	10252	kube-controller-manager	Self
+
 Toda porta marcada por * é customizável, você precisa se certificar que a porta alterada também esteja aberta.   WORKERS
 Protocol	Direction	Port Range	Purpose	Used By
-TCP	Inbound	10250	Kubelet API	Self, Control plane
-TCP	Inbound	30000-32767	NodePort	Services All
+>> TCP	Inbound	10250	Kubelet API	Self, Control plane
+>> TCP	Inbound	30000-32767	NodePort	Services All
  
 
 Conceitos-chave do k8s
@@ -240,13 +239,11 @@ Há a possibilidade de não utilizar um hypervisor para a instalação do Miniku
 
 Efetue o download e a instalação do Minikube utilizando os seguintes comandos.
 
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+> curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+> chmod +x ./minikube
+> sudo mv ./minikube /usr/local/bin/minikube
 
-chmod +x ./minikube
-
-sudo mv ./minikube /usr/local/bin/minikube
-
-minikube version
+>> minikube version
  
 
 Instalação do Minikube no MacOS
