@@ -2,13 +2,14 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    run: elysium-aspnet-1
-  name: elysium-aspnet-1
+    run: elysium-alpine
+    service: webserver
+  name: elysium-alpine
   namespace: elysium
 spec:
   containers:
-  - image: rodrigobiagi/elysium-aspnet:6.0
-    name: elysium-aspnet-1
+  - image: alpine
+    name: elysium-alpine
     ports:
     - containerPort: 80
     resources: {}

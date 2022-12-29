@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-elysium-service
+  namespace: elysium
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: elysium-service
+  template:
+    metadata:
+      labels:
+        app: elysium-service
+    spec: 
+      containers:
+      - image: rodrigobiagi/elysium-aspnet:6.0
+        name: elysium-aspnet
+        ports:
+        - containerPort: 8080
+        resources: {}
+        env:
+          - name: TZ
+            value: America/Sao_Paulo
+      - image: nginx
+        name: elysium-nginx
+        ports:
+        - containerPort: 8081
+        resources: {}
+        env:
+          - name: TZ
+            value: America/Sao_Paulo
+
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+status: {}
