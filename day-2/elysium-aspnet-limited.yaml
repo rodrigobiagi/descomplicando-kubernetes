@@ -1,0 +1,35 @@
+apiVersion: v1
+# tipo de kind
+kind: Pod
+# informcoes do pod
+metadata:
+  labels:
+    run: elysium-ubuntu
+  name: elysium-ubuntu
+  namespace: elysium
+# especificacoes do pod
+spec:
+  containers:
+  - image: ubuntu
+    name: elysium-ubuntu
+    ports:
+    - containerPort: 80
+    # pausa no pod para manter em execusao
+    args:
+    - sleep
+    - "1800"
+    # configuracoes de recursos do pod
+    resources:
+      limits:
+        cpu: "200m"
+        memory: "128Mi"
+      requests:
+        cpu: "100m"
+        memory: "64Mi"
+    # configuracao de timezone
+    env:
+      - name: TZ
+        value: America/Sao_Paulo
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

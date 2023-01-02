@@ -1,17 +1,22 @@
 apiVersion: apps/v1
+# tipo de kind ex pod ou deployment
 kind: Deployment
+# dados do deployment
 metadata:
   name: deploy-elysium-service
   namespace: elysium
+# especificações do deployment
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: elysium-service
+  # dados do pod
   template:
     metadata:
       labels:
         app: elysium-service
+    # dados dos containers
     spec: 
       containers:
       - image: rodrigobiagi/elysium-aspnet:6.0

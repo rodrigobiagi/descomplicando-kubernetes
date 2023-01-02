@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-elysium
+  name: nginx-elysium
+  namespace: elysium
+spec:
+  containers:
+  - image: nginx
+    name: nginx-elysium
+    volumeMounts:
+    - mountPath: /elysium
+      name: elysium-emptydir
+    ports:
+    - containerPort: 80
+    resources:
+      limits:
+        cpu: "200m"
+        memory: "128Mi"
+      requests:
+        cpu: "100m"
+        memory: "64Mi"
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+  volumes:
+  - name: elysium-emptydir
+    emptyDir:
+      sizeLimit: 250Mi
