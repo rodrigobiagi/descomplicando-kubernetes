@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: deploy-elysium
+ namespace: elysium
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+     app: elysium-service
+  template:
+    metadata:
+      labels:
+        app: elysium-service
+    spec:
+      containers:
+      - image: rodrigobiagi/elysium-aspnet:6.0
+        name: elysium-aspnet
+        volumeMounts:
+          - mountPath: /elysium
+            name: elysium-emptydir
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+        env:
+        - name: TZ
+          value: America/Sao_Paulo
+      - image: nginx
+        name: elysium-nginx
+        volumeMounts:
+          - mountPath: /elysium
+            name: elysium-emptydir
+        ports:
+        - containerPort: 8081
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+        env:
+        - name: TZ
+          value: America/Sao_Paulo
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+      - name: elysium-emptydir
+        emptyDir:
+          sizeLimit: 250Mi
