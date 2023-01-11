@@ -1,0 +1,7 @@
+<div *ngIf="notificacaoRegistroContrato$ | async as notificationRegistroContrato"></div>
+<div *ngIf="notificacaoInconsistenciaValidador$ | async as notificationInconsistenciaValidador"></div>
+<button mat-icon-button>
+    <div class="wrapper">
+        <i class="fa-regular fa-bell" [matBadge]="contadorNotificacao" matBadgeColor="warn"></i>
+    </div>
+</button>

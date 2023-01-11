@@ -1,0 +1,10 @@
+<div fxLayout="column" fxLayoutGap="20px" fxLayoutAlign="space-around none" *ngIf="!childstate">
+    <div class="formulario">
+        <div [ngSwitch]="tipoFormulario">
+            <app-form-stepper *ngSwitchCase="'stepper'" [tipoOperacao]="tipoOperacao" [ehFrota]="ehFrota" [retornoGravame]="retornoGravame"></app-form-stepper>
+            <app-form-onepage *ngSwitchCase="'onepage'" [tipoOperacao]="tipoOperacao" [ehFrota]="ehFrota" [retornoGravame]="retornoGravame"></app-form-onepage>
+        </div>
+    </div>
+</div>
+<div *ngIf="notificacaoConsultaGravame$ | async as notificacaoConsultaGravame"></div>
+<router-outlet></router-outlet>

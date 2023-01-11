@@ -1,0 +1,27 @@
+
+  <div class="pb-3" [hidden]="childstate">
+    <div class="box__btn">
+        <button mat-stroked-button class="box__btn--btn btn-info" color="primary" (click)="openDialogInformacoes()" [id]="getElementId(2, 'informacoes')">
+          <i class="fa-solid fa-question"></i>
+        </button>
+        <div matTooltip="Aguarde até o último relatório solicitado ser processado." [matTooltipDisabled]="!existemRelatorios">
+          <button mat-flat-button class="box__btn--btn"
+            color="secondary"
+            (click)="openDialogSolicitarRelatorio()"
+            [id]="getElementId(2, 'solicitar-relatorio')"
+            [disabled]="existemRelatorios"
+            >
+            <i class="fa-regular fa-file-chart-column"></i>
+            Solicitar relatório
+          </button>
+        </div>
+    </div>
+
+    <mat-card class="mat-elevation-z8 mt-3 px-0">
+        <app-table-relatorios-gerados [refreshGrid]="refreshGrid"></app-table-relatorios-gerados>
+    </mat-card>
+</div>
+
+<div class="px-2">
+    <router-outlet></router-outlet>
+</div>

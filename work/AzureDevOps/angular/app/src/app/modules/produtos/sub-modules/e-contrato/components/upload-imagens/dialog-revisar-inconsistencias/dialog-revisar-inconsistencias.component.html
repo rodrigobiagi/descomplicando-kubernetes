@@ -1,0 +1,41 @@
+<p>Por favor, selecione para qual contrato devemos associar essa imagem: </p>
+
+<form [formGroup]="contratosForm" class="mt-2">
+  <table mat-table [dataSource]="dataSource" #table="matSort" matSort>
+
+    <mat-radio-group formControlName="contrato">
+      <ng-container matColumnDef="radio">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <mat-radio-button [value]="element"></mat-radio-button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="numeroContrato">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Contrato</th>
+        <td mat-cell *matCellDef="let element">{{ element.numeroContrato }} <span class="icon-frota"
+            *ngIf="element.ehFrota">F</span></td>
+      </ng-container>
+
+      <ng-container matColumnDef="numeroRestricao">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Gravame</th>
+        <td mat-cell *matCellDef="let element">{{ element.numeroRestricao }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="documentoDevedor">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>CPF/CNPJ devedor</th>
+        <td mat-cell *matCellDef="let element">{{ element.documento }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="operacao">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Operação
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element.operacao }}</td>
+      </ng-container>
+    </mat-radio-group>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</form>

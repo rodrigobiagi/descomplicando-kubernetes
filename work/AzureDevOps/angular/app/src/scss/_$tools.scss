@@ -1,0 +1,160 @@
+// Tools
+
+/* Fontface */
+@font-face {
+    font-family: 'Fieldwork Thin';
+    src: url('../assets/font/Fieldwork_Geo_Thin.otf'),
+        url('../assets/font/Fieldwork_Geo_Thin.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fieldwork Light';
+    src: url('../assets/font/Fieldwork_Geo_Light.otf'),
+        url('../assets/font/Fieldwork_Geo_Light.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fieldwork Regular';
+    src: url('../assets/font/Fieldwork_Geo_Regular.otf'),
+        url('../assets/font/Fieldwork_Geo_Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Fieldwork Bold';
+    src: url('../assets/font/Fieldwork_Geo_Bold.otf'),
+        url('../assets/font/Fieldwork_Geo_Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat Regular';
+    src: url('../assets/font/Montserrat-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat Bold';
+    src: url('../assets/font/Montserrat-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Montserrat ExtraBold';
+    src: url('../assets/font/Montserrat-ExtraBold.ttf') format('truetype');
+}
+
+/** Mixins **/
+/* Border radius */
+@mixin border-radius($bd-radius) {
+    border-radius: $bd-radius  !important;
+}
+
+//#region Gradients
+@mixin gradient-text($deg) {
+    background: -webkit-linear-gradient($deg, #E32B51 0%, #056AB0 100%);
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+@mixin gradient($direction, $list) {
+    background: -webkit-linear-gradient($direction, $list);
+    background: -moz-linear-gradient($direction, $list);
+    background: -o-linear-gradient($direction, $list);
+    background: linear-gradient($direction, $list);
+}
+
+//#endregion
+
+//region Box Shadows
+@mixin box-shadow() {
+    box-shadow: 0 12px 17px #00000014, 0 5px 22px #00000014, 0 7px 8px #0000000d !important;
+}
+
+//#endregion
+
+/** Font open sans variações
+ * Light - $fw: 300, $fs: normal
+ * LightItalic - $fw: 300, $fs: italic
+ * Regular - $fw: 400, $fs: normal
+ * RegularItalic - $fw: 400, $fs: italic
+ * SemiBold - $fw: 600, $fs: normal
+ * Bold - $fw: 700, $fs: normal
+ * ExtraBold - $fw: 800, $fs: normal
+ */
+
+//#region Montserrat Mixins
+@mixin fontMontserratRegular($fw: 400, $fs: normal) {
+    font-family: 'Montserrat Regular', sans-serif;
+    font-weight: $fw;
+    font-style: $fs;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+}
+
+@mixin fontMontserratBold($fw: 700, $fs: normal) {
+    font-family: 'Montserrat Bold', sans-serif;
+    font-weight: $fw;
+    font-style: $fs;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+}
+
+@mixin fontMontserratExtraBold($fw: 800, $fs: normal) {
+    font-family: 'Montserrat ExtraBold', sans-serif;
+    font-weight: $fw;
+    font-style: $fs;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+}
+//#endregion
+
+/* Font Open Sans */
+@mixin fontOpenSans($fw: 400, $fs: normal) {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: $fw;
+    font-style: $fs;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+}
+
+/* Font Fieldwork Regular*/
+@mixin fontFieldworkRegular($fw: 400, $fs: normal) {
+    font-family: 'Fieldwork Regular';
+    font-weight: $fw;
+    font-style: $fs;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: antialased;
+}
+
+/* Font Fieldwork Bold*/
+@mixin fontFieldworkBold($fw: 500, $fs: normal) {
+    font-family: 'Fieldwork Bold';
+    font-weight: $fw;
+    font-style: $fs;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: antialased;
+}
+
+/* Font Fieldwork Bold*/
+@mixin fontFieldworkLight($fw: 400, $fs: normal) {
+    font-family: 'Fieldwork Light';
+    font-weight: $fw;
+    font-style: $fs;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: antialased;
+}
+
+/* Font Fieldwork Thin*/
+@mixin fontFieldworkThin($fw: 400, $fs: normal) {
+    font-family: 'Fieldwork Thin';
+    font-weight: $fw;
+    font-style: $fs;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: antialased;
+}
+
+/* Transition */
+@mixin transition($x...) {
+    transition: $x;
+}

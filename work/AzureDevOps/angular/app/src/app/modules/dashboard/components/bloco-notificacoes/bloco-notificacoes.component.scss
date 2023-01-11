@@ -1,0 +1,85 @@
+@import '$settings';
+@import '$tools';
+
+.bell-icon {
+  font-size: 2em;
+  background: -webkit-linear-gradient(#E32B51, #056AB0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h4 {
+  @include fontMontserratBold;
+  font-size: 18px;
+  color: $blue-900
+}
+
+.mat-mini-fab.mat-primary {
+  background-color: $blue-400;
+  color: $blue-600;
+
+  i {
+    font-size: 2em;
+  }
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: end;
+  position: absolute;
+  bottom: 12%;
+  right: 10%;
+
+  button {
+    box-shadow: none !important;
+  }
+}
+
+.notificacoes-content {
+  position: absolute;
+  top: 21%;
+  left: 17%;
+}
+
+p {
+  font-size: 14px;
+  margin-top: 0.5rem;
+}
+
+.content-wrapper {
+  @include border-radius(10px);
+  padding: 30px 20px 20px 30px;
+  background-color: #EBF5FF;
+}
+
+.left-elipse {
+  position: absolute;
+  width: 290.53px;
+  height: 290.53px;
+  left: -181px;
+  top: 14%;
+  background: linear-gradient(80deg, rgba(214, 215, 217, 0.3) -4.61%, rgba(99, 155, 194, 0.3) 51.66%, rgba(5, 106, 176, 0.3) 97.89%);
+  opacity: .6;
+}
+
+.right-elipse {
+  position: absolute;
+  width: 290.53px;
+  height: 290.53px;
+  top: -113%;
+  right: -6%;
+  background: linear-gradient(233deg, rgba(214, 215, 217, 0.3) -4.61%, rgba(99, 155, 194, 0.3) 51.66%, rgba(5, 106, 176, 0.3) 97.89%);
+  opacity: .4;
+}
+
+.right-elipse,
+.left-elipse {
+  @include border-radius(100%);
+  background-blend-mode: color-dodge;
+  transform: rotate(161deg);
+}
+
+mat-card {
+  overflow: hidden;
+}

@@ -1,0 +1,96 @@
+<div fxLayout="column">
+  <form [formGroup]="formulario" novalidate>
+    <div>
+      <div fxLayout="row" fxLayoutGap="10px">
+        <h6 class="headline">Dados do contrato</h6>
+      </div>
+      <div fxLayout="row wrap" fxLayoutAlign="space-between" fxLayoutGap="10px grid">
+        <mat-form-field fxFlex="25">
+          <mat-label>N.º do contrato</mat-label>
+          <input [id]="getElementId(0, 'numero-contrato')" type="text" matInput name="numeroContrato"
+            formControlName="numeroContrato" required>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="25">
+          <mat-label>UF licenciamento</mat-label>
+          <mat-select [id]="getElementId(5, 'uf-licenciamento')" name="ufLicenciamento"
+            formControlName="ufLicenciamento" required>
+            <mat-option>Selecione</mat-option>
+            <mat-option *ngFor="let uf of ufsLicenciamento" [value]="uf">{{ uf }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field fxFlex="25">
+          <mat-label>Tipo de restrição</mat-label>
+          <mat-select [id]="getElementId(5, 'tipo-restricao')" name="tipoRestricao" formControlName="tipoRestricao"
+            required>
+            <mat-option *ngFor="let restricao of tiposRestricao" [value]="restricao.id">{{restricao.valor}}</mat-option>
+          </mat-select>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('tipoRestricao').hasError('required')">Obrigatório
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex="25">
+          <mat-label>Data do contrato</mat-label>
+          <input [id]="getElementId(0, 'data-contrato')" matInput name="dataContrato" formControlName="dataContrato"
+            placeholder="Digite data do contrato" [min]="minDate" [max]="maxDate" [matDatepicker]="dataContrato"
+            maxlength="10" required>
+          <mat-datepicker-toggle matSuffix [for]="dataContrato"></mat-datepicker-toggle>
+          <mat-datepicker #dataContrato></mat-datepicker>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('dataContrato').hasError('required')">Obrigatório
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex="100" *ngIf="uf == 'RJ'"
+          [matTooltip]="taxasResponse?.ativo && taxasResponse?.qtdGuiaDisponivel > 0 ? 'Gestão de estoque de DUDAs realizado pela Tecnobank' : '' ">
+          <mat-label>DUDA</mat-label>
+          <input [id]="getElementId(0, 'numero-duda')" type="text" matInput #duda name="duda" formControlName="duda"
+            placeholder="Digite o número do DUDA" numbers-only maxlength="10">
+          <mat-hint *ngIf="mudarObrigatoriedade('duda')">Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('duda').hasError('required')">Obrigatório
+          </mat-error>
+          <mat-error *ngIf="formulario.get('duda').hasError('maxlength')">DUDA inválida </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="tipoOperacao == 3 || tipoOperacao == 4">
+
+        <div fxLayout="row wrap" fxLayoutAlign="space-between" fxLayoutGap="10px grid">
+          <mat-form-field fxFlex="25">
+            <mat-label>Nº do aditivo</mat-label>
+            <input [id]="getElementId(0, 'numero-aditivo')" type="input" matInput name="numeroAditivo"
+              formControlName="numeroAditivo" placeholder="Digite número do aditivo" maxlength="20" required>
+            <mat-hint>Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('numeroAditivo').hasError('required')">Obrigatório
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="25">
+            <mat-label>Data do aditivo</mat-label>
+            <input [id]="getElementId(0, 'data-aditivo')" matInput name="dataAditivo" formControlName="dataAditivo"
+              placeholder="Digite data do aditivo" [min]="minDate" [max]="maxDate" [matDatepicker]="dataAditivo"
+              maxlength="10" required>
+            <mat-datepicker-toggle matSuffix [for]="dataAditivo"></mat-datepicker-toggle>
+            <mat-datepicker #dataAditivo></mat-datepicker>
+            <mat-hint>Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('dataAditivo').hasError('required')">Obrigatório
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="auto">
+            <mat-label>Tipo do aditivo</mat-label>
+            <mat-select [id]="getElementId(5, 'tipo-aditivo')" name="tipoAditivo" formControlName="tipoAditivo">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let aditivo of tiposAditivo" [value]="aditivo.id">{{ aditivo.valor }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="formulario.get('tipoAditivo').hasError('required')">Obrigatório
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+      </div>
+    </div>
+  </form>
+  <app-dados-contrato-complementar (formChangedEvent)="onFormChanged($event)" [submitComplementar]="submitComplementar"
+    [contrato]="contrato">
+  </app-dados-contrato-complementar>
+</div>

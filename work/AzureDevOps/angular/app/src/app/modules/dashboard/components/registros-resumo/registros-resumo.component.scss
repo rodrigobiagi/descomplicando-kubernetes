@@ -1,0 +1,9 @@
+@import '$settings';
+@import '$tools';
+
+.mat-button-toggle, .mat-button-toggle button {
+    height:30px;
+    font-size: .8em;
+    @include fontMontserratBold;
+}
+

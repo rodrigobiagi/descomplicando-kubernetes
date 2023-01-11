@@ -1,0 +1,69 @@
+<div class="resume-btn d-flex justify-content-between mt-2 mb-2" fxFlex fxLayout="row" fxLayoutGap="20px">
+    <div class="resume-option">
+      <mat-card class="h-100 card-btn card-success"
+        [ngClass]="filtroSelected == 1 ? 'selected' : ''"
+        (click)="selectFiltro(1)"
+        >
+        <div class="option-item">
+            <div class="option-icon success">
+                <i class="fa-regular fa-memo-circle-check"></i>
+            </div>
+            <div class="option-description">
+                <div class="description-title">
+                    Contratos registrados
+                </div>
+                <div class="description-result" (mouseenter)="onHoverBotaoFiltro(1)" [matTooltip]="tooltipText">
+                    <span class="result">{{contratosRegistrados.periodoAtual }}</span>
+                    <span class="result-status">
+                        <i class="fa-solid success" [ngClass]="contratosRegistrados.isPositivo ? 'fa-arrow-up-right' : 'fa-arrow-down-left'"></i>
+                        {{contratosRegistrados.variacao}}
+                    </span>
+                </div>
+            </div>
+        </div>
+      </mat-card>
+    </div>
+    <div class="resume-option">
+      <mat-card class="h-100 card-btn card-warning" [ngClass]="filtroSelected == 2 ? 'selected' : ''" (click)="selectFiltro(2)">
+        <div class="option-item">
+            <div class="option-icon warning">
+                <i class="fa-regular fa-triangle-exclamation"></i>
+            </div>
+            <div class="option-description">
+                <div class="description-title">
+                    Contratos com inconsistências
+                </div>
+                <div class="description-result" (mouseenter)="onHoverBotaoFiltro(2)" [matTooltip]="tooltipText">
+                    <span class="result">{{ contratosInconsistencias.periodoAtual }}</span>
+                    <span class="result-status">
+                        <i class="fa-solid warning" [ngClass]="contratosInconsistencias.isPositivo ? 'fa-arrow-up-right' : 'fa-arrow-down-left'"></i>
+                        {{ contratosInconsistencias.variacao }}
+                    </span>
+                </div>
+            </div>
+        </div>
+      </mat-card>
+    </div>
+    <div class="resume-option">
+      <mat-card class="h-100 card-btn card-danger" [ngClass]="filtroSelected == 3 ? 'selected' : ''" (click)="selectFiltro(3)">
+        <div class="option-item">
+            <div class="option-icon danger">
+                <i class="fa-regular fa-images"></i>
+            </div>
+            <div class="option-description">
+                <div class="description-title">
+                    Contratos sem imagens
+                </div>
+                <div class="description-result" (mouseenter)="onHoverBotaoFiltro(3)" [matTooltip]="tooltipText">
+                    <span class="result">{{contratosSemImagem.periodoAtual}}</span>
+                    <span class="result-status">
+                        <i class="fa-solid danger" [ngClass]="contratosSemImagem.isPositivo ? 'fa-arrow-up-right' : 'fa-arrow-down-left'"></i>
+                        {{contratosSemImagem.variacao}}
+                    </span>
+                </div>
+            </div>
+        </div>
+      </mat-card>
+    </div>
+
+</div>

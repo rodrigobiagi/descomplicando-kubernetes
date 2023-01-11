@@ -1,0 +1,9 @@
+@import '$settings';
+@import '$tools';
+
+.headline {
+  @include fontMontserratBold;
+  font-size: 16px;
+  color: $gray-800;
+  margin: 8px 0 15px 0;
+}

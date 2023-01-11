@@ -1,0 +1,40 @@
+<div fxLayout="row" fxLayoutAlign="space-between">
+  <div fxFlex>
+    <div *ngIf="isLoading" class="d-flex" fxLayout="row" fxLayoutAlign="space-between none">
+      <div *skeleton="
+                isLoading;
+                className: 'mr-1';
+                height: '36px';
+                width: '10%';"></div>
+      <div *skeleton="
+                isLoading;
+                className: 'mr-1';
+                height: '36px';
+                width: '80%';"></div>
+      <div *skeleton="
+                isLoading;
+                className: 'mr-1';
+                height: '36px';
+                width: '10%';"></div>
+    </div>
+  </div>
+</div>
+
+<div fxLayout="column" fxLayoutGap="15px" *ngIf="veiculos.length == 1">
+  <div fxLayout="row" class="property-row" *ngFor="let revisao of veiculos[0].dadosRevisaoRascunho">
+    <div fxFlex="50" class="nome-exibicao"> {{revisao.nomeExibicao}} </div>
+    <div fxFlex="50"> {{revisao.valor}} </div>
+  </div>
+</div>
+
+<div fxLayout="row wrap" fxLayoutAlign="space-between" fxLayoutGap="grid" class="veiculos"
+  *ngIf="veiculos.length > 1" fxFlex="auto">
+  <div fxFlex="48" fxLayout="column" fxLayoutGap="10px" class="veiculo p-1 mb-2"
+    *ngFor="let veiculo of veiculos; let i = index;">
+    <p>Veículo {{ i + 1 }}</p>
+    <div class="row" *ngFor="let item of veiculo.dadosRevisaoRascunho">
+      <div fxFlex="auto" class="nome">{{ item.nomeExibicao }}</div>
+      <div fxFlex="auto" class="valor">{{ item.valor }}</div>
+    </div>
+  </div>
+</div>

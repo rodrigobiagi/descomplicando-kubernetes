@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-comunicacao-venda-api
+  namespace: #{namespace}#
+spec:
+  replicas: #{replicas}#
+  selector:
+    matchLabels:
+      app: comunicacao-venda-api
+  template:
+    metadata:
+      labels:
+        app: comunicacao-venda-api
+    spec:
+      containers:
+      - name:  comunicacao-venda-api-container
+        image: #{image}#:#{imageName}#
+        resources:
+          requests:
+            cpu: #{cpu}#
+            memory: #{memory}#
+          limits:
+            cpu: #{cpu-limits}#
+            memory: #{memory-limits}#
+        env:
+        - name: TZ
+          value: America/Sao_Paulo
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config-appsettings
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      volumes:
+        - name: config-appsettings
+          configMap:
+            name: comunicacao-venda-api-appsettings
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-comunicacao-venda-api
+  namespace: #{namespace}#
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: comunicacao-venda-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-comunicacao-venda-api
+  namespace: #{namespace}#
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: #{rota}#.2ef396cff58c48d2b094.eastus2.aksapp.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: service-comunicacao-venda-api
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - #{rota}#.2ef396cff58c48d2b094.eastus2.aksapp.io
+    secretName: tls-tecnobank
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-comunicacao-venda-api
+  namespace: #{namespace}#
+spec:
+  maxReplicas: #{max-replicas}#
+  minReplicas: #{min-replicas}#
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deploy-comunicacao-venda-api
+  targetCPUUtilizationPercentage: 80
+  

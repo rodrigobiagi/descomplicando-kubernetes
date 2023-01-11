@@ -1,0 +1,10 @@
+@import '$settings';
+
+.background-info-loading {
+    background-color: $gray-300;
+    padding: 2px;
+}
+.info-loading {
+    padding: 0px 15px;
+    color: $blue-dark;
+}

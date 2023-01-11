@@ -1,0 +1,11 @@
+<div class="dialog">
+    <h2 mat-dialog-title id="modal-title">{{ getFormatacao(data.title) }}</h2>
+    <mat-dialog-content>
+        <ng-template #target></ng-template>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button [id]="getElementId(2, 'dialog-cancel')" *ngIf="!disableBtns" mat-button class="bold text-gray-800" [mat-dialog-close]="data.buttonCancel.value">{{ data.buttonCancel.text }}</button>
+        <button [id]="getElementId(2, 'dialog-confirm')" *ngIf="!disableSave && !disableBtns" mat-button class="btn btn-primary bold" [mat-dialog-close]="data.buttonConfirm.value" cdkFocusInitial>{{ data.buttonConfirm.text }}</button>
+        <button [id]="getElementId(2, 'dialog-custom')" *ngIf="data.buttonCustom && data.buttonCustom.showBtn" class="btn-primary w-100 bold" mat-button [mat-dialog-close]="data.buttonCustom.value">{{ data.buttonCustom.text }}</button>
+    </mat-dialog-actions>
+</div>

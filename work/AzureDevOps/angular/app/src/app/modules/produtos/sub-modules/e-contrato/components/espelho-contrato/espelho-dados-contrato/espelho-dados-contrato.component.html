@@ -1,0 +1,52 @@
+<div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+    <div fxFlex="50">
+        <p class="field-title">Nº do Contrato</p>
+        <p>{{ contrato?.contrato.numeroContrato }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">UF do Licenciamento</p>
+        <p>{{ contrato?.contrato.ufLicenciamento }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Data do Aditivo</p>
+        <p>{{ contrato?.contrato.dataAditivo?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Nº do Aditivo</p>
+        <p>{{ contrato?.contrato.numeroAditivo?? '-' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Tipo de Aditivo</p>
+        <p>{{ tipoAditivo }}</p>
+    </div>
+    <div fxFlex="50">
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Tipo de Restrição</p>
+        <p>{{ tipoRestricao }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Data do Contrato</p>
+        <p>{{ contrato?.contrato?.dataContrato ?? '-' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50" *ngIf="contrato?.contrato.ufLicenciamento !== 'RJ'">
+        <p class="field-title">&nbsp;</p>
+        <p>&nbsp;</p>
+    </div>
+    <div fxFlex="50" *ngIf="contrato?.contrato.ufLicenciamento === 'RJ'">
+        <p class="field-title">DUDA</p>
+        <p>**********</p>
+    </div>
+</div>

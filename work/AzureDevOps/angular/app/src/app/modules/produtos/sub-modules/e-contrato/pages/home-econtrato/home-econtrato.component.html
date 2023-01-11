@@ -1,0 +1,14 @@
+<div class="d-block">
+    <div fxFlex="100" fxLayout="row" fxLayoutAlign="center" fxLayoutGap="20px">
+        <h4 class="mt-0">Escolha entre as opções disponíveis:</h4>
+    </div>
+
+    <div fxLayout="row" fxLayout.sm="row" fxLayout.md="row" fxLayout.lg="row" fxLayout.xs="column" fxLayout.xl="row"
+        fxLayout.xs="column" fxLayoutGap="40px">
+        <div fxFlex="100" fxLayout.xs="column" fxLayout="row" fxLayoutAlign="center" fxLayoutGap="20px">
+            <app-button [route]="permissoesRegistroContrato ? 'registro-contrato' : '../e-contrato'" labelText="Registro de Contrato" icon="fa-regular fa-file-plus" [disable]="!permissoesRegistroContrato"></app-button>
+            <app-button [route]="envioLote ? 'enviar-lote' : '../e-contrato'" labelText="Enviar Lote" icon="fa-regular fa-layer-plus" [disable]="!envioLote"></app-button>
+            <app-button [route]="consultaContrato ? 'consultar-registro' : '../e-contrato'" labelText="Consultar Contrato" icon="fa-regular fa-file-search" [disable]="!consultaContrato"></app-button>
+        </div>
+    </div>
+</div>

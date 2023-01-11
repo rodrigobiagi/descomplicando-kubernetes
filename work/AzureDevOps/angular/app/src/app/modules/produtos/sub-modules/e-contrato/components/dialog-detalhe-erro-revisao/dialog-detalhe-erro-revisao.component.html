@@ -1,0 +1,72 @@
+<div class="dialog dialog-resumo-falha">
+    <h2 mat-dialog-title>Detalhes das inconsistencias</h2>
+    <mat-dialog-content>
+        <table class="resumo-falhas" aria-describedby="Detalhes das inconsistencias">
+            <thead>
+                <tr class="header">
+                    <th scope="col" id="nome-campo">Campo do Formulário</th>
+                    <th scope="col" id="descricao-inconsistencia">Descrição das Inconsistências</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container>
+                    <tr class="titulo">
+                        <td colspan="2">Dados do Veículo</td>
+                    </tr>
+                </ng-container>
+                <ng-container>
+                    <tr class="titulo">
+                        <td colspan="2">Dados do Financiamento</td>
+                    </tr>
+                    <ng-container *ngFor="let inconsistenciaFinanciamento of inconsistenciasDadosFinanciamento">
+                        <tr>
+                            <td [attr.rowspan]="inconsistenciaFinanciamento.erros.length">{{inconsistenciaFinanciamento.nomeExibicao}}</td>
+                            <td><span class="codigo-erro">{{inconsistenciaFinanciamento.erros[0].codigo}}</span> - {{inconsistenciaFinanciamento.erros[0].mensagem}}</td>
+                        </tr>
+                        <ng-container *ngFor="let erro of inconsistenciaFinanciamento.erros; let i=index;">
+                            <tr *ngIf="i != 0">
+                                <td><span class="codigo-erro">{{erro.codigo}}</span> - {{erro.mensagem}}</td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <ng-container>
+                    <tr class="titulo">
+                        <td colspan="2">Dados do Contrato</td>
+                    </tr>
+                    <ng-container *ngFor="let inconsistenciaContrato of inconsistenciasDadosContrato">
+                        <tr>
+                            <td [attr.rowspan]="inconsistenciaContrato.erros.length">{{inconsistenciaContrato.nomeExibicao}}</td>
+                            <td><span class="codigo-erro">{{inconsistenciaContrato.erros[0].codigo}}</span> - {{inconsistenciaContrato.erros[0].mensagem}}</td>
+                        </tr>
+                        <ng-container *ngFor="let erro of inconsistenciaContrato.erros; let i=index;">
+                            <tr *ngIf="i != 0">
+                                <td><span class="codigo-erro">{{erro.codigo}}</span> - {{erro.mensagem}}</td>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                </ng-container>
+                <ng-container>
+                    <tr class="titulo">
+                        <td colspan="2">Dados do Credor</td>
+                    </tr>
+                </ng-container>
+            </tbody>
+            <tfoot>
+                <tr class="footer">
+                    <td colspan="2">
+                        <mat-icon class="warning" inline="true">warning</mat-icon>
+                        {{totalInconsistencia}} inconsisitências
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-raised-button>
+            <mat-icon>content_copy</mat-icon>
+            Copiar para Excel
+        </button>
+        <button mat-button mat-dialog-close cdkFocusInitial>Fechar</button>
+    </mat-dialog-actions>
+</div>

@@ -1,0 +1,67 @@
+@import '$settings';
+@import '$tools';
+
+h3 {
+  text-align: center
+}
+
+.bold {
+  @include fontFieldworkBold;
+}
+
+.box-status {
+  background-color:#DFEEFC;
+  border-radius: 5px;
+  padding: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+
+  i {
+    color: $primary;
+  }
+
+}
+
+.timeline-link {
+  width:2px;
+  height: 35px;
+  background-color: $success-800;
+  margin-left: 15px;
+  margin-top: -2px;
+  margin-bottom: -2px;
+}
+
+.steps {
+  margin-top: 30px;
+}
+
+.step {
+  display:flex;
+  gap: 10px;
+  align-items: center;
+
+  i {
+    font-size: 2em;
+  }
+}
+
+.box-negado {
+  background-color:#FFF7EC;
+  border-radius: 5px;
+  padding: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: $error-900;
+  margin-top: 10px;
+}
+
+.color-red {
+  color:$error-900;
+}
+
+.color-green {
+  color: $success-800;
+}

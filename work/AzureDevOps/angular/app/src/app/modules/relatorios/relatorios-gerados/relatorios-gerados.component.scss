@@ -1,0 +1,20 @@
+.top-options {
+  position: absolute;
+  right: 20px;
+  z-index: 2;
+  margin-top: 0 !important;
+}
+
+.box__btn {
+  display: flex;
+  justify-content: right;
+  position: relative;
+  gap: 10px;
+  margin-top: -68px;
+}
+
+.btn-info {
+  width:36px!important;
+  min-width: unset!important;
+  padding: 0 !important;
+}

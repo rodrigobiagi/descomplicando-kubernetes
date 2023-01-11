@@ -1,0 +1,10 @@
+<div fxLayout="row" fxLayout.sm="column" fxLayout.md="column" fxLayout.lg="row" fxLayout.xs="column" fxLayout.xl="row"
+    fxLayoutGap="40px" *ngIf="!childstate">
+    <div fxFlex="55" class="mr-0">
+        <app-criar-rascunho-resumo (childstate)="childstate = $event"></app-criar-rascunho-resumo>
+    </div>
+    <div fxFlex="45" class="mr-2">
+        <app-rascunho-list></app-rascunho-list>
+    </div>
+</div>
+<router-outlet></router-outlet>

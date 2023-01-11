@@ -1,0 +1,43 @@
+<section>
+  <input type="file" hidden #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event.target.files)"
+    [accept]="acceptedTypes" [disabled]="!permissoesConsulta.editar">
+
+  <div class="dropzone" appDragAndDrop (fileDropped)="onFileDropped($event)" (click)="onClickFile(fileDropRef)"
+    [ngClass]="{ 'disabled': !permissoesConsulta.editar }">
+    <mat-icon>add_photo_alternate</mat-icon>
+    <h3>Arraste a imagem e solte aqui ou clique para buscar em sua máquina.</h3>
+
+    <span class="file-error">
+      Formatos permitidos: PDF, JPEG, JPG, PNG e TIFF. <br>
+      Tamanho máximo permitido: 10MB.
+    </span>
+    <br>
+    <span *ngIf="fileError !== null" class="file-error">
+      <mat-icon>warning</mat-icon> {{ fileError }}
+    </span>
+  </div>
+  <br>
+  <div class="files-list single-file" *ngIf="showImage()">
+    <div class="file-name">
+      <mat-icon> insert_photo</mat-icon>
+      <div class="info">
+        <h4 class="name">
+          {{ getFileName() }}
+        </h4>
+        <p class="size">
+          {{ getFileDetails() }}
+        </p>
+      </div>
+    </div>
+
+    <div class="file-download" (click)="onClickDownload()" matTooltip="Download da imagem"
+      *ngIf="obterImagem?.existeImagem && !loading">
+      <mat-icon>arrow_downward</mat-icon>
+    </div>
+
+    <div class="file-loading" matTooltip="Carregando imagem para download" *ngIf="loading">
+      <mat-icon>sync</mat-icon>
+    </div>
+
+  </div>
+</section>

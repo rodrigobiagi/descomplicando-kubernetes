@@ -1,0 +1,64 @@
+<div [hidden]="childstate" class="listar-usuarios">
+
+  <div class="d-flex justify-content-end my-2 top-options" style="gap: 10px" *ngIf="usuarioAba">
+    <button mat-flat-button class="box__btn--btn" color="secondary" (click)="criarUsuario()"
+      [disabled]="!permissoesUsuario.admin">
+      Incluir usuário
+    </button>
+  </div>
+
+  <div class="d-flex justify-content-end my-2 top-options" style="gap: 10px" *ngIf="!usuarioAba">
+    <button mat-flat-button class="box__btn--btn" color="secondary" (click)="criarUsuarioConvidado()">
+      Convidar usuário
+    </button>
+  </div>
+
+  <mat-tab-group (selectedTabChange)="changeTab($event)">
+    <mat-tab label="Perfis">
+      <ng-template mat-tab-label>
+        <div class="empresas-tab-label">
+          <i class="fa-regular fa-user text-default"></i>&nbsp;
+          <span>Usuários</span>
+        </div>
+      </ng-template>
+      <div class="px-2">
+        <app-grid-filter [filter]="filter" (pesquisar)="search($event)" (redefinir)="redefinirFiltro()"
+          [showRedefinir]="showRedefinirUsuarioBtn" [radiusTop]="false"></app-grid-filter>
+      </div>
+
+      <div class="default-tab px-2 pb-3">
+        <mat-card class="mat-elevation-z8 mt-2 px-0">
+          <app-table-usuarios [filtro]="filtroUsuario" [refreshGrid]="refreshUsuarioGrid">
+          </app-table-usuarios>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab *ngIf="ehmaster">
+      <ng-template mat-tab-label>
+        <div class="empresas-tab-label">
+          <i class="fa-regular fa-users-medical text-default"></i>&nbsp;
+          <span>Usuários convidados</span>
+        </div>
+      </ng-template>
+
+      <div class="px-2">
+        <app-grid-filter [filter]="filterConvidado" (pesquisar)="searchConvidados($event)"
+          (redefinir)="redefinirFiltroConvidado()" [showRedefinir]="refreshUsuarioConvidadoGrid" [radiusTop]="false">
+        </app-grid-filter>
+      </div>
+
+      <div class="default-tab px-2 pb-3">
+        <mat-card class="mat-elevation-z8 mt-2 px-0">
+          <app-table-usuarios-convidados [filtro]="filtroUsuarioConvidado" [refreshGrid]="refreshUsuarioConvidadoGrid">
+          </app-table-usuarios-convidados>
+        </mat-card>
+      </div>
+
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<div class="px-2">
+  <router-outlet></router-outlet>
+</div>

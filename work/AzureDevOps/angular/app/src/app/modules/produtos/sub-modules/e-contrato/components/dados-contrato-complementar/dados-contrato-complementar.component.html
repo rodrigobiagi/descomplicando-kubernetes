@@ -1,0 +1,209 @@
+<div fxLayout="row">
+  <h6 class="headline">Dados complementares</h6>
+</div>
+
+<form [formGroup]="formulario" novalidate>
+  <div fxLayout="row wrap" fxLayoutAlign="space-between" fxLayoutGap="10px grid">
+    <mat-form-field fxFlex="25" *ngIf="uf === 'PR'">
+      <mat-label>Taxa do contrato</mat-label>
+      <input [id]="getElementId(0, 'taxa-contrato')" type="text" matInput name="taxaContrato"
+        formControlName="taxaContrato" placeholder="Digite a taxa do contrato" prefix="R$ " min="0.01" max="9999999.99"
+        maxlength="15" currencyMask>
+      <mat-hint *ngIf="mudarObrigatoriedade('taxaContrato')">Obrigatório</mat-hint>
+      <mat-error *ngIf="formulario.get('taxaContrato').hasError('required')">Obrigatório
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field [fxFlex]="uf === 'PR' ? 25 : 20">
+      <mat-label>Taxa de IOF</mat-label>
+      <input [id]="getElementId(0, 'taxa-iof')" type="text" matInput name="taxaIof" formControlName="taxaIof"
+        placeholder="Digite a taxa do IOF" [percentage]="7">
+      <mat-hint *ngIf="mudarObrigatoriedade('taxaIof')">Obrigatório</mat-hint>
+      <mat-error *ngIf="formulario.get('taxaIof').hasError('required')">Obrigatório</mat-error>
+    </mat-form-field>
+
+    <mat-form-field [fxFlex]="uf === 'PR' ? 25 : 20">
+      <mat-label>Taxa de juros ao mês</mat-label>
+      <input [id]="getElementId(0, 'taxa-juros-mes')" type="text" matInput name="taxaJurosMes"
+        formControlName="taxaJurosMes" placeholder="Digite a taxa de juros mês" [percentage]="7"
+        (blur)="setValorPadrao('taxaJurosMes', '000')">
+      <mat-hint *ngIf="mudarObrigatoriedade('taxaJurosMes')">Obrigatório</mat-hint>
+      <mat-error *ngIf="formulario.get('taxaJurosMes').hasError('required')">Obrigatório
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field [fxFlex]="uf === 'PR' ? 25 : 20">
+      <mat-label>Taxa de juros ao ano</mat-label>
+      <input [id]="getElementId(0, 'taxa-juros-ano')" type="text" matInput name="taxaJurosAno"
+        formControlName="taxaJurosAno" placeholder="Digite a taxa de juros ano" [percentage]="4"
+        (blur)="setValorPadrao('taxaJurosAno', '000')">
+      <mat-hint *ngIf="mudarObrigatoriedade('taxaJurosAno')">Obrigatório</mat-hint>
+      <mat-error *ngIf="formulario.get('taxaJurosAno').hasError('required')">Obrigatório
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field fxFlex>
+      <mat-label>Índice</mat-label>
+      <input [id]="getElementId(0, 'indice')" type="text" matInput name="indice" formControlName="indice"
+        placeholder="Digite o índice" maxlength="10" [alphanumerics-only]="['acento', 'hifen', 'espaco']" required>
+      <mat-hint>Obrigatório</mat-hint>
+      <mat-error *ngIf="formulario.get('indice').hasError('required')">Obrigatório</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px">
+    <mat-form-field fxFlex="100">
+      <mat-label>Principal recebedor do pagamento</mat-label>
+      <input [id]="getElementId(0, 'principal-recebedor')" type="text" matInput name="nomeRecebedorPagamento"
+        formControlName="nomeRecebedorPagamento" placeholder="Digite o nome do recebedor do pagto.">
+    </mat-form-field>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px" class="justify-content-between">
+    <div class="pt-1 produtos-registrar-contrato" fxFlex="50">
+      <p class="bold desk">Tipo de documento</p>
+      <div fxLayout="row" class="align-items-start" fxLayoutGap="10px">
+        <mat-button-toggle-group [id]="getElementId(7, 'tipo-documento')" name="tipoDocumentoRecebedor"
+          formControlName="tipoDocumentoRecebedor" aria-label="tipoDocumentoRecebedor">
+          <mat-button-toggle [id]="getElementId(7, 'documento-cpf')" value="cpf"
+            class="btn-toggle">CPF</mat-button-toggle>
+          <mat-button-toggle [id]="getElementId(7, 'documento-cnpj')" value="cnpj"
+            class="btn-toggle">CNPJ</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field fxFlex="auto">
+          <mat-label>Documento do recebedor
+          </mat-label>
+          <input [id]="getElementId(0, 'documento-recebedor')" type="text" matInput name="documentoRecebedor"
+            formControlName="documentoRecebedor"
+            [mask]="mascaraDocumento(formulario.get('tipoDocumentoRecebedor').value)"
+            placeholder="Digite o documento do recebedor">
+          <mat-error *ngIf="formulario.get('documentoRecebedor').hasError('documentNotValid')">
+            Documento do recebedor inválido
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="pt-1 produtos-registrar-contrato" fxFlex="50">
+      <p class="bold desk">Tipo de documento</p>
+      <div fxLayout="row" class="align-items-start" fxLayoutGap="10px">
+        <mat-button-toggle-group [id]="getElementId(7, 'tipo-documento-vendedor')" name="tipoDocumentoVendedor"
+          formControlName="tipoDocumentoVendedor" aria-label="tipoDocumentoVendedor">
+          <mat-button-toggle [id]="getElementId(0, 'documento-vendedor')" value="cpf"
+            class="btn-toggle">CPF</mat-button-toggle>
+          <mat-button-toggle value="cnpj" class="btn-toggle">CNPJ</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field fxFlex="auto">
+          <mat-label>Documento do vendedor</mat-label>
+          <input [id]="getElementId(0, 'documento-vendedor')" type="text" matInput name="documentoVendedor"
+            formControlName="documentoVendedor" [mask]="mascaraDocumento(formulario.get('tipoDocumentoVendedor').value)"
+            placeholder="Digite o documento do vendedor">
+          <mat-error *ngIf="formulario.get('documentoVendedor').hasError('documentNotValid')">
+            Documento do vendedor inválido
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px" class="justify-content-between">
+    <div class="pt-1 produtos-registrar-contrato" fxFlex="50">
+      <p class="bold desk">Taxa de mora?</p>
+      <div fxLayout="row" class="align-items-start" fxLayoutGap="10px">
+        <mat-button-toggle-group [id]="getElementId(7, 'taxa-mora')" name="indicadorTaxaMora"
+          formControlName="indicadorTaxaMora" (change)="habilitarTaxaMora($event.value)" aria-label="indicadorTaxaMora">
+          <mat-button-toggle value="true" class="btn-toggle">Sim</mat-button-toggle>
+          <mat-button-toggle value="false" class="btn-toggle">Não</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field fxFlex="auto">
+          <mat-label>Taxa de mora</mat-label>
+          <input [id]="getElementId(0, 'taxa-mora')" type="text" matInput name="valorTaxaMora"
+            formControlName="valorTaxaMora" [percentage]="4" placeholder="Digite a taxa mora"
+            (blur)="setValorPadrao('valorTaxaMora', '000')">
+          <mat-hint
+            *ngIf="formulario.get('indicadorTaxaMora').value === 'true' || mudarObrigatoriedade('valorTaxaMora')">Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('valorTaxaMora').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="pt-1 produtos-registrar-contrato" fxFlex="50">
+      <p class="bold desk">Comissão?</p>
+      <div fxLayout="row" class="align-items-start" fxLayoutGap="10px">
+        <mat-button-toggle-group [id]="getElementId(7, 'indicador-comissao')" name="indicadorComissao"
+          formControlName="indicadorComissao" (change)="habilitarComissao($event.value)" aria-label="indicadorComissao">
+          <mat-button-toggle value="true" class="btn-toggle">Sim</mat-button-toggle>
+          <mat-button-toggle value="false" class="btn-toggle">Não</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field fxFlex="auto">
+          <mat-label>Comissão</mat-label>
+          <input [id]="getElementId(0, 'comissao')" type="text" matInput name="comissao" formControlName="comissao"
+            placeholder="Digite a taxa comissão" [percentage]="4" (blur)="setValorPadrao('comissao', '000')">
+          <mat-hint
+            *ngIf="formulario.get('indicadorComissao').value === 'true' || mudarObrigatoriedade('comissao')">Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('comissao').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px" class="justify-content-between">
+    <div class="pt-1 produtos-registrar-contrato" fxFlex="50">
+      <p class="bold desk">Taxa de multa?</p>
+      <div fxLayout="row" class="align-items-start" fxLayoutGap="10px">
+        <mat-button-toggle-group [id]="getElementId(7, 'taxa-multa')" name="indicadorTaxaMulta"
+          formControlName="indicadorTaxaMulta" (change)="habilitarTaxaMulta($event.value)"
+          aria-label="indicadorTaxaMulta">
+          <mat-button-toggle value="true" class="btn-toggle">Sim</mat-button-toggle>
+          <mat-button-toggle value="false" class="btn-toggle">Não</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field fxFlex="auto">
+          <mat-label>Taxa de multa</mat-label>
+          <input [id]="getElementId(0, 'multa')" type="text" matInput name="valorTaxaMulta"
+            formControlName="valorTaxaMulta" placeholder="Digite a taxa de multa" [percentage]="4"
+            (blur)="setValorPadrao('valorTaxaMulta', '000')">
+          <mat-hint *ngIf="formulario.get('indicadorTaxaMulta').value === 'true'">Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('valorTaxaMulta').hasError('required')">Obrigatório
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="pt-1 produtos-registrar-contrato" fxFlex="50">
+      <p class="bold desk">Penalidade?</p>
+      <div fxLayout="row" class="align-items-start" fxLayoutGap="10px">
+        <mat-button-toggle-group [id]="getElementId(7, 'taxa-penalidade')" name="indicadorPenalidade"
+          formControlName="indicadorPenalidade" (change)="habilitarPenalidade($event.value)"
+          aria-label="indicadorPenalidade">
+          <mat-button-toggle value="true" class="btn-toggle">Sim</mat-button-toggle>
+          <mat-button-toggle value="false" class="btn-toggle">Não</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field fxFlex="auto">
+          <mat-label>Penalidade</mat-label>
+          <input [id]="getElementId(0, 'penalidade')" type="text" matInput name="penalidade"
+            formControlName="penalidade" placeholder="Digite a penalidade" maxlength="50"
+            [alphanumerics-only]="['espaco']" (blur)="setValorPadrao('penalidade', 'CONFORME CLAUSULAS CONTRATUAIS')">
+          <mat-hint
+            *ngIf="formulario.get('indicadorPenalidade').value === 'true' || mudarObrigatoriedade('penalidade')">
+            Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('penalidade').hasError('required')">Obrigatório
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px">
+    <mat-form-field class="input-width-8" fxFlex="auto">
+      <mat-label>Comentários</mat-label>
+      <textarea [id]="getElementId(0, 'comentario')" matInput rows="5" name="comentario" formControlName="comentario"
+        maxlength="1000"></textarea>
+    </mat-form-field>
+  </div>
+</form>

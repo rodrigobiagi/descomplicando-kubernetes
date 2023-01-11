@@ -1,0 +1,407 @@
+@import '$settings';
+@import '$tools';
+
+.centralize {
+    z-index: 1;
+}
+
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+section.details {
+  @include border-radius(4px);
+  border: 1px solid #CACCCF;
+  padding: 0 16px;
+  margin-bottom: 1rem;
+}
+
+span.data-title {
+  color: $blue;
+}
+
+table.data-detail > tr > td {
+  padding: 0.5rem 0;
+}
+
+table.data-detail.processamento {
+  border-top: 1px solid #CACCCF;
+  margin-top: 1rem;
+}
+
+table.data-detail.processamento td:first-child {
+  width: 20%;
+}
+
+h3.detail-title {
+  border-bottom: 1px solid #CACCCF;
+  color: #134067;
+}
+
+h3.detail-title.processamento {
+  width: 220px;
+}
+
+h3.detail-title.contrato {
+  width: 165px;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.element__detail {
+  overflow: hidden;
+}
+
+.element__detail ul {
+  display: flex;
+  list-style: none;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.element__detail__expand__buttons {
+  li {
+    margin-right: 15px;
+  }
+
+  .btn {
+    @include transition(opacity 0.2s ease-in-out);
+    background: $blue;
+    padding: 0 2rem;
+    opacity: 1;
+
+    &.btn_warning {
+      background: $yellow-warning;
+      color: $blue-dark;
+    }
+
+    &.btn_error{
+      background: $red-error;
+      color: $white;
+    }
+
+    &.btn_cancelar-contrato{
+      background: $yellow-warning;
+      color: $white;
+    }
+
+    &:hover {
+      filter: alpha(opacity=80);
+      opacity: 0.8;
+    }
+  }
+}
+
+.element__detail .element__detail__expand {
+  justify-content: space-between;
+  margin: 0;
+}
+
+.text-primary {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.text-rows {
+  position: relative;
+}
+
+.text-rows .text-rows_arrow {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}
+
+.mat-cell {
+  font-size: 16px;
+}
+
+.feedBack .feedBack__icon {
+  color: $gray-600;
+  font-size: 40px;
+  margin-top: 26px;
+  height: auto;
+  width: auto;
+}
+
+.feedBack .feedBack__text {
+  color: $gray-600;
+  margin-top: 0;
+}
+
+.mat-toolbar-multiple-rows {
+  margin-top: 15px;
+  padding-top: 5px;
+}
+
+.mat-toolbar-row {
+  justify-content: center;
+}
+
+.mat-menu-panel {
+  min-height: 0 !important;
+}
+
+.loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0px;
+  right: 0;
+  background: rgba(51, 51, 51, 0.20);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box__consulta {
+  position: relative;
+}
+
+// .filter {
+//   align-items: center;
+//   display: flex;
+//   justify-content: flex-start;
+//   margin: 0 40px 20px 0;
+//   z-index: 3;
+// }
+
+// .filter__text {
+//   color: $blue-dark;
+//   font-size: 18px;
+//   margin: 0 0 0 10px;
+// }
+
+// .filter__button {
+//   background-color: $white;
+// }
+
+// .filter__button.filter__button--open {
+//   background-color: $blue;
+// }
+
+// .filter__button--icon {
+//   color: $blue;
+//   font-size: 15px;
+// }
+
+// .filter__button--open .filter__button--icon {
+//   color: $white;
+// }
+
+// .filter__form {
+//   align-content: center;
+//   align-items: center;
+//   flex-direction: row;
+//   flex-wrap: wrap;
+//   display: flex;
+//   justify-content: flex-start;
+//   overflow: initial;
+//   opacity: 1;
+// }
+
+// .filter__form .mat-form-field {
+//   width: 304px;
+// }
+
+// .filter__form--center {
+//   align-content: center;
+//   align-items: center;
+//   flex-direction: row;
+//   display: flex;
+//   justify-content: center;
+//   overflow: initial;
+//   opacity: 1;
+// }
+
+// .filter__form .mat-form-field {
+//   margin-right: 10px;
+// }
+
+// .filter__form .mat-form-field:last-child {
+//   margin-right: 0;
+// }
+
+// .filter__card {
+//   margin-bottom: 2em;
+//   margin-right: 2.5em;
+//   padding-top: 24px;
+//   padding-left: 24px;
+//   z-index: 2;
+// }
+
+
+// .filter__buttons {
+//   margin-left: 715px;
+// }
+
+// .filter__buttons.filter__buttons--margin {
+//   margin-left: 401px;
+// }
+
+// .filter__buttons button {
+//   margin-right: 10px
+// }
+
+
+.filter-button {
+  @include border-radius(8px);
+  color: $gray-500;
+  margin-right: 20px;
+}
+
+.filter-search {
+  font-size: 12px;
+
+  i {
+      padding-right: 10px;
+      margin-top: -10px;
+      color: $gray-600;
+      font-weight: 700;
+  }
+
+}
+
+.filter {
+  display: none;
+  position: absolute;
+  left: 15px;
+  top: 60px;
+  z-index: 9;
+
+  &.active {
+      display: block;
+  }
+
+  .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 8px;
+
+      button {
+          font-size: 12px;
+      }
+  }
+
+  .filter-checklist {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 0;
+
+      li {
+          padding: 5px 0
+      }
+  }
+}
+
+.filter-multiple-select {
+  @include border-radius(8px);
+  color: $gray-500;
+  margin-right: 20px;
+  border: 1px rgba(0, 0, 0, .12) solid !important;
+  line-height: 33px;
+  padding: 0 16px;
+  height: 36px;
+}
+
+.filter-card-select {
+  margin-left: 0;
+  box-shadow: 0px 12px 17px rgb(0 0 0 / 8%), 0px 5px 22px rgb(0 0 0 / 8%), 0px 7px 8px rgb(0 0 0 / 5%) !important;
+}
+
+.filter-header {
+  span {
+      @include fontMontserratBold;
+      color: $gray-800;
+      line-height: 35px;
+      font-size: 12px;
+  }
+}
+
+.filter-title {
+  @include fontMontserratBold;
+  font-size: 12px;
+}
+
+.btn-redefinir {
+  font-size: 12px;
+}
+
+.b-divider {
+  border-bottom: 1px solid $gray-400;
+}
+
+.filter-options {
+  max-height: 180px;
+  overflow: auto;
+}
+
+.filter-button,
+.filter-multiple-select {
+  i {
+      font-size: 10px;
+      line-height: 18px;
+  }
+}
+
+.filter-multiple-select {
+  &:hover {
+      background: #f5f5f5;
+  }
+}
+
+.filter-active {
+  border: 1px solid $primary  !important;
+  color: $primary  !important;
+}
+
+.filter-error {
+  border: 1px solid $spotlight-700  !important;
+  color: $spotlight-700  !important;
+}
+
+mat-label i,
+.filter-button i {
+  padding-left: 40px;
+}
+
+.mat-column-Imagem {
+  text-align: center;
+}
+
+.icon-contrato {
+  background-color: $primary;
+  color:#FFF;
+  padding:5px 8px;
+  border-radius: 50px;
+  font-size: .8em;
+}
+
+.icon-frota {
+  background-color: $primary;
+}
+
+.icon-cancelado {
+  background-color: $yellow-warning;
+}
+
+.icon-baixado {
+  background-color: $red-error;
+}

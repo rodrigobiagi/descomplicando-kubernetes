@@ -1,0 +1,22 @@
+@import '$settings';
+@import '$tools';
+
+.card {
+  background-color: #e1e7ec;
+  border-radius: 10px;
+}
+.centralize {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.gray-700 {
+  color: $gray-700;
+}
+
+.bloco-descricao {
+  font-size: 0.8em;
+}

@@ -1,0 +1,15 @@
+@import '$settings';
+@import '$tools';
+
+.centralize {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  width: 93%;
+}
+
+.gray-700 {
+  color: $gray-700;
+}

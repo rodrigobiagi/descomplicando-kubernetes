@@ -1,0 +1,82 @@
+<mat-card class="mb-4 mat-elevation-z8">
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="fw-bold">Dados do usuário</div>
+  </div>
+  <form [formGroup]="createUsuarioConvidadoForm" (ngSubmit)="submitUsuario()" class="mt-2">
+    <div fxLayout="row" fxLayoutGap="10px">
+      <mat-form-field appearance="outline" fxFlex="50">
+        <mat-label>Produto </mat-label>
+        <mat-select formControlName="produto" required>
+          <mat-option>
+            Escolha um produto
+          </mat-option>
+          <mat-option value="0"> e-Contrato </mat-option>
+        </mat-select>
+        <mat-hint>Obrigatório</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlex="25" [ngClass]="{ 'd-none': !usuarioConvidadoId} ">
+        <mat-label>Empresa </mat-label>
+        <input matInput placeholder="Nome do usuário" formControlName="nomeEmpresa" />
+        <mat-hint>Obrigatório</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlex="50" [ngClass]="{ 'd-none': usuarioConvidadoId }">
+        <mat-label>Selecione a empresa </mat-label>
+        <mat-select formControlName="empresaId" required>
+          <mat-option>
+            Selecione a empresa
+          </mat-option>
+          <mat-option *ngFor="let empresa of empresas" [value]="empresa.id">
+            {{ getOptionEmpresa(empresa) }}</mat-option>
+        </mat-select>
+        <mat-hint>Obrigatório</mat-hint>
+        <mat-error *ngIf="createUsuarioConvidadoForm.controls['empresaId'].hasError('required')">Campo obrigatório
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlex="25" [ngClass]="{ 'd-none': !usuarioConvidadoId }">
+        <mat-label>Usuário </mat-label>
+        <input matInput placeholder="Nome do usuário" formControlName="nomeUsuario" />
+        <mat-hint>Obrigatório</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlex="50" [ngClass]="{ 'd-none': usuarioConvidadoId }">
+        <mat-label>Selecione o usuário </mat-label>
+        <mat-select formControlName="usuarioId" required>
+          <mat-option>
+            Selecione o usuário
+          </mat-option>
+          <mat-option *ngFor="let usuario of usuarios" [value]="usuario.id" class="usuario-email">
+            {{usuario.nome}}
+            <span>{{ usuario.email }}</span>
+          </mat-option>
+        </mat-select>
+        <mat-hint>Obrigatório</mat-hint>
+        <mat-error *ngIf="createUsuarioConvidadoForm.controls['usuarioId'].hasError('required')">Campo obrigatório
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlex="50">
+        <mat-label>Selecione o perfil </mat-label>
+        <mat-select formControlName="perfilId" required>
+          <mat-option>
+            Selecione o perfil
+          </mat-option>
+          <mat-option *ngFor="let perfil of perfis" [value]="perfil.id">
+            {{ perfil.nome }}</mat-option>
+        </mat-select>
+        <mat-hint>Obrigatório</mat-hint>
+        <mat-error *ngIf="createUsuarioConvidadoForm.controls['perfilId'].hasError('required')">Campo obrigatório
+        </mat-error>
+      </mat-form-field>
+
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+      <button mat-flat-button color="primary" type="submit" [disabled]="!createUsuarioConvidadoForm.valid">
+        Confirmar
+      </button>
+    </div>
+  </form>
+</mat-card>

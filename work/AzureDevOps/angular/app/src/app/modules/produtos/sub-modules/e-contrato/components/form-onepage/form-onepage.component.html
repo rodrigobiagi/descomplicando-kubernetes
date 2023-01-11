@@ -1,0 +1,45 @@
+<div fxLayout="column" fxLayoutAlign="space-between" fxLayoutGap="5px">
+
+    <div fxLayout="row" class="revisar-inconsistencia" *ngIf="possuiInconsistencia">
+        <h3>Identificamos algumas inconsisitências, verifique abaixo os campos em destaque.</h3>
+    </div>
+
+    <div fxLayout="row" fxLayout.sm="row" fxLayout.md="row" fxLayout.lg="row" fxLayout.xs="column" fxLayout.xl="row">
+        <app-dados-veiculo (formChangedEvent)="onFormChanged($event)" [contrato]="contrato"
+            [tipoOperacao]="tipoOperacao" [ehFrota]="ehFrota" [retornoGravame]="retornoGravame"></app-dados-veiculo>
+    </div>
+    <div fxLayout="row" fxLayout.sm="row" fxLayout.md="row" fxLayout.lg="row" fxLayout.xs="column" fxLayout.xl="row">
+        <app-dados-contrato (formChangedEvent)="onFormChanged($event)" [contrato]="contrato"
+            [tipoOperacao]="tipoOperacao">
+        </app-dados-contrato>
+    </div>
+    <div fxLayout="row" fxLayout.sm="row" fxLayout.md="row" fxLayout.lg="row" fxLayout.xs="column" fxLayout.xl="row">
+        <app-dados-financiamento (formChangedEvent)="onFormChanged($event)" [contrato]="contrato"
+            [tipoOperacao]="tipoOperacao" [retornoGravame]="retornoGravame"></app-dados-financiamento>
+    </div>
+    <div fxLayout="row" fxLayout.sm="row" fxLayout.md="row" fxLayout.lg="row" fxLayout.xs="column" fxLayout.xl="row">
+        <app-dados-credor (formChangedEvent)="onFormChanged($event)" [contrato]="contrato" [tipoOperacao]="tipoOperacao"
+            [retornoGravame]="retornoGravame"></app-dados-credor>
+    </div>
+    <div fxLayout="row" fxLayout.sm="row" fxLayout.md="row" fxLayout.lg="row" fxLayout.xs="column" fxLayout.xl="row">
+        <app-dados-devedor (formChangedEvent)="onFormChanged($event)" [contrato]="contrato"
+            [tipoOperacao]="tipoOperacao"></app-dados-devedor>
+    </div>
+    <!-- <div *ngIf="uf === 'PR'" fxLayout="row" fxLayout.sm="row" fxLayout.md="row" fxLayout.lg="row" fxLayout.xs="column"  fxLayout.xl="row">
+        <app-dados-terceiro-garantidor (formChangedEvent)="onFormChanged($event)" [contrato]="contrato" [tipoOperacao]="tipoOperacao"></app-dados-terceiro-garantidor>
+    </div> -->
+    <!--descomentar linhas acima após implementação do terceiro garantidor-->
+    <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="15px">
+        <button mat-raised-button class="btn btn-primary btn-lg" (click)="revisarRegistro()">Revisar e
+            Registrar</button>
+    </div>
+</div>
+<form [formGroup]="formulario" novalidate>
+    <input type="hidden" name="formVeiculo" formControlName="formVeiculo">
+    <input type="hidden" name="formContrato" formControlName="formContrato">
+    <input type="hidden" name="formComplemento" formControlName="formComplemento">
+    <input type="hidden" name="formFinanciamento" formControlName="formFinanciamento">
+    <input type="hidden" name="formCredor" formControlName="formCredor">
+    <input type="hidden" name="formDevedor" formControlName="formDevedor">
+    <input type="hidden" name="formTerceiroGarantidor" formControlName="formTerceiroGarantidor">
+</form>

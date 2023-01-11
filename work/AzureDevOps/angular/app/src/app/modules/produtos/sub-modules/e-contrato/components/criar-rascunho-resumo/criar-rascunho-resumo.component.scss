@@ -1,0 +1,36 @@
+@import '$settings';
+@import '$tools';
+
+figure {
+    margin: 0 0 0 10px;
+}
+
+.card-step {
+    @include border-radius(5px);
+    box-shadow: 2px 2px 2px #e3e6e9;
+    padding-left: 10px;
+    margin-bottom: 8px;
+    padding-top: 10px;
+}
+
+.tipo-form-desc {
+    margin-top: 0;
+    color: $blue-dark;
+}
+
+.tipo-form-desc i {
+    color: $red-dark;
+    font-size: 1.2rem;
+}
+
+.info-button {
+  border: none;
+  background-color: transparent;
+  font-size: 1.1em;
+  color: $primary;
+  cursor: pointer;
+}
+
+.bold {
+  @include fontMontserratBold;
+}

@@ -1,0 +1,80 @@
+trigger:
+  - master
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - job: CalculateVersion
+    displayName: Tagging release version
+
+    steps:
+      - checkout: self
+        persistCredentials: true
+
+      - task: gitversion/setup@0
+        displayName: Install GitVersion
+        inputs:
+          versionSpec: "5.x"
+
+      - task: gitversion/execute@0
+        displayName: Calculating version
+        inputs:
+          useConfigFile: True
+          configFilePath: ".azuredevops/gitversion.yml"
+
+      - pwsh: |
+          Write-Host "##vso[build.updatebuildnumber]$(GitVersion.SemVer)"
+        displayName: Update Build.BuildNumber
+
+
+      - task: PowerShell@2
+        displayName: Adding git release tag
+        inputs:
+          targetType: inline
+          script: |
+            Write-Host "Configuring git author info.." -ForegroundColor Cyan
+            git config user.email "Azure DevOps pipeline"
+            git config user.name "Azure.Devops@pipeline.com"
+            Write-Host "Adding git tag for release $(GitVersion.SemVer).." -ForegroundColor Cyan
+            git tag -a $("v$(GitVersion.SemVer)") -m $("Release $(GitVersion.SemVer)")
+            Write-Host "Doing git push.." -ForegroundColor Cyan
+            git push --tags
+            Write-Host "Done." -ForegroundColor Cyan
+
+  - job: CreateReleaseNotes
+    displayName: Creating release notes
+    dependsOn: CalculateVersion
+
+    steps:
+      - task: XplatGenerateReleaseNotes@3
+        displayName: "Generate release notes"
+        inputs:
+          outputfile: '$(System.DefaultWorkingDirectory)\releasenotes-symux-api.md'
+          templateLocation: File
+          templatefile: ".azuredevops/release_notes_template.md"
+          dumpPayloadToConsole: false
+          dumpPayloadToFile: false
+          replaceFile: True
+          getParentsAndChildren: False
+          getAllParents: False
+          getIndirectPullRequests: False
+          stopOnError: True
+          considerPartiallySuccessfulReleases: False
+
+      - task: WikiUpdaterTask@1
+        displayName: "Publish to the wiki"
+        inputs:
+          repo: "https://tecnobanksa-interno@dev.azure.com/tecnobanksa-interno/portal/_git/portal.wiki"
+          filename: Release-Notes.md
+          replaceFile: false
+          appendToFile: false
+          dataIsFile: true
+          sourceFile: '$(System.DefaultWorkingDirectory)\releasenotes-symux-api.md'
+          message: "Update from Pipeline"
+          gitname: $(Release.RequestedFor)
+          gitemail: $(Release.RequestedForEmail)
+          useAgentToken: false
+          localpath: '$(System.DefaultWorkingDirectory)\repo'
+          user: lucas.reis
+          password: tzmiihqhohbzy7n35kqhaf2jrnpzd5wy3xce3x6mqoii34h4fd7a

@@ -1,0 +1,21 @@
+<ul class="list-group flex-column d-flex" [ngClass]="{ 'active': activeMenuItem, 'third-level':  thirdLevel, 'open': menuItemId != null }">
+    <li class="list-group-item" *ngFor="let menuItem of menuItems" [id]="menuItem.id"
+        [ngClass]="{ 'active': menuItem.active, 'third-level': thirdLevel }" (click)="clickLink($event, menuItem)"
+        (mouseenter)="toggleItem(menuItem.id)" (mouseleave)="toggleItem(menuItem.id)">
+        <a>
+            <div class="wrapper">
+                <i [ngClass]="menuItem.icon" aria-hidden="true"> </i>
+            </div>
+
+            <div class="menu-label-item">
+                <span class="ml-1 align-middle">{{ menuItem.label }}</span>
+                <p class="arrow-child" *ngIf="menuItem.child">
+                    <i *ngIf="!menuItem.active" class="fa-regular fa-angle-down"></i>
+                    <i *ngIf="menuItem.active" class="fa-regular fa-angle-up"></i>
+                </p>
+            </div>
+        </a>
+
+        <app-menu-items [mouseEnter]="menuItemId" [menuItems]="menuItem.child" [thirdLevel]="true"></app-menu-items>
+    </li>
+</ul>

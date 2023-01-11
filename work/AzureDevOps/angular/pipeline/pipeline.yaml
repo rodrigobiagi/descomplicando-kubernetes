@@ -1,0 +1,714 @@
+trigger:
+  branches:
+    include:
+    - '*'
+    - refs/tags/*
+    exclude:
+    - master
+  paths:
+    include:
+    - app
+
+pr:
+  - develop
+
+variables:
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') }}:
+    featBranchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/feature/', '') ]
+    namespace_temp: $[ replace(variables['Build.SourceBranch'], 'refs/heads/feature/', '') ]
+    namespace: 'portal-web-$(namespace_temp)'
+    rota: '$(namespace)'
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    namespace_temp: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/feature/', '') ]
+    namespace: 'portal-web-$(namespace_temp)'
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags') }}:
+    imageName: $[ replace(variables['Build.SourceBranch'], 'refs/tags/', '') ]
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/') }}:
+    imageName: 'template-$(Build.BuildId)'
+
+pool:
+  vmImage: ubuntu-latest
+#=====================================================================================
+stages:
+- stage: 'CI'
+  displayName: 'App Build'
+  condition:  ne(variables['Build.Reason'], 'PullRequest')
+  jobs:
+  - job: "App_build" 
+    displayName: 'App Build'
+    steps:    
+    - task: NodeTool@0
+      displayName: 'Use Node 14.x'
+      inputs:
+        versionSpec: 14.x
+
+    - task: Npm@1
+      displayName: 'npm clean'
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: 'cache clean --force'
+        workingDir: $(Build.SourcesDirectory)/app/
+
+    - task: Npm@1
+      displayName: 'npm install'
+      inputs:
+        verbose: false
+        workingDir: $(Build.SourcesDirectory)/app/
+
+    - task: Npm@1
+      displayName: build
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: 'run build'
+        workingDir: $(Build.SourcesDirectory)/app/
+
+    - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+      displayName: 'Prepare analysis on SonarCloud'
+      inputs:
+        SonarCloud: SonarCloud
+        organization: 'tecnobanksa-interno'
+        scannerMode: CLI
+        configMode: manual
+        cliProjectKey: 'tecnobanksa-interno_portal-web'
+        cliProjectName: 'portal-web'
+
+    - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+      displayName: 'Run Code Analysis'
+
+    - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+      displayName: 'Publish Quality Gate Result'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish files'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/infra/'
+        artifactName: kubernetes-files
+       
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cp $(Build.SourcesDirectory)/app/nginx.conf $(Build.SourcesDirectory)/app/dist/portal-web
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish files'
+      continueOnError: true
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/app/dist/portal-web'
+        artifactName: artifact-to-container
+#=====================================================================================
+- stage: 'DockerBuildFeat'
+  displayName: 'Docker Build Feature'
+  condition:  and(succeeded(), ne(variables['featBranchName'], ''))
+  variables:
+  - group: portal-web-feat
+  - group: cert
+  - group: resources-dev-tst
+  dependsOn: CI
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+    
+    - task: replacetokens@3
+      displayName: "Substituir variaveis main.*.js"
+      inputs:
+        rootDirectory: '$(Pipeline.Workspace)/dockerapp'
+        targetFiles: '*.js'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrdev250'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t tbkacrdev250.azurecr.io/portal-web:$(imageName) .
+          docker image push tbkacrdev250.azurecr.io/portal-web:$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+#=====================================================================================
+- stage: 'Feature_Deploys'
+  displayName: 'Feature: Deploy AKS'
+  condition: and(succeeded(), ne(variables['featBranchName'], ''))
+  dependsOn: 'DockerBuildFeat'
+  variables:
+  - group: portal-web-feat
+  - group: cert
+  - group: resources-dev-tst
+  jobs:
+  - deployment: 'deploy_feature'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: portal-web-feat
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+                
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/dev-deployment.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'apply hpa'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/hpa.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+#=====================================================================================
+- stage: 'Feature_Destroy'
+  displayName: 'Feature: Destroy Feature PR Develop'
+  condition: and (eq(variables['System.PullRequest.TargetBranch'], 'refs/heads/develop') , eq(variables['Build.Reason'], 'PullRequest'))
+  jobs:
+  - deployment: 'destroy_feature'
+    displayName: 'Destroy Feature PR Develop'
+    environment: portal-web-feat
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            continueOnError: true
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'delete'
+              arguments: 'namespace $(namespace)'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+#=====================================================================================
+  - job: 
+    displayName: "Deploy DEV"
+    variables:
+    - group: 'portal-web-dev'
+    - group: cert
+    - group: resources-dev-tst
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'echo "##vso[task.setvariable variable=namespace]novoportal-dev"'
+    
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'echo "##vso[task.setvariable variable=rota]dev-portal"'
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Microsoft Azure (ee6fe381-276f-4841-a137-013a36a53279)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          env=$(az acr repository show-tags --name tbkacrdev250 --repository portal-web --top 1 --orderby time_desc)
+          env=$(echo $env |  sed "s/\]//g" | sed "s/\[//g" | sed "s/\"//g")
+          echo "##vso[task.setvariable variable=imageName]$env"
+
+    - task: replacetokens@3
+      displayName: "Substituir variaveis deployment e namespace"
+      inputs:
+        rootDirectory: '$(Build.SourcesDirectory)/infra'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          cat $(Build.SourcesDirectory)/infra/dev-deployment.yaml | sed 's/web: /web:/' > $(Build.SourcesDirectory)/infra/deploy.yaml
+          cat $(Build.SourcesDirectory)/infra/deploy.yaml
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Build.SourcesDirectory)/infra/namespace.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+
+    - task: Kubernetes@1
+      displayName: 'apply deployment'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Build.SourcesDirectory)/infra/deploy.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+#=====================================================================================
+- stage: 'DockerBuildDev'
+  displayName: 'Docker Build Develop'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest'))
+  dependsOn: CI
+  variables:
+  - group: portal-web-tst
+  - group: cert
+  - group: resources-dev-tst
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+    
+    - task: replacetokens@3
+      displayName: "Substituir variaveis main.*.js"
+      inputs:
+        rootDirectory: '$(Pipeline.Workspace)/dockerapp'
+        targetFiles: '*.js'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrhml001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t tbkacrhml001.azurecr.io/portal-web:$(imageName) .
+          docker image push tbkacrhml001.azurecr.io/portal-web:$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+
+- stage: 'Develop_Deploys'
+  displayName: 'Develop: Deploy AKS'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  dependsOn: 'DockerBuildDev'
+  variables:
+  - group: portal-web-tst
+  - group: cert
+  - group: resources-dev-tst
+  jobs:
+  - deployment: 'deploy_feature'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: portal-web-tst
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+                
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/deployment.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'apply hpa'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/hpa.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+- stage: 'DockerBuildRelease'
+  displayName: 'Release: Docker Build'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/release'), ne(variables['Build.Reason'], 'PullRequest'))
+  dependsOn: CI
+  variables:
+  - group: portal-web-hml
+  - group: cert
+  - group: resources-hml
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+    
+    - task: replacetokens@3
+      displayName: "Substituir variaveis main.*.js"
+      inputs:
+        rootDirectory: '$(Pipeline.Workspace)/dockerapp'
+        targetFiles: '*.js'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrhml001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t tbkacrhml001.azurecr.io/portal-web:$(imageName) .
+          docker image push tbkacrhml001.azurecr.io/portal-web:$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+
+- stage: 'Release_Deploys'
+  displayName: 'Release: Deploy AKS'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/release'))
+  dependsOn: 'DockerBuildRelease'
+  variables:
+  - group: portal-web-hml
+  - group: cert
+  - group: resources-hml
+  jobs:
+  - deployment: 'deploy_release'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: portal-web-hml
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+                
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/deployment.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'apply hpa'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/hpa.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+  
+- stage: 'DockerBuildMaster'
+  displayName: 'Master: Docker Build'
+  condition:  and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+  dependsOn: CI
+  variables:
+  - group: portal-web-prd
+  - group: cert
+  - group: resources-prd
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+    
+    - task: replacetokens@3
+      displayName: "Substituir variaveis main.*.js"
+      inputs:
+        rootDirectory: '$(Pipeline.Workspace)/dockerapp'
+        targetFiles: '*.js'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrprd001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t tbkacrprd001.azurecr.io/portal-web:$(imageName) .
+          docker image push tbkacrprd001.azurecr.io/portal-web:$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+ 
+- stage: 'Master_Deploys'
+  displayName: 'Master: Deploy AKS'
+  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+  dependsOn: 'DockerBuildMaster'
+  variables: 
+    - group: 'portal-web-prd'
+    - group: cert
+    - group: resources-prd
+  jobs:
+  - deployment: 'master_release'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: portal-web-prd
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+                
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/deployment.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'apply hpa'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/hpa.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+- stage: 'Master_Rollback'
+  displayName: 'Master: Rollback'
+  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+  jobs:
+  - deployment: 'master_rollback'
+    displayName: 'Rollback Deployment Azure Kubernetes Service'
+    timeoutInMinutes: 15
+    variables: 
+    - group: 'portal-web-prd'
+    - group: cert
+    - group: resources-prd
+    environment: portal-web-rollback
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            name: rollback
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              command: 'rollout'
+              arguments: 'undo deployment/deploy-portal-web'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              namespace: novoportal-prd

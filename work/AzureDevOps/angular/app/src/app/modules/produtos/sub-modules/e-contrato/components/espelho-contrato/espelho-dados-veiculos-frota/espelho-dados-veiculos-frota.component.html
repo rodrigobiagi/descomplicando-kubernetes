@@ -1,0 +1,41 @@
+
+
+<div class="veiculo-box mb-2" *ngFor="let veiculo of contrato.veiculo">
+  <div fxLayout="row" fxLayoutGap="25px">
+    <div fxFlex="25">
+      <p class="field-title">Chassi</p>
+      <p>{{ veiculo.chassi ?? '-' }}</p>
+    </div>
+    <div fxFlex="25">
+      <p class="field-title">Renavam</p>
+      <p>{{ veiculo.renavam }}</p>
+    </div>
+    <div fxFlex="25">
+      <p class="field-title">Remarcado</p>
+      <p>{{ veiculo.remarcado ? 'SIM' : 'NÃO' }}</p>
+    </div>
+    <div fxFlex="25">
+      <p class="field-title">UF / Placa</p>
+      <p>{{ veiculo.ufPlaca }}</p>
+    </div>
+  </div>
+  <div fxLayout="row" fxLayoutGap="25px">
+    <div fxFlex="25">
+      <p class="field-title">Placa</p>
+      <p>{{ veiculo.placa }}</p>
+    </div>
+    <div fxFlex="25">
+      <p class="field-title">Ano Fabricação</p>
+      <p>{{ veiculo.anoFabricacao }}</p>
+    </div>
+    <div fxFlex="25">
+      <p class="field-title">Modelo</p>
+      <p>{{ veiculo.anoModelo }}</p>
+    </div>
+    <div fxFlex="25">
+      <p class="field-title">Nº do Gravame</p>
+      <p>{{ veiculo.numeroRestricao }}</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,54 @@
+<div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+    <div fxFlex="50">
+        <p class="field-title">Financiado</p>
+        <p>{{ contrato?.devedor?.nomeDoFinanciado ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Tipo - Número</p>
+        <p>{{ contrato?.devedor?.documento?.tipoDocumento == 1 ? 'CPF' : 'CNPJ' }} - {{ devedorDocumento }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Logradouro</p>
+        <p>{{ contrato?.devedor?.endereco?.logradouro ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Número</p>
+        <p>{{ contrato?.devedor?.endereco?.numero ?? '-' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Complemento</p>
+        <p>{{ (contrato?.devedor?.endereco?.complemento == '' || contrato?.devedor?.endereco?.complemento == null) ? '-' : contrato?.devedor?.endereco?.complemento }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Bairro</p>
+        <p>{{ contrato?.devedor?.endereco?.bairro ?? '-' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Município - UF</p>
+        <p>{{ contrato?.devedor?.endereco?.municipio }} - {{ contrato?.devedor?.endereco?.uf }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">CEP</p>
+        <p>{{ devedorCep }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Telefone</p>
+        <p>({{ contrato?.devedor?.contato?.ddd ?? '-' }}) {{ contrato?.devedor?.contato?.telefone ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">E-Mail</p>
+        <p>{{ (contrato?.devedor?.contato?.email == '' || contrato?.devedor?.contato?.email == null) ? '-' : contrato?.devedor?.contato?.email }}</p>
+    </div>
+</div>

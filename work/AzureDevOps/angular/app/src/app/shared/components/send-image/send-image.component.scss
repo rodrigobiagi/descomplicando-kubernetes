@@ -1,0 +1,128 @@
+@import '$settings';
+@import '$tools';
+
+section {
+    padding: 1rem 0;
+}
+
+h3 {
+    font-size: 16px;
+    font-weight: 100;
+}
+
+.dropzone {
+    @include border-radius(0.25rem);
+    width: 332px;
+    padding: 2rem;
+    text-align: center;
+    border: dashed 1px #CACCCF;
+    position: relative;
+    margin: 0 auto;
+    
+    &.disabled {
+      border-color: $gray-300;
+      background: $gray-200;
+      color: $gray-400;
+
+      mat-icon {
+        color: $gray-400;
+        --fa-secondary-color: $gray-300;
+      }
+
+      p {
+        color: $gray-400;
+      }
+    }
+}
+  
+.single-file {
+    @include border-radius(0.25rem);
+    display: flex;
+    padding: 0.5rem;
+    justify-content: space-between;
+    align-items: center;
+    border: solid 1px #CACCCF;
+    margin-bottom: 1rem;
+}
+  
+.name {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 350px;
+}
+  
+.size {
+    @include border-radius(0.25rem);
+    font-size: 12px;
+    font-weight: 500;
+    color: #a4a4a4;
+    margin: 0;
+}
+  
+.info {
+    width: 100%
+}
+
+.dropzone span {
+    font-size: 12px;
+}
+
+.dropzone .file-error .mat-icon {
+    color: $yellow-warning;
+    vertical-align: sub;
+}
+
+.dropzone > .mat-icon {
+    font-size: 3rem;
+    margin-left: -23px;
+    color: $blue;
+}
+
+.files-list .mat-icon {
+    color: $blue;
+    margin-right: 0.3rem;
+}
+
+.file-download {
+    @include border-radius(1rem);
+    background: $blue;
+    padding-top: 6px;
+    cursor: pointer;
+}
+
+.file-download mat-icon {
+    color: $white !important;
+    font-size: 0.90rem;
+    display: inline-flex !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    height: 20px;
+    width: 26px;
+}
+
+.file-loading {
+    @include border-radius(1rem);
+    background: $gray-300;
+    padding-top: 6px;
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
+}
+
+.file-loading mat-icon {
+    color: $gray-800 !important;
+    font-size: 0.90rem;
+    display: inline-flex !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    height: 20px;
+    width: 26px;
+}
+
+.file-name {
+    display: inline-flex;
+    width: 100%;
+}

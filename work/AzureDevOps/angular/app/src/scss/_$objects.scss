@@ -1,0 +1,36 @@
+// Objects
+/* Button */
+.btn-lg {
+    padding: 0 45px !important;
+    line-height: 50px !important;
+}
+
+.btn-md {
+    padding: 0 30px !important;
+    line-height: 40px !important;
+}
+
+/* Input */
+.input-width-2 {
+    width: 250px;
+}
+
+.input-width-3 {
+    width: 350px;
+}
+
+input {
+    color: rgba(0,0,0,.87) !important;
+}
+
+/* Dialog */
+.dialog {
+    padding: 8px 26px 26px 26px;
+}
+
+/*Breadcrumb*/
+/*Mat objects*/
+
+.mat-input-element:disabled, .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
+    color: rgba(0,0,0,.38) !important;
+}

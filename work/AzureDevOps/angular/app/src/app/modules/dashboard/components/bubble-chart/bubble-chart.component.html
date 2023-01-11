@@ -1,0 +1,42 @@
+<mat-card class="mat-elevation-z8 h-100" id="card">
+  <div class="h-100" [hidden]="estados.length == 0">
+    <p class="desk bold px-1">Registros por estado</p>
+
+    <div class="chart-container" [ngClass]="estados.length == 0 ? 'hidden' : ''">
+      <svg id="chart"></svg>
+      <div class="tooltip">
+        <div class="tooltip-uf"></div>
+        <div class="tooltip-registros">
+          <span class="registros-title">Registros realizados:</span>
+          <span class="registros-pill"></span>
+        </div>
+      </div>
+    </div>
+    <div class="legenda align-self-end">
+      <div class="legenda-item">
+        <div class="legenda-cor legenda-sul"></div>
+        <div class="legenda-nome">Sul</div>
+      </div>
+      <div class="legenda-item">
+        <div class="legenda-cor legenda-sudeste"></div>
+        <div class="legenda-nome">Sudeste</div>
+      </div>
+      <div class="legenda-item">
+        <div class="legenda-cor legenda-nordeste"></div>
+        <div class="legenda-nome">Nordeste</div>
+      </div>
+      <div class="legenda-item">
+        <div class="legenda-cor legenda-norte"></div>
+        <div class="legenda-nome">Norte</div>
+      </div>
+      <div class="legenda-item">
+        <div class="legenda-cor legenda-centro-oeste"></div>
+        <div class="legenda-nome">Centro-oeste</div>
+      </div>
+    </div>
+
+  </div>
+
+  <app-bloco-vazio [options]="blocoVazio" *ngIf="estados.length == 0"></app-bloco-vazio>
+
+</mat-card>

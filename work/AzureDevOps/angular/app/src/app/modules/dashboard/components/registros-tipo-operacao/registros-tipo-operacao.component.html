@@ -1,0 +1,14 @@
+<mat-card class="h-100">
+  <div *ngIf="mesAtual.length > 0 && mesAnterior.length > 0">
+    <p class="desk bold px-1">Registros por tipo de operação</p>
+
+    <div id="chartTipoOperacao" class="chart">
+      <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [dataLabels]="chartOptions.dataLabels"
+        [plotOptions]="chartOptions.plotOptions" [xaxis]="chartOptions.xaxis" [stroke]="chartOptions.stroke"
+        [grid]="chartOptions.grid" [yaxis]="chartOptions.yaxis" [legend]="chartOptions.legend"
+        [tooltip]="chartOptions.tooltip"></apx-chart>
+    </div>
+  </div>
+
+  <app-bloco-vazio *ngIf="mesAtual.length == 0 && mesAnterior.length == 0" [options]="blocoVazio"></app-bloco-vazio>
+</mat-card>

@@ -1,0 +1,11 @@
+<mat-carousel timings="250ms ease-in" [autoplay]="true" interval="5000" color="accent" maxWidth="auto"
+  [slides]="slides.length" [loop]="true" [hideArrows]="true" [hideIndicators]="false" [useKeyboard]="false" [useMouseWheel]="false"
+  orientation="ltr">
+  <mat-carousel-slide matCarouselSlide [image]="slide.img" [hideOverlay]="true" *ngFor="let slide of slides">
+    <div class="mat_caro_content">
+      <h5 class="bold" *ngIf="slide.h5">{{ slide.h5 }}</h5>
+      <a class="box__btn--btn bold p-1 mt-0 mr-3" *ngFor="let btn of slide.btn" [ngClass]="btn.type"
+        type="button" [href]="btn.url" target="_blank">{{ btn.label }}</a>
+    </div>
+  </mat-carousel-slide>
+</mat-carousel>

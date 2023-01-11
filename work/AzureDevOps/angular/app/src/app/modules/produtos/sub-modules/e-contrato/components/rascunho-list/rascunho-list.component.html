@@ -1,0 +1,23 @@
+<mat-card class="p-2">
+  <h6 class="headline mb-0">Meus rascunhos</h6>
+  <p>Visualize aqui os últimos 5 registros que você iniciou e não foram finalizados. Se preferir, gerencie essas informações de forma colaborativa, clicando <a  [id]="getElementId(8, 'gerenciar-rascunhos')"(click)="onClickGerenciarRascunhos()">aqui</a>.</p>
+
+  <table class="rascunhos-list w-100 mt-1">
+    <tr *ngFor="let row of items" class="py-2">
+      <td>
+        {{ row.operacaoId | tipoOperacao }} <span>{{ row.numeroContrato }}</span> para <span>{{
+          row.ufLicenciamento }}</span>
+      </td>
+      <td class="acoes">
+        <button [id]="getElementId(2, 'continuar-rascunho', row.identifier)" mat-button mat-icon-button class="continuar" (click)="editarRascunho(row.identifier)"
+          [disabled]="checkEdit(row.operacaoId)" matTooltip="Continuar">
+          <i class="fa-regular fa-pen"></i>
+        </button>
+        <button [id]="getElementId(2, 'excluir-rascunho', row.identifier)" mat-button mat-icon-button class="excluir ml-1" (click)="excluirRascunho(row.identifier, row.operacaoId)"
+          [disabled]="checkEdit(row.operacaoId)" matTooltip="Excluir">
+          <i class="fa-regular fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+  </table>
+</mat-card>

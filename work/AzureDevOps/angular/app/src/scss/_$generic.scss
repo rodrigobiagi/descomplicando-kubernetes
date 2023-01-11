@@ -1,0 +1,8 @@
+// Generic
+@import '$tools';
+
+* {
+    -webkit-font-smoothing: antialased;
+    -moz-osx-font-smoothing: antialased;
+    @include fontMontserratRegular;
+}

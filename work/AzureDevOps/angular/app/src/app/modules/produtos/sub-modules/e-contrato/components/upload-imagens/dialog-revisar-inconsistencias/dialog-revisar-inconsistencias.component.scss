@@ -1,0 +1,16 @@
+@import '$settings';
+@import '$tools';
+
+p {
+  padding: 0 8rem;
+  text-align: center;
+  margin-top: 0;
+}
+
+.icon-frota {
+  background-color: $primary;
+  color:$white;
+  padding:5px 8px;
+  border-radius: 50px;
+  font-size: .8em;
+}

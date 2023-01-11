@@ -1,0 +1,86 @@
+<div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+    <div fxFlex="20">
+        <p class="field-title">Taxa de Mora</p>
+        <p>{{ contrato?.complementar.indicadorTaxaMora ? 'Sim' : 'Não' }}</p>
+    </div>
+    <div fxFlex="20">
+        <p class="field-title">Valor Taxa de Mora</p>
+        <p>{{ contrato?.complementar.indicadorTaxaMora ? (contrato?.complementar.valorTaxaMora === null ? '-' : contrato?.complementar.valorTaxaMora + '%') : '-' }}</p>
+    </div>
+    <div fxFlex="60">
+        <p class="field-title">Índice</p>
+        <p>{{ contrato?.complementar.indice ?? '-' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="20">
+        <p class="field-title">Taxa de Multa</p>
+        <p>{{ contrato?.complementar.indicadorTaxaMulta ? 'Sim' : 'Não' }}</p>
+    </div>
+    <div fxFlex="20">
+        <p class="field-title">Valor Taxa de Multa</p>
+        <p>{{ contrato?.complementar.indicadorTaxaMulta ? (contrato?.complementar.valorTaxaMulta === null ? '-' : contrato?.complementar.valorTaxaMulta + '%') : '-' }}</p>
+    </div>
+    <div fxFlex="30">
+        <p class="field-title">Indicador de Comissão</p>
+        <p>{{ contrato?.complementar.indicadorComissao ? 'Sim' : 'Não' }}</p>
+    </div>
+    <div fxFlex="30">
+        <p class="field-title">Comissão</p>
+        <p>{{ contrato?.complementar.indicadorComissao ? (contrato?.complementar.comissao === null ? '-' : contrato?.complementar.comissao + '%') : '-' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="20" *ngIf="contrato?.contrato.ufLicenciamento == 'PR'">
+        <p class="field-title">Valor Taxa do Contrato</p>
+        <p>{{ getValorTaxaContrato(contrato?.complementar.taxaContrato) }}</p>
+    </div>
+    <div fxFlex="20">
+        <p class="field-title">Valor Taxa de Juros ao Mês</p>
+        <p>{{ contrato?.complementar.taxaJurosMes === null ? '-' : contrato?.complementar.taxaJurosMes + '%' }}</p>
+    </div>
+    <div [fxFlex]="contrato?.contrato.ufLicenciamento == 'PR' ? '30' : '20'">
+        <p class="field-title">Indicador de Penalidade</p>
+        <p>{{ contrato?.complementar.indicadorPenalidade ? 'Sim' : 'Não' }}</p>
+    </div>
+    <div fxFlex="30">
+        <p class="field-title">Penalidade</p>
+        <p>{{ contrato?.complementar.indicadorPenalidade ? (contrato?.complementar.penalidade == '' || contrato?.complementar.penalidade == null ? '-' : contrato?.complementar.penalidade) : '-' }}</p>
+    </div>
+</div>
+
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="20">
+        <p class="field-title">Valor do IoF</p>
+        <p>{{ contrato?.complementar.taxaIof === null ? '-' : contrato?.complementar.taxaIof + '%' }}</p>
+
+        <p class="field-title">Principal Pagador do Recebimento</p>
+        <p>{{ contrato?.complementar.nomeRecebedorPagamento == '' ? '-' : contrato?.complementar.nomeRecebedorPagamento }}</p>
+
+        <p class="field-title">Tipo Doc. Recebedor</p>
+        <p>{{ contrato?.complementar.documentoRecebedor?.tipoDocumento == 1 ? 'CPF' : 'CNPJ' }}</p>
+
+        <p class="field-title">Tipo Doc. Vendedor</p>
+        <p>{{ contrato?.complementar.documentoVendedor?.tipoDocumento == 1 ? 'CPF' : 'CNPJ' }}</p>
+    </div>
+    <div fxFlex="20">
+        <p class="field-title">Valor Taxa de Juros ao Ano</p>
+        <p>{{ contrato?.complementar.taxaJurosAno === null ? '-' : contrato?.complementar.taxaJurosAno + '%' }}</p>
+
+        <p class="field-title">&nbsp;</p>
+        <p>&nbsp;</p>
+
+        <p class="field-title">CPF/CNPJ do Recebedor do Pgto</p>
+        <p>{{ documentoRecebedor }}</p>
+
+        <p class="field-title">CPF/CNPJ do Vendedor do Bem</p>
+        <p>{{ documentoVendedor }}</p>
+    </div>
+    <div fxFlex="60">
+        <p class="field-title">Comentários</p>
+        <p>{{ contrato?.complementar.comentario?? '-' }}</p>
+    </div>
+</div>

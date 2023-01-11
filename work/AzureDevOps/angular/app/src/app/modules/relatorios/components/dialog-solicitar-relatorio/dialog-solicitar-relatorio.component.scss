@@ -1,0 +1,25 @@
+@import '$settings';
+@import '$tools';
+
+.bold {
+  @include fontMontserratBold;
+}
+
+.info {
+  color: $primary;
+  margin-left: 5px;
+}
+
+.tooltip-relatorio {
+  white-space: pre-line;
+}
+
+.relatorio-buttons {
+  width:100%;
+  display: flex;
+  justify-content: space-between;
+
+  .mat-button-toggle {
+    flex-grow: 1;
+  }
+}

@@ -1,0 +1,793 @@
+trigger:
+
+  tags:
+    include:
+    - 'v*.*.*'
+
+    exclude:
+    - 'v*.*.00'
+
+  branches:
+    include:
+#    - refs/tags/*
+    - refs/heads/fix/*
+    - refs/heads/fix-develop
+    - refs/heads/fix-release
+
+    exclude:
+    - master
+    - develop
+    - release
+    
+  paths:
+    include:
+    - app
+
+pr:
+  - fix-develop
+
+variables:
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/fix/') }}:
+    fixBranchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/fix/', '') ]
+    namespace_temp: $[ replace(variables['Build.SourceBranch'], 'refs/heads/fix/', '') ]
+    namespace: 'fix-wkr-processador-ba-$(namespace_temp)'
+    imageName: '$(Build.BuildId)'
+    image: 'tbkacrdev250.azurecr.io/fix-wkr-processador-ba'
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    namespace_temp: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/fix/', '') ]
+    namespace: 'fix-wkr-processador-ba-$(namespace_temp)'
+    imageName: '$(Build.BuildId)'
+    image: 'tbkacrdev250.azurecr.io/fix-wkr-processador-ba'
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags') }}:
+    imageName: $[ replace(variables['Build.SourceBranch'], 'refs/tags/', '') ]
+    image: 'tbkacrprd001.azurecr.io/wkr-processador-ba'
+    destroyDeployment: 'deploy-fix-wkr-processador-ba'
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/fix-develop') }}:
+    imageName: '$(Build.BuildId)'
+    image: 'tbkacrhml001.azurecr.io/fix-wkr-processador-ba'
+    destroyDeployment: 'deploy-fix-wkr-processador-ba'
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/fix-release') }}:
+    imageName: '$(Build.BuildId)'
+    image: 'tbkacrhml001.azurecr.io/fix-wkr-processador-ba'
+    destroyDeployment: 'deploy-fix-wkr-processador-ba'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+#==================================================================
+- stage: 'CI'
+  displayName: 'App Build'
+  condition:  ne(variables['Build.Reason'], 'PullRequest')
+  pool:
+    name: TBK_Builder
+  jobs:
+  - job: "App_build" 
+    displayName: 'App Build'
+    steps:    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet clean'
+      inputs:
+        command: custom
+        projects: '**/*.csproj'
+        custom: clean
+        arguments: '--nologo -v "m"'
+        workingDirectory: $(Build.SourcesDirectory)/app/
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: restore
+        projects: '**/*.csproj'
+        restoreArguments: '--nologo --interactive'
+        workingDirectory: $(Build.SourcesDirectory)/app/
+        feedRestore: d9077a02-57ae-48a2-ba8c-740d35c29b10/d61592b0-d08d-4a55-a692-295fac988013
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        projects: '**/*.csproj'
+        arguments: '--nologo --no-restore -v "m" -maxcpucount --configuration release'
+        workingDirectory: $(Build.SourcesDirectory)/app/
+
+    - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+      displayName: 'Prepare analysis on SonarCloud'
+      inputs:
+        SonarCloud: SonarCloud
+        organization: 'tecnobanksa-interno'
+        scannerMode: CLI
+        configMode: manual
+        cliProjectKey: 'tecnobanksa-interno_econtrato-processador-bahia-worker'
+        cliProjectName: 'econtrato-processador-bahia-worker'
+
+    - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+      displayName: 'Run Code Analysis'
+
+    - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+      displayName: 'Publish Quality Gate Result'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish files'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/app/src/Processador.App.Bahia.Worker/bin/Release/net5.0'
+        artifactName: artifact-to-container
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish files'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/infra/'
+        artifactName: kubernetes-files
+#==================================================================
+- stage: 'DockerBuildFix'
+  displayName: 'Fix Feature: Docker Build'
+  condition: and(succeeded(), ne(variables['fixBranchName'], ''))
+  dependsOn: CI
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Fix Feature: Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/src/Processador.App.Bahia.Worker/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+    
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrdev250'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t $(image):$(imageName) .
+          docker image push $(image):$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+#==================================================================
+- stage: 'Fix_Deploys'
+  displayName: 'Fix: Deploy AKS'
+  condition: and(succeeded(), ne(variables['fixBranchName'], ''))
+  dependsOn: 'DockerBuildFix'
+  variables:
+  - group: processador-ba-worker-feat
+  - group: DbCredential
+  - group: cert
+  - group: resources-dev-tst-hml
+  jobs:
+  - deployment: 'deploy_fix'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: processador-ba-worker-feat
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis configmap"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)/configmap'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'create configmap'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              namespace: '$(namespace)'
+              command: 
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              configMapName: 'wkr-processador-ba-appsettings'
+              forceUpdateConfigMap: true
+              useConfigMapFile: true
+              configMapFile: '$(Agent.BuildDirectory)/configmap/appsettings.json'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/deployment-fix.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+#==================================================================
+- stage: 'Fix_Destroy'
+  displayName: 'Fix: Destroy Fix PR Fix-Develop'
+  condition: and (eq(variables['System.PullRequest.TargetBranch'], 'refs/heads/fix-develop') , eq(variables['Build.Reason'], 'PullRequest'))
+  jobs:
+  - deployment: 'destroy_Fix'
+    displayName: 'Destroy Fix PR Develop'
+    environment: processador-ba-worker-dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            continueOnError: true
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'delete'
+              arguments: 'namespace $(namespace)'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Bash@3
+            condition: failed() 
+            continueOnError: true
+            inputs:
+              targetType: 'inline'
+              script: 'kubectl delete namespace $(namespace)'
+#==================================================================
+  - job: 
+    displayName: "Fix-Develop: DeployAKS"
+    variables:
+    - group: processador-ba-worker-dev
+    - group: DbCredential
+    - group: cert
+    - group: resources-dev-tst-hml
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'echo "##vso[task.setvariable variable=namespace]novoportal-dev"'
+    
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Microsoft Azure (ee6fe381-276f-4841-a137-013a36a53279)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          env=$(az acr repository show-tags --name tbkacrdev250 --repository fix-wkr-processador-ba --top 1 --orderby time_desc)
+          env=$(echo $env |  sed "s/\]//g" | sed "s/\[//g" | sed "s/\"//g")
+          echo "##vso[task.setvariable variable=imageName]$env"
+
+    - task: replacetokens@3
+      displayName: "Substituir variaveis deployment e namespace"
+      inputs:
+        rootDirectory: '$(Build.SourcesDirectory)/infra'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: replacetokens@3
+      displayName: "Substituir variaveis configmap"
+      inputs:
+        rootDirectory: '$(Build.SourcesDirectory)/infra/configmap'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Build.SourcesDirectory)/infra/namespace.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+
+    - task: Kubernetes@1
+      displayName: 'create configmap'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+        namespace: '$(namespace)'
+        command: 
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+        configMapName: 'wkr-processador-ba-appsettings'
+        forceUpdateConfigMap: true
+        useConfigMapFile: true
+        configMapFile: '$(Build.SourcesDirectory)/infra/configmap/appsettings.json'
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          cat $(Build.SourcesDirectory)/infra/deployment-fix.yaml | sed 's/-ba: /-ba:/' > $(Build.SourcesDirectory)/infra/deploy.yaml
+          cat $(Build.SourcesDirectory)/infra/deploy.yaml
+
+    - task: Kubernetes@1
+      displayName: 'apply deployment'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Build.SourcesDirectory)/infra/deploy.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+#==================================================================
+- stage: 'DockerBuild'
+  displayName: 'Fix TST/HML: DockerBuild'
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/fix-develop'), eq(variables['Build.SourceBranch'], 'refs/heads/fix-release')))
+  dependsOn: CI
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/src/Processador.App.Bahia.Worker/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+    
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrhml001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t $(image):$(imageName) .
+          docker image push $(image):$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+#==================================================================
+- stage: 'Develop_Deploys'
+  displayName: 'Destroy Deployment: Fix-Desenv'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/fix-develop'))
+  dependsOn: 'DockerBuild'
+  jobs:
+  - deployment: 'destroy_fixdesenv'
+    displayName: 'Destroy Deployment: Fix-Desenv'
+    environment: processador-ba-worker-tst
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            continueOnError: true
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              namespace: 'novoportal-dev'
+              command: 'delete'
+              arguments: 'deployment $(destroyDeployment)'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Bash@3
+            condition: failed() 
+            continueOnError: true
+            inputs:
+              targetType: 'inline'
+              script: 'kubectl delete deployment $(destroyDeployment)'
+#==================================================================
+  - job: 
+    displayName: 'Fix-Develop: Deploy AKS'
+    variables:
+    - group: processador-ba-worker-tst
+    - group: DbCredential
+    - group: cert
+    - group: resources-dev-tst-hml
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'kubernetes-files'
+        targetPath: '$(Pipeline.Workspace)'
+          
+    - task: replacetokens@3
+      displayName: "Substituir variaveis deployment e namespace"
+      inputs:
+        rootDirectory: '$(Agent.BuildDirectory)'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+          
+    - task: replacetokens@3
+      displayName: "Substituir variaveis configmap"
+      inputs:
+        rootDirectory: '$(Agent.BuildDirectory)/configmap'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+          
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+    
+    - task: Kubernetes@1
+      displayName: 'create configmap'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+        namespace: '$(namespace)'
+        command: 
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+        configMapName: 'wkr-processador-ba-appsettings'
+        forceUpdateConfigMap: true
+        useConfigMapFile: true
+        configMapFile: '$(Agent.BuildDirectory)/configmap/appsettings.json'
+
+    - task: Kubernetes@1
+      displayName: 'apply deployment'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Agent.BuildDirectory)/deployment-fix.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+#==================================================================
+- stage: 'Release_Deploys'
+  displayName: 'Destroy Deployment: Fix-Develop'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/fix-release'))
+  dependsOn: 'DockerBuild'
+  jobs:
+  - deployment: 'destroy_fixdevelop'
+    displayName: 'Destroy Deployment: Fix-Develop'
+    environment: processador-ba-worker-hml
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            continueOnError: true
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              namespace: 'novoportal-tst'
+              command: 'delete'
+              arguments: 'deployment $(destroyDeployment)'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Bash@3
+            condition: failed() 
+            continueOnError: true
+            inputs:
+              targetType: 'inline'
+              script: 'kubectl delete deployment $(destroyDeployment)'
+#==================================================================
+  - job: 
+    displayName: 'Fix-Release: Deploy AKS'
+    variables:
+    - group: processador-ba-worker-hml
+    - group: DbCredential
+    - group: cert
+    - group: resources-dev-tst-hml
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'kubernetes-files'
+        targetPath: '$(Pipeline.Workspace)'
+          
+    - task: replacetokens@3
+      displayName: "Substituir variaveis deployment e namespace"
+      inputs:
+        rootDirectory: '$(Agent.BuildDirectory)'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+          
+    - task: replacetokens@3
+      displayName: "Substituir variaveis configmap"
+      inputs:
+        rootDirectory: '$(Agent.BuildDirectory)/configmap'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+          
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+    
+    - task: Kubernetes@1
+      displayName: 'create configmap'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+        namespace: '$(namespace)'
+        command: 
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+        configMapName: 'wkr-processador-ba-appsettings'
+        forceUpdateConfigMap: true
+        useConfigMapFile: true
+        configMapFile: '$(Agent.BuildDirectory)/configmap/appsettings.json'
+
+    - task: Kubernetes@1
+      displayName: 'apply deployment'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Agent.BuildDirectory)/deployment-fix.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+#==================================================================
+- stage: 'DockerBuildMaster'
+  displayName: 'Fix Master: Docker Build'
+  dependsOn: CI
+  condition:  and(startsWith(variables['build.sourceBranch'], 'refs/tags/'), ne(variables['Build.Reason'], 'PullRequest'))
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Fix Master: Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/src/Processador.App.Bahia.Worker/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+    
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrprd001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t $(image):$(imageName) .
+          docker image push $(image):$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+#==================================================================
+- stage: 'Master_Deploys'
+  displayName: 'Destroy Deployment: Fix-Release'
+  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+  dependsOn: 'DockerBuildMaster'
+  jobs:
+  - deployment: 'destroy_fixrelease'
+    displayName: 'Destroy Deployment: Fix-Release'
+    environment: processador-ba-worker-prd
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            continueOnError: true
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              namespace: 'novoportal-hml'
+              command: 'delete'
+              arguments: 'deployment $(destroyDeployment)'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Bash@3
+            condition: failed() 
+            continueOnError: true
+            inputs:
+              targetType: 'inline'
+              script: 'kubectl delete deployment $(destroyDeployment)'
+#==================================================================
+  - job:
+    displayName: 'Fix-Master: Deploy AKS'
+    variables:
+    - group: processador-ba-worker-prd
+    - group: DbCredential
+    - group: cert
+    - group: resources-prd
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'kubernetes-files'
+        targetPath: '$(Pipeline.Workspace)'
+         
+    - task: replacetokens@3
+      displayName: "Substituir variaveis deployment e namespace"
+      inputs:
+        rootDirectory: '$(Agent.BuildDirectory)'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+          
+    - task: replacetokens@3
+      displayName: "Substituir variaveis configmap"
+      inputs:
+        rootDirectory: '$(Agent.BuildDirectory)/configmap'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+          
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+
+    - task: Kubernetes@1
+      displayName: 'create configmap'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+        namespace: '$(namespace)'
+        command:
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+        configMapName: 'wkr-processador-ba-appsettings'
+        forceUpdateConfigMap: true
+        useConfigMapFile: true
+        configMapFile: '$(Agent.BuildDirectory)/configmap/appsettings.json'
+
+    - task: Kubernetes@1
+      displayName: 'apply deployment'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Agent.BuildDirectory)/deployment.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+#==================================================================
+- stage: 'Master_Rollback'
+  displayName: 'Master: Rollback'
+  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+  jobs:
+  - deployment: 'master_rollback'
+    displayName: 'Rollback Deployment Azure Kubernetes Service'
+    timeoutInMinutes: 15
+    variables: 
+    - group: processador-ba-worker-prd
+    - group: DbCredential
+    - group: cert
+    - group: resources-prd
+    environment: processador-ba-worker-rollback
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            name: rollback
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              command: 'rollout'
+              arguments: 'undo deployment/deploy-wkr-processador-ba'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              namespace: novoportal-prd

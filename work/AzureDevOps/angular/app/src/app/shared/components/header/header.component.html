@@ -1,0 +1,31 @@
+<div fxFlex="row" fxLayoutAlign="center center" class="toolbar">
+    <button mat-icon-button (click)="onActiveMenu()" [ngClass]="{ 'active': menuActive }" id="menuHamburger" class="menu-hamburger">
+        <div class="menu">
+            <i *ngIf="!menuActive" class="fa-regular fa-bars menu-hamburger"></i>
+            <i *ngIf="menuActive" class="fa-regular fa-times menu-hamburger"></i>
+        </div>
+    </button>
+    <span class="ml-2">
+        <a routerLink="/">
+            <img src="./../../../../assets/img/TBK.svg" alt="logo tecnobank">
+        </a>
+    </span>
+    <span class="spacer"></span>
+    <div class="header-icons">
+        <div class="wrapper"> <i class="fa-regular fa-envelope"></i> </div>
+        <app-notificacao></app-notificacao>
+    </div>
+    <div class="user-image">
+        {{ inicialUsuario }}
+    </div>
+    <div [matMenuTriggerFor]="menu" #menuTrigger class="menu-user-name">
+        {{ nomeUsuario }}
+        <div class="wrapper menu-user-name"> <i class="fa-regular fa-caret-down"></i> </div>
+    </div>
+    <mat-menu #menu="matMenu">
+        <app-dialog-profile></app-dialog-profile>
+    </mat-menu>
+    <div class="info-loading">
+        <app-info-loading></app-info-loading>
+    </div>
+</div>

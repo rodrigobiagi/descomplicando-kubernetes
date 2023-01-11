@@ -1,0 +1,10 @@
+<div class="dialog">
+    <h2 mat-dialog-title>Enviar Registro</h2>
+    <mat-dialog-content>
+        <p>Deseja realmente enviar o registro de contrato?</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close [id]="getElementId(2, 'cancelar')">Cancelar</button>
+        <button mat-button mat-raised-button class="btn btn-secondary btn-lg" [mat-dialog-close]="true" cdkFocusInitial [id]="getElementId(2, 'confirmar')">Sim, desejo enviar o registro</button>
+    </mat-dialog-actions>
+</div>

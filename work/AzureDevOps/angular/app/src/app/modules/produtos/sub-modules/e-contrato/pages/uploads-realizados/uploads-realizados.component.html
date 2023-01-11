@@ -1,0 +1,13 @@
+<div class="pb-3">
+  <div class="box__btn">
+    <button mat-flat-button class="box__btn--btn btn btn-outline-600" (click)="baixarRelatorio()">
+      <i class="fa-regular fa-file-excel"></i>
+      Baixar relatório
+    </button>
+  </div>
+  <app-grid-filter [filter]="filter" (pesquisar)="search($event)" (redefinir)="redefinirFiltro()"
+    [showRedefinir]="showRedefinirBtn"></app-grid-filter>
+  <mat-card class="mat-elevation-z8 mt-2 px-0">
+    <app-table-uploads-realizados [refreshGrid]="refreshGrid" [filtro]="filtro"></app-table-uploads-realizados>
+  </mat-card>
+</div>

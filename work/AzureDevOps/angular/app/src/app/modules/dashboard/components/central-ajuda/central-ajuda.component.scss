@@ -1,0 +1,75 @@
+@import '$settings';
+@import '$tools';
+
+.central-ajuda {
+  // background: linear-gradient(90deg, #e32b5133 0%, #056ab033 100%);
+  background: linear-gradient(90deg, #e32b5100 0%, #056ab033 100%);
+  background-blend-mode: difference;
+  overflow: hidden;
+}
+
+.elipse-top {
+  @include border-radius(100%);
+  width: 240px;
+  height: 240px;
+  position: absolute;
+  left: 23.7%;
+  bottom: 65.26%;
+  background: linear-gradient(90deg, #E32B51 63.22%, #69b5e0cc 88.22%);
+  background-blend-mode: lighten;
+  opacity: 0.1;
+  transform: rotate(68.1deg);
+}
+
+.elipse-middle {
+  @include border-radius(100%);
+  width: 395px;
+  height: 395px;
+  position: absolute;
+  left: 20%;
+  top: 8%;
+  background: linear-gradient(90deg, #E32B51 10.22%, #69B5E0 131.22%);
+  background-blend-mode: lighten;
+  opacity: 0.1;
+  transform: rotate(-115.97deg);
+}
+
+.mask-tbk {
+  position: absolute;
+  right: 0;
+  top: 61.03%;
+  bottom: -69.43%;
+}
+
+.help-wrap {
+  @include border-radius(10px);
+  background: linear-gradient(326deg, #e32b5199 2%, #056ab033 63.22%);
+}
+
+h5.headline {
+  @include fontMontserratBold;
+  color: $white !important;
+  font-size: 18px;
+  padding: 30px 30px 15px 30px;
+  margin-bottom: 0;
+  position: inherit;
+}
+
+p {
+  color: $white;
+  padding: 0 8rem 0 30px;
+  position: inherit;
+}
+
+button {
+  @include fontMontserratBold;
+  @include border-radius(4px);
+  cursor: pointer;
+  position: inherit;
+  color: $white;
+  background-color: $blue-800;
+  margin-top: 15px;
+  box-shadow: 0px 12px 17px rgba(0, 0, 0, 0.08), 0px 5px 22px rgba(0, 0, 0, 0.08), 0px 7px 8px rgba(0, 0, 0, 0.05);
+  border: none;
+  padding: 6px 6px 6px 8px;
+}

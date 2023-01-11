@@ -1,0 +1,40 @@
+<div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+    <div fxFlex="50">
+        <p class="field-title">Valor Total da Dívida</p>
+        <p>{{ valorTotalDivida }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Valor da Parcela</p>
+        <p>{{ contrato?.financiamento?.quantidadeParcela }}x {{ valorParcela }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Data liberação do crédito</p>
+        <p>{{ contrato?.financiamento.liberacaoCredito?.data ?? '-' }}</p>
+    </div>
+    <div fxFlex="50"></div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">UF do Contrato</p>
+        <p>{{ contrato?.financiamento.liberacaoCredito?.uf ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Município</p>
+        <p>{{ municipio }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Venc. 1ª Parcela</p>
+        <p>{{ contrato?.financiamento.dataVencimentoPrimeiraParcela ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Venc. Última Parcela</p>
+        <p>{{ contrato?.financiamento.dataVencimentoUltimaParcela ?? '-' }}</p>
+    </div>
+</div>

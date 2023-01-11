@@ -1,0 +1,60 @@
+<section>
+  <form [formGroup]="formulario">
+    <mat-form-field class="input-width-full">
+      <mat-label>Escolha uma versão de lote</mat-label>
+      <mat-select [id]="getElementId(5, 'versao-lote')" name="lote"
+        formControlName="lote" required>
+        <mat-option [id]="getElementId(6, 'lote-null')">Selecione</mat-option>
+        <mat-option
+          *ngFor="let versao of versoesLote"
+          [value]="versao.palavraChave"
+          [id]="getElementId(6, 'lote', versao.palavraChave)"
+          [disabled]="checkAllowVersao(versao.palavraChave)"
+          >
+            {{ versao.valor }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="input-width-full" *ngIf="showOperacao">
+      <mat-label>Selecione uma operação</mat-label>
+      <mat-select [id]="getElementId(5, 'operacao')" name="operacao"
+        formControlName="operacao" >
+        <mat-option [id]="getElementId(6, 'operacao-null')">Selecione</mat-option>
+        <mat-option [value]="1" [id]="getElementId(6, 'registro-contrato')">Registro de contrato</mat-option>
+        <mat-option [value]="2" [id]="getElementId(6, 'alteracao-contrato')">Alteração de contrato</mat-option>
+        <mat-option [value]="3" [id]="getElementId(6, 'registro-aditivo')">Registro de aditivo</mat-option>
+        <mat-option [value]="4" [id]="getElementId(6, 'alteracao-aditivo')">Alteração de aditivo</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </form>
+    <input type="file" hidden #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event.target.files)"
+        [accept]="acceptedTypes" [disabled]="formulario.invalid">
+
+    <div *ngIf="files === null" class="dropzone" appDragAndDrop (fileDropped)="onFileDropped($event)"
+        (click)="onClickFile(fileDropRef)" class="{{ formulario.invalid ? 'dropzone-disabled' : ''}}">
+        <i class="fa-duotone fa-cloud-arrow-up"></i>
+        <h3>Arraste o arquivo e solte aqui ou clique para buscar em sua máquina.</h3>
+
+        <span *ngIf="fileError !== null" class="file-error">
+            <mat-icon>warning</mat-icon> {{ fileError }}
+        </span>
+    </div>
+
+    <div class="files-list" *ngIf="files !== null" >
+        <div class="single-file" appDragAndDrop (fileDropped)="onFileDropped($event)"
+            (click)="onClickFile(fileDropRef)">
+            <mat-icon> insert_drive_file</mat-icon>
+            <div class="info">
+                <h4 class="name">
+                    {{ files?.name }}
+                </h4>
+                <p class="size">
+                  {{ formatDate(fileDate)}}
+                    tamanho {{ formatBytes(files?.size) }}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

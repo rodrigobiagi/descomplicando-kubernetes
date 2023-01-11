@@ -1,0 +1,124 @@
+<form [formGroup]="formulario" autocomplete="off" novalidate>
+  <div fxLayout="column">
+    <div>
+      <div fxLayout="row" fxLayoutGap="10px">
+        <h6 class="headline">Dados do financiamento</h6>
+      </div>
+      <div fxLayout="row wrap" fxLayoutGap="10px grid" class="mt-2">
+        <mat-form-field fxFlex="24">
+          <mat-label>Valor total da dívida</mat-label>
+          <input type="text" name="valorTotalDivida" formControlName="valorTotalDivida" prefix="R$ "
+            [min]="mudarObrigatoriedade('valorTotalDivida') ? '0.01' : null" matInput placehoder="Digite o valor"
+            max="9999999.99" maxlength="15" currencyMask required [id]="getElementId(0, 'financiamento-valor-total')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('valorTotalDivida').hasError('required')">Obrigatório
+          </mat-error>
+          <mat-error
+            *ngIf="!(formulario.get('valorTotalDivida').hasError('required')) && formulario.get('valorTotalDivida').hasError('min')">
+            Valor total da dívida inválido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="18">
+          <mat-label>Valor da parcela</mat-label>
+          <input type="text" name="valorParcela" formControlName="valorParcela" matInput placehoder="Digite o valor"
+            [min]="mudarObrigatoriedade('valorParcela') ? 0.01 : 0" max="9999999.99" maxlength="15" currencyMask
+            required [id]="getElementId(0, 'financiamento-valor-parcela')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('valorParcela').hasError('required')">Obrigatório
+          </mat-error>
+          <mat-error
+            *ngIf="!(formulario.get('valorParcela').hasError('required')) && uf === 'SP' && formulario.get('valorParcela').hasError('min')">
+            Valor da parcela inválido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="24">
+          <mat-label>Quant. de parcelas</mat-label>
+          <input type="number" name="qtdeParcela" formControlName="qtdeParcela" matInput placehoder="Quant. de parcelas"
+            maxlength="3" (input)="keypressNumber(qtdeParcela)" #qtdeParcela required [id]="getElementId(0, 'financiamento-qtd-parcelas')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('qtdeParcela').hasError('required')">Obrigatório
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="34">
+          <mat-label>Data venc. da 1 parcela</mat-label>
+          <input name="dataVencimentoPrimeiraParcela" formControlName="dataVencimentoPrimeiraParcela" matInput
+            placeholder="dd/mm/aaaa" (dateChange)="setaDataMinima($event.target.value)" [matDatepicker]="dataParcela1"
+            maxlength="10" required  [id]="getElementId(0, 'financiamento-venc-prim-parcela')">
+          <mat-datepicker-toggle matSuffix [for]="dataParcela1"></mat-datepicker-toggle>
+          <mat-datepicker #dataParcela1></mat-datepicker>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error
+            *ngIf="formulario.get('dataVencimentoPrimeiraParcela').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+      </div>
+      <div fxLayout="row" fxLayoutGap="10px" class="mt-1">
+
+        <mat-form-field fxFlex="30">
+          <mat-label>Data venc. última parcela</mat-label>
+          <input name="dataVencimentoUltimaParcela" formControlName="dataVencimentoUltimaParcela" matInput
+            placeholder="dd/mm/aaaa" (dateChange)="verificaDatasParcelamento($event.target.value)" [min]="minDate"
+            [matDatepicker]="dataParcela2" maxlength="10" required [id]="getElementId(0, 'financiamento-venc-ult-parcela')">
+          <mat-datepicker-toggle matSuffix [for]="dataParcela2"></mat-datepicker-toggle>
+          <mat-datepicker #dataParcela2></mat-datepicker>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('dataVencimentoUltimaParcela').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="40">
+          <mat-label>Data de liberação do crédito</mat-label>
+          <input name="dataLiberacaoCredito" formControlName="dataLiberacaoCredito" matInput placeholder="dd/mm/aaaa"
+            [max]="maxDate" [matDatepicker]="dataLiberacao" maxlength="10" required [id]="getElementId(0, 'financiamento-data-liberacao')">
+          <mat-datepicker-toggle matSuffix [for]="dataLiberacao"></mat-datepicker-toggle>
+          <mat-datepicker #dataLiberacao></mat-datepicker>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('dataLiberacaoCredito').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="30">
+          <mat-label>UF de liberação do crédito</mat-label>
+          <mat-select [id]="getElementId(5, 'financiamento-uf')" name="ufLiberacaoCredito"
+            formControlName="ufLiberacaoCredito" required>
+            <mat-option>Selecione</mat-option>
+            <mat-option *ngFor="let uf of ufsLicenciamento" [value]="uf">{{ uf }}</mat-option>
+          </mat-select>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('ufLiberacaoCredito').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutGap="10px" class="mt-1">
+        <mat-form-field fxFlex="100">
+          <mat-label>Município</mat-label>
+          <input type="text" name="municipioLiberacaoCredito" formControlName="municipioLiberacaoCredito"
+            (input)="replaceSpecialChar()" matInput [matAutocomplete]="municipio"
+            placeholder="Digite o município liberação de crédito" required  [id]="getElementId(0, 'financiamento-municipio')">
+          <mat-autocomplete #municipio="matAutocomplete">
+            <mat-option *ngFor="let municipio of municipiosFiltrados" [value]="municipio.nome">{{
+              municipio.nome }}</mat-option>
+          </mat-autocomplete>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('municipioLiberacaoCredito').hasError('required')">Obrigatório</mat-error>
+          <mat-error *ngIf="formulario.get('municipioLiberacaoCredito').hasError('not-located')">Município
+            inválido</mat-error>
+        </mat-form-field>
+      </div>
+      <div fxLayout="row" fxLayoutGap="30px" class="mt-2">
+        <h6 class="headline">Para empresas administradoras de consórcio</h6>
+      </div>
+      <div fxLayout="row" fxLayoutGap="10px" class="mt-2">
+        <mat-form-field fxFlex="50">
+          <mat-label>Cota do consórcio</mat-label>
+          <input type="text" name="cotaConsorcio" #cotaConsorcio maxlength="6" numbers-only
+            formControlName="cotaConsorcio" matInput placeholder="Digite a cota do consórcio"  [id]="getElementId(0, 'financiamento-cota-consorcio')">
+        </mat-form-field>
+
+        <mat-form-field fxFlex="50">
+          <mat-label>Número do grupo</mat-label>
+          <input type="text" name="numeroGrupo" formControlName="numeroGrupo" matInput
+            placeholder="Digite o número do grupo" maxlength="6" #numeroGrupo  [id]="getElementId(0, 'financiamento-numero-grupo')">
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</form>

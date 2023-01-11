@@ -1,0 +1,113 @@
+<ng-template #stepBystep let-title="title" let-description="description">
+  <p class="color-primary mb-2 mt-3">{{title}}</p>
+</ng-template>
+
+<form [formGroup]="formulario" (ngSubmit)="submit()" novalidate class="mr-2">
+  <mat-card>
+    <div class="ml-1 mr-1">
+      <ng-template [ngTemplateOutlet]="stepBystep"
+          [ngTemplateOutletContext]="{title: 'Preencha as informações da empresa e contrato:'}">
+      </ng-template>
+      <div fxLayout="row" fxLayoutGap="10" fxLayoutAlign="space-between start">
+        <mat-form-field  fxFlex="43">
+          <mat-label>Insira o nome da empresa</mat-label>
+          <mat-select [id]="getElementId(5, 'rascunho-empresa')" name="empresa" formControlName="empresa"
+            required>
+            <mat-option>Selecione</mat-option>
+            <mat-option *ngFor="let empresa of empresas" [value]="empresa.id">{{ empresa.nome }} | {{ formatCnpj(empresa.cnpj) }}</mat-option>
+          </mat-select>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('empresa').hasError('required')">A empresa é obrigatória</mat-error>
+        </mat-form-field>
+        <mat-form-field  fxFlex="33">
+          <mat-label>Número do contrato</mat-label>
+          <input [id]="getElementId(0, 'rascunho-numero')" matInput name="numeroContrato" formControlName="numeroContrato" maxlength="20" required>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('numeroContrato').hasError('required')">O número do
+            contrato é obrigatório</mat-error>
+          <mat-error *ngIf="formulario.get('numeroContrato').hasError('minlength')">O número do
+            contrato deve conter no minímo 3 caracteres</mat-error>
+          <mat-error *ngIf="formulario.get('numeroContrato').hasError('maxlength')">O número do
+            contrato deve conter no máximo 20 caracteres</mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex="20">
+          <mat-label>UF</mat-label>
+          <mat-select [id]="getElementId(5, 'rascunho-uf')" name="ufLicenciamento" formControlName="ufLicenciamento"
+            required>
+            <mat-option>Selecione</mat-option>
+            <mat-option *ngFor="let uf of ufsLicenciamento" [value]="uf.ufDetran">{{ uf.ufDetran }}</mat-option>
+          </mat-select>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('ufLicenciamento').hasError('required')">A UF do
+            licenciamento é obrigatória</mat-error>
+        </mat-form-field>
+
+      </div>
+      <div fxLayout="row" class="mt-1" *ngIf="formulario.controls['ufLicenciamento'].value == 'PR'">
+        <mat-checkbox [id]="getElementId(4, 'rascunho-frota')" formControlName="registroFrota" labelPosition="before"> Registro de frota </mat-checkbox>
+      </div>
+
+      <ng-template [ngTemplateOutlet]="stepBystep"
+        [ngTemplateOutletContext]="{ title: 'Escolha qual o tipo de operação que irá realizar:'}">
+      </ng-template>
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="start center" class="pb-2">
+        <div class="produtos-registrar-contrato">
+          <mat-button-toggle-group  [id]="getElementId(7, 'tipo-operacao')" name="tipoOperacao" formControlName="tipoOperacao" fxLayout.xs="column"
+            fxLayout.sm="row">
+            <mat-button-toggle
+              value=1
+              [disabled]="!permissoesFlag1.editar || !allowRegistrarContrato"
+              [id]="getElementId(7, 'operacao-registrar-contrato')"
+              matTooltip="Funcionalidade inativa"
+              [matTooltipDisabled]="allowRegistrarContrato">
+                Registrar contrato
+            </mat-button-toggle>
+            <mat-button-toggle
+              value=2
+              [disabled]="!permissoesFlag2.editar || !allowAlterarContrato"
+              [id]="getElementId(7, 'operacao-alterar-contrato')"
+              matTooltip="Funcionalidade inativa"
+              [matTooltipDisabled]="allowAlterarContrato">
+                Alterar contrato
+            </mat-button-toggle>
+            <mat-button-toggle
+              value=3
+              [disabled]="!permissoesFlag3.editar || !allowRegistrarAditivo"
+              [id]="getElementId(7, 'operacao-registrar-aditivo')"
+              matTooltip="Funcionalidade inativa"
+              [matTooltipDisabled]="allowRegistrarAditivo">
+                Registrar aditivo
+            </mat-button-toggle>
+            <mat-button-toggle
+              value=4
+              [disabled]="!permissoesFlag4.editar || !allowAlterarAditivo"
+              [id]="getElementId(7, 'operacao-alterar-aditivo')"
+              matTooltip="Funcionalidade inativa"
+              [matTooltipDisabled]="allowAlterarAditivo">
+                Alterar aditivo
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+      </div>
+
+        <p class="color-primary mb-2 mt-3 ng-star-inserted">
+          Escolha qual formato de formulário deseja usar:
+          <button class="info-button" type="button" (click)="openModalTipoFormulario()">
+            <i class="fa-regular fa-circle-question"></i>
+          </button>
+        </p>
+
+      <div fxLayout="row" fxLayoutAlign="start start" class="tipo-form produtos-registrar-contrato">
+        <mat-button-toggle-group [id]="getElementId(7, 'tipo-formulario')" name="tipoFormulario" formControlName="tipoFormulario" aria-label="Modo do Formulario">
+          <mat-button-toggle id="stepperModoID" value="stepper" [id]="getElementId(7, 'formulario-stepper')">Stepper</mat-button-toggle>
+          <mat-button-toggle id="onePageModoID" value="onepage" [id]="getElementId(7, 'formulario-one-page')">Onepage </mat-button-toggle>
+        </mat-button-toggle-group>
+
+      </div>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="end" class="mt-2">
+      <button mat-raised-button type="submit" id="iniciarRegistroID" [disabled]="formulario.invalid || formSubmitted"
+        class="btn btn-primary btn-lg bold">Iniciar registro</button>
+    </div>
+  </mat-card>
+</form>

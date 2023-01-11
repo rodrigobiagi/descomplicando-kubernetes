@@ -1,0 +1,10 @@
+<div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+    <div fxFlex="50">
+        <p class="field-title">Cota do Consórcio</p>
+        <p>{{ contrato?.financiamento?.consorcio?.cota == '' || contrato?.financiamento?.consorcio?.cota == null ? '-' : contrato?.financiamento?.consorcio?.cota }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Nº do Grupo</p>
+        <p>{{ contrato?.financiamento?.consorcio?.grupo == '' || contrato?.financiamento?.consorcio?.grupo == null ? '-' : contrato?.financiamento?.consorcio?.grupo }}</p>
+    </div>
+</div>

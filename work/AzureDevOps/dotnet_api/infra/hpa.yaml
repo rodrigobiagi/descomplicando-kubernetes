@@ -1,0 +1,13 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-comunicacao-venda-api
+  namespace: #{namespace}#
+spec:
+  maxReplicas: #{max-replicas}#
+  minReplicas: #{min-replicas}#
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deploy-comunicacao-venda-api
+  targetCPUUtilizationPercentage: 50

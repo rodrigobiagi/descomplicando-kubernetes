@@ -1,0 +1,23 @@
+<section *ngIf="!adicionado">
+  <h6 class="headline bold my-0">Adicionar veículo</h6>
+
+  <app-dados-veiculo [formID]="'add-veiculo'" [carregarVeiculo]="carregarVeiculo" [aditivo]="aditivo" (addVeiculo)="setVeiculo($event)" (numeroRestricao)="setNumeroRestricao($event)"></app-dados-veiculo>
+
+  <mat-dialog-actions class="d-flex justify-content-end">
+    <button mat-flat-button class="btn-cancel" type="button" [mat-dialog-close]="false" [id]="getElementId(2, 'add-veiculo-cancelar')">Fechar</button>
+    <button mat-flat-button color="primary" cdkFocusInitial *ngIf="veiculo != null " [id]="getElementId(2, 'add-veiculo-confirmar')"
+      [mat-dialog-close]="veiculo">Confirmar</button>
+  </mat-dialog-actions>
+</section>
+
+<section *ngIf="adicionado">
+  <div class="text-center">
+    <p class="vector mb-1"> <i class="fa-solid fa-circle-check"></i> </p>
+    <h4 class="mt-0">Veículo adicionado com êxito!</h4>
+  </div>
+
+  <mat-dialog-actions class="d-flex justify-content-end">
+    <button mat-flat-button class="btn-cancel" type="button" [mat-dialog-close]="false" [id]="getElementId(2, 'add-veiculo-fechar')">Fechar</button>
+    <button mat-flat-button color="primary" cdkFocusInitial [mat-dialog-close]="true" [id]="getElementId(2, 'add-veiculo-proximo')">Próximo veículo</button>
+  </mat-dialog-actions>
+</section>

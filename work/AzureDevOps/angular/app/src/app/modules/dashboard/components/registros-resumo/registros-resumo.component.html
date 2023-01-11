@@ -1,0 +1,27 @@
+<mat-card class="h-100">
+  <div class="loading-shade h-100 d-flex justify-content-center align-items-center" *ngIf="loading$ | async as loading">
+    <mat-spinner *ngIf="loading"></mat-spinner>
+    <div class="error"></div>
+  </div>
+
+    <section *ngIf="!(loading$ | async)" class="d-flex align-items-center" fxLayout="row" fxLayoutGap="40px">
+      <p class="desk bold">Resumo</p>
+      <div class="resumo-filter">
+        <mat-button-toggle-group name="resumo-filter" aria-label="Font Style" [(ngModel)]="selectedFilter"
+          [disabled]="disableFilter" (change)="resumoChanged()">
+          <mat-button-toggle value="ultimasVinteQuatroHoras">Hoje</mat-button-toggle>
+          <mat-button-toggle value="ultimosSeteDias">7 dias</mat-button-toggle>
+          <mat-button-toggle value="ultimosTrintaDias">30 dias</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </section>
+
+    <div *ngIf="dadosContratos.length > 0">
+      <apx-chart #chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
+        [colors]="['#0BDE78', '#FFAF3F', '#EC1453']" [stroke]="chartOptions.stroke" [legend]="chartOptions.legend"
+        [dataLabels]="chartOptions.dataLabels" [fill]="chartOptions.fill" [tooltip]="chartOptions.tooltip"></apx-chart>
+
+    </div>
+
+    <app-bloco-vazio *ngIf="dadosContratos.length == 0 && !(loading$ | async)" [options]="blocoVazio"></app-bloco-vazio>
+</mat-card>

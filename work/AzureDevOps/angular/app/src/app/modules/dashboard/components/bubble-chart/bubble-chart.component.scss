@@ -1,0 +1,108 @@
+
+@import '$settings';
+@import '$tools';
+
+#card {
+  position: relative;
+}
+
+p {
+  margin-top:15px
+}
+
+text {
+  text-anchor: middle;
+  cursor: default;
+  opacity: 0;
+}
+
+circle {
+  cursor: pointer;
+}
+
+.tooltip {
+  position: absolute;
+  visibility: hidden;
+  border-radius: 3px;
+  background-color: #384047;
+  font-family: sans-serif;
+  max-width: 400px;
+  padding:10px;
+
+}
+
+.tooltip-uf {
+  color: #AAAAAA;
+  margin-bottom: 4px;
+  font-size: 12px;
+  @include fontMontserratBold;
+}
+
+.tooltip-registros {
+  @include fontMontserratBold;
+  font-size: 12px;
+  color: #FFF;
+}
+
+.registros-pill {
+  background-color: #666c72;
+  border-radius: 5px;
+  padding: 3px 5px;
+  margin-left: 3px;
+  @include fontMontserratBold;
+}
+
+.registros-title {
+  margin-bottom: 3px;
+  @include fontMontserratBold;
+}
+
+.chart-container {
+  position: relative;
+  background-color: #FFF;
+  height: 69%;
+}
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  font-size: .8em;
+}
+
+.hidden {
+  opacity:0;
+}
+
+.legenda-item {
+  display: flex;
+  align-items: center;
+  margin: 10px 12px;
+}
+
+.legenda-cor {
+  width:21px;
+  height:6px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+.legenda-sul {
+  background-color: #80e5ca;
+}
+
+.legenda-sudeste {
+  background-color: #73a3ce;
+}
+
+.legenda-nordeste {
+  background-color: #ffdcdc;
+}
+
+.legenda-norte {
+  background-color: #d3ed6c;
+}
+
+.legenda-centro-oeste {
+  background-color: #ce739a;
+}

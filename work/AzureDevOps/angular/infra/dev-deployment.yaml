@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-portal-web
+  namespace: #{namespace}#
+spec:
+  replicas: #{replicas}#
+  selector:
+    matchLabels:
+      app: portal-web
+  template:
+    metadata:
+      labels:
+        app: portal-web
+    spec:
+      containers:
+      - name:  portal-web-container
+        image: #{image}#:#{imageName}#
+        resources:
+          requests:
+            cpu: #{cpu}#
+            memory: #{memory}#
+          limits:
+            cpu: #{cpu-limits}#
+            memory: #{memory-limits}#
+        env:
+        - name: TZ
+          value: America/Sao_Paulo
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-portal-web
+  namespace: #{namespace}#
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: portal-web
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-portal-web
+  namespace: #{namespace}#
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: #{rota}#.2ef396cff58c48d2b094.eastus2.aksapp.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: service-portal-web
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - #{rota}#.2ef396cff58c48d2b094.eastus2.aksapp.io
+    secretName: tls-tecnobank

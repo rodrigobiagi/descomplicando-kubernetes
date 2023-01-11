@@ -1,0 +1,121 @@
+<mat-card class="mb-4 mat-elevation-z8" style="position: relative">
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="fw-bold">Dados do perfil</div>
+  </div>
+
+  <form [formGroup]="createPerfilForm" (ngSubmit)="onSubmit()" class="mt-2">
+    <div fxLayout="row" fxLayoutGap="10px">
+      <mat-form-field appearance="outline" fxFlex="50">
+        <mat-label>Nome do perfil </mat-label>
+        <input matInput placeholder="Nome do perfil" formControlName="nome" [id]="getElementId(0, 'perfil-nome')" maxlength="50"
+          (keyup)="errorName ? errorName = null : errorName" required />
+        <mat-hint>Obrigatório</mat-hint>
+        <mat-error class="bold" *ngIf="createPerfilForm.controls['nome'].hasError('required')">Campo
+          obrigatório
+        </mat-error>
+        <mat-error class="bold"
+          *ngIf="!createPerfilForm.get('nome').hasError('required') && createPerfilForm.get('nome').hasError('nameInvalid')">
+          MASTER é um nome de perfil reservado do sistema. Você não poderá criar um perfil com este nome.
+        </mat-error>
+        <mat-hint class="text-danger bold" *ngIf="errorName">{{ errorName }}</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" fxFlex="auto">
+        <mat-label>Descrição </mat-label>
+        <input matInput placeholder="Descrição" formControlName="descricao" [id]="getElementId(0, 'perfil-descricao')"
+          maxlength="200" />
+      </mat-form-field>
+    </div>
+    <div fxLayout="row" fxLayoutGap="10px" class="mt-2">
+      <div fxFlex="30">
+        <mat-slide-toggle formControlName="ativo" [id]="getElementId(7, 'perfil-ativo')">Ativo?</mat-slide-toggle>
+      </div>
+      <div fxFlex="30">
+        <mat-slide-toggle formControlName="convidado" [id]="getElementId(7, 'perfil-convidado')">Destinado a usuários
+          convidados?</mat-slide-toggle>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="fw-bold">Permissões deste perfil</div>
+    </div>
+
+    <mat-accordion class="grupos-permissoes">
+      <mat-expansion-panel hideToggle class="mat-elevation-z8 mt-3 grupo-permissoes" *ngFor="let grupo of gruposList">
+        <mat-expansion-panel-header class="grupo-header" #panelGroup (click)="panelGroup._toggle()">
+          <mat-panel-title class="mx-0">
+            <table class="permissoes-title">
+              <tr>
+                <td class="panel-title funcionalidade-nome">
+                  <mat-checkbox [checked]="isAllCompleteGroup(grupo.id)" [indeterminate]="someCompleteGroup(grupo.id)"
+                    (change)="setAllGroup($event.checked, grupo.id)"
+                    [id]="getElementId(4, 'permissao-' + 'all', grupo.id)">
+                    <span class="panel-title">{{ grupo.nome }}</span>
+                  </mat-checkbox>
+                </td>
+                <td class="panel-title funcionalidade-permissao">
+                  <mat-checkbox [checked]="isAllComplete(grupo.id, 'admin')"
+                    [indeterminate]="someComplete(grupo.id, 'admin')"
+                    (change)="setAll($event.checked, grupo.id, 'admin')"
+                    [id]="getElementId(4, 'permissao-' + 'admin', grupo.id)">
+                    <span class="panel-title">Admin</span>
+                  </mat-checkbox>
+                </td>
+                <td class="panel-title funcionalidade-permissao">
+                  <mat-checkbox [checked]="isAllComplete(grupo.id, 'editar')"
+                    [indeterminate]="someComplete(grupo.id, 'editar')"
+                    (change)="setAll($event.checked, grupo.id, 'editar')"
+                    [id]="getElementId(4, 'permissao-' + 'editar', grupo.id)">
+                    <span class="panel-title">Editar</span>
+                  </mat-checkbox>
+                </td>
+                <td class="panel-title funcionalidade-permissao">
+                  <mat-checkbox [checked]="isAllComplete(grupo.id, 'consultar')"
+                    [indeterminate]="someComplete(grupo.id, 'consultar')"
+                    (change)="setAll($event.checked, grupo.id, 'consultar')"
+                    [id]="getElementId(4, 'permissao-' + 'consultar', grupo.id)" class="enable-pointer-events">
+                    <span class="panel-title">Consultar</span>
+                  </mat-checkbox>
+                </td>
+                <td class="last-td">
+                  <i [ngClass]="{ 'fa-solid fa-circle-chevron-up': checkAriaExpanded(panelGroup),  'fas fa-chevron-circle-down': !checkAriaExpanded(panelGroup), 'disabled-pointer': grupo.nome == 'Dashboards' }"
+                    class="fas fa-chevron-circle-down pr-2" (click)="panelGroup._toggle()"></i>
+                </td>
+              </tr>
+            </table>
+          </mat-panel-title>
+
+        </mat-expansion-panel-header>
+
+        <table class="permissoes-body">
+          <tr *ngFor="let permissao of grupo.permissoes">
+            <td class="funcionalidade-nome">{{ permissao.nome }}</td>
+            <td class="funcionalidade-permissao">
+              <mat-checkbox [checked]="permissao.admin" (change)="updateAllComplete(grupo.id, 'admin', permissao.id)"
+                [id]="getElementId(4, 'permissao-' + 'admin', grupo.id + '_' + permissao.id)">
+              </mat-checkbox>
+            </td>
+            <td class="funcionalidade-permissao">
+              <mat-checkbox [checked]="permissao.editar" (change)="updateAllComplete(grupo.id, 'editar', permissao.id)"
+                [id]="getElementId(4, 'permissao-' + 'editar', grupo.id + '_' + permissao.id)">
+              </mat-checkbox>
+            </td>
+            <td class="funcionalidade-permissao">
+              <mat-checkbox [checked]="permissao.consultar"
+                (change)="updateAllComplete(grupo.id, 'consultar', permissao.id)"
+                [id]="getElementId(4, 'permissao-' + 'consultar', grupo.id + '_' + permissao.id)">
+              </mat-checkbox>
+            </td>
+            <td class="last-td"></td>
+          </tr>
+        </table>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <div class="d-flex justify-content-end mt-4">
+      <button mat-flat-button color="primary" type="submit" [disabled]="!createPerfilForm.valid">
+        Confirmar
+      </button>
+    </div>
+  </form>
+</mat-card>

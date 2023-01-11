@@ -1,0 +1,49 @@
+// Base
+@import '$settings';
+@import '$tools';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+    @include fontMontserratRegular;
+    background: $gray-300;
+    height: 100%;
+    min-height: 100%;
+    scroll-behavior: smooth;
+    margin: 0;
+    color: $gray-dark;
+}
+
+a {
+    cursor: pointer;
+    color: $blue-dark;
+}
+
+h4 {
+  @include fontMontserratBold;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+h6 {
+  font-size: 16px;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.success {
+  color: $green-success
+}
+
+.blue {
+  color: $blue;
+}
+
+.warning {
+  color :$yellow-warning;
+}

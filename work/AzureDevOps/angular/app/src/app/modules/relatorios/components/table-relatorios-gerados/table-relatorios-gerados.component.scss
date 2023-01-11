@@ -1,0 +1,12 @@
+@import '$settings';
+@import '$tools';
+
+.mat-column-dataSolicitacao, .mat-column-dataDisponibilizacao {
+  white-space: pre;
+}
+
+.no-items {
+  text-align: center;
+  color: $gray-700;
+  padding: 30px 0;
+}

@@ -1,0 +1,24 @@
+<mat-card class="h-100">
+  <div *ngIf="atividadesRecentes.length > 0">
+    <p class="desk bold px-1 mb-1">Atividades recentes</p>
+
+    <section *ngFor="let atividade of atividadesRecentes" class="d-flex justify-content-between pt-2" fxLayout="row" fxLayoutGap="10px">
+      <div class="block" fxFlex>
+
+        <div class="atividade-recente d-flex justify-content-between px-1" fxFlex fxLayout="row">
+          <div class="picture d-flex align-items-center">
+            <div class="user-image">{{ atividade.nomeUsuario.slice(0, 1) }}</div>
+          </div>
+
+          <div class="info">
+            <p class="my-0"><strong>{{ atividade.nomeUsuario }}</strong> {{ atividade.mensagem }}</p>
+            <span><i class="fa-solid fa-clock"></i> {{ getData(atividade.dataAtividade) }}</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <app-bloco-vazio *ngIf="atividadesRecentes.length == 0" [options]="blocoVazio"></app-bloco-vazio>
+</mat-card>

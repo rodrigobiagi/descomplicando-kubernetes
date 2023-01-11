@@ -1,0 +1,181 @@
+<div fxLayout="column">
+  <form [formGroup]="formulario" novalidate>
+    <div>
+      <div fxLayout="row wrap" fxLayoutGap="0px" fxLayoutAlign="space-between"
+        [ngClass]="{ 'd-none': formID }" class="mb-2">
+        <h6 class="headline">Dados do veículo</h6>
+        <button class="veiculos-adicionados bold"
+          *ngIf="(ehFrota || contrato?.veiculo.length > 1) && veiculosList.length > 0" type="button"
+          [matMenuTriggerFor]="menuVeiculosList" [id]="getElementId(2, 'veiculos-adicionados')">
+          {{ veiculosList.length }} veículo{{ veiculosList.length > 1 ? 's' : '' }} adicionado{{ veiculosList.length > 1
+          ? 's' : '' }}
+        </button>
+        <mat-menu #menuVeiculosList="matMenu">
+          <app-dados-veiculo-list [substituicaoGarantia]="substituicaoGarantia" (editarVeiculo)="editarVeiculo($event)"
+            (removerVeiculo)="removerVeiculo($event)"></app-dados-veiculo-list>
+        </mat-menu>
+      </div>
+      <div fxLayout="row wrap" fxLayoutAlign="space-between" fxLayoutGap="10px grid">
+        <mat-form-field fxFlex="40">
+          <mat-label>Chassi</mat-label>
+          <input type="text" matInput #chassi [id]="getElementId(0, 'chassi')" maxlength="21" name="chassi"
+            formControlName="chassi" placeholder="Digite o chassi do veículo" (blur)="consultarGravame(chassi.value)"
+            alphanumerics-only required>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('chassi').hasError('required')">Obrigatório</mat-error>
+          <mat-error *ngIf="formulario.get('chassi').hasError('minlength')">Chassi inválido
+          </mat-error>
+          <mat-icon matSuffix>
+            <mat-spinner *ngIf="loading" [diameter]="25"></mat-spinner>
+          </mat-icon>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="30">
+          <mat-label>Ano de fabricação</mat-label>
+          <input type="text" matInput [id]="getElementId(0, 'anoFabricacao')" name="anoFabricacao"
+            formControlName="anoFabricacao" placeholder="Ano de fabricação" (blur)="refreshValidator()" numbers-only
+            maxlength="4" required>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('anoFabricacao').hasError('required')">Obrigatório</mat-error>
+          <mat-error *ngIf="formulario.get('anoFabricacao').hasError('range')">
+            Ano de fabricação inválido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="30">
+          <mat-label>Ano do modelo</mat-label>
+          <input type="text" matInput [id]="getElementId(0, 'anoModelo')" name="anoModelo" formControlName="anoModelo"
+            placeholder="Ano do modelo" (blur)="refreshValidator()" numbers-only maxlength="4" required>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('anoModelo').hasError('required')">Obrigatório
+          </mat-error>
+          <mat-error *ngIf="formulario.get('anoModelo').hasError('range')">Ano do modelo inválido</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="pt-2">
+
+        <div fxLayout="row" fxLayoutGap="10px"> </div>
+
+        <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap="10px">
+          <div class="pt-1 produtos-registrar-contrato" fxFlex="20">
+            <p class="bold desk mt-0">Remarcado?</p>
+            <div fxLayout="row" class="align-items-start" fxLayoutGap="10px">
+              <mat-button-toggle-group name="remarcado" [id]="getElementId(7, 'remarcado')" formControlName="remarcado"
+                aria-label="remarcado">
+                <mat-button-toggle id="btn-remarcado-sim" value="true" class="btn-toggle">Sim</mat-button-toggle>
+                <mat-button-toggle id="btn-remarcado-nao" value="false" class="btn-toggle">Não</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+          </div>
+
+          <div class="pt-1 produtos-registrar-contrato">
+            <p class="bold desk mt-0">Emplacado?</p>
+            <div fxLayout="row" class="align-items-start" fxLayoutGap="10px">
+              <mat-button-toggle-group name="emplacado" [id]="getElementId(7, 'emplacado')" formControlName="emplacado"
+                aria-label="emplacado" #emplacado="matButtonToggleGroup"
+                (change)="alteraObrigatoriedadeCampos(emplacado.value)">
+                <mat-button-toggle id="btn-emplacado-sim" value="true" class="btn-toggle">Sim</mat-button-toggle>
+                <mat-button-toggle id="btn-emplacado-nao" value="false" class="btn-toggle">Não</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-2" fxLayout="row wrap" fxLayoutAlign="space-between" fxLayoutGap="10px grid">
+          <mat-form-field fxFlex="25">
+            <mat-label>Placa</mat-label>
+            <input type="text" matInput [id]="getElementId(0, 'placa')" alphanumerics-only #placa minlength="5"
+              maxlength="7" name="placa" formControlName="placa" placeholder="Digite o placa do veículo" required>
+            <mat-hint *ngIf="formulario.get('emplacado').value === 'true'">Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('placa').hasError('required')">Obrigatório</mat-error>
+            <mat-error *ngIf="formulario.get('placa').hasError('minlength')">Placa inválida</mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="20">
+            <mat-label>UF da placa</mat-label>
+            <mat-select [id]="getElementId(5, 'uf-placa')" name="ufPlaca" formControlName="ufPlaca" required>
+              <mat-option>Selecione</mat-option>
+              <mat-option *ngFor="let uf of ufsLicenciamento" [value]="uf">{{ uf }}</mat-option>
+            </mat-select>
+            <mat-hint *ngIf="formulario.get('emplacado').value === 'true'">Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('ufPlaca').hasError('required')">Obrigatório
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="25">
+            <mat-label>Renavam</mat-label>
+            <input type="text" [id]="getElementId(0, 'renavam')" numbers-only matInput name="renavam" #renavam
+              numbers-only maxlength="11" formControlName="renavam" placeholder="Digite o renavam do veículo" required>
+            <mat-hint *ngIf="formulario.get('emplacado').value === 'true'">Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('renavam').hasError('required')">Obrigatório</mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="30">
+            <mat-label>N.º do gravame</mat-label>
+            <input type="text" matInput [id]="getElementId(0, 'numeroRestricao')" #gravameveiculo name="numeroRestricao"
+              formControlName="numeroRestricao" placeholder="Digite o número do gravame" numbers-only maxlength="8"
+              required>
+            <mat-hint>Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('numeroRestricao').hasError('required')">Obrigatório
+            </mat-error>
+            <mat-error *ngIf="formulario.get('numeroRestricao').hasError('minlength')">N.º do gravame
+              inválido</mat-error>
+            <mat-error *ngIf="formulario.get('numeroRestricao').hasError('maxlength')">N.º do gravame
+              inválido</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="row wrap" fxLayoutAlign="space-between" fxLayoutGap="10px grid">
+          <mat-form-field fxFlex="20">
+            <mat-label>Marca</mat-label>
+            <input type="text" matInput [id]="getElementId(0, 'marca')" name="marca" formControlName="marca"
+              placeholder="Marca do veículo" (blur)="filterData($event.target.value,'marca', true)"
+              (input)="replaceSpecialChar('marca')" [matAutocomplete]="marcas">
+            <mat-autocomplete #marcas="matAutocomplete">
+              <mat-option *ngFor="let marca of marcasVeiculoFiltrados" (click)="enviaMarcaId(marca.id)"
+                [value]="marca.nome">{{ marca.nome }}</mat-option>
+            </mat-autocomplete>
+            <mat-hint *ngIf="mudarObrigatoriedade('marca')">Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('marca').hasError('required')">Obrigatório</mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="20">
+            <mat-label>Modelo</mat-label>
+            <input type="text" matInput [id]="getElementId(0, 'modelo')" name="modelo" formControlName="modelo"
+              placeholder="Modelo do veículo" (blur)="filterData($event.target.value,'modelo', true)"
+              (input)="replaceSpecialChar('modelo')" [matAutocomplete]="modelos">
+            <mat-autocomplete #modelos="matAutocomplete">
+              <mat-option *ngFor="let modelo of modelosVeiculoFiltrados" (click)="enviaModeloId(modelo.especieId)"
+                [value]="modelo.nome">{{ modelo.nome }}</mat-option>
+            </mat-autocomplete>
+            <mat-hint *ngIf="mudarObrigatoriedade('modelo')">Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('modelo').hasError('required')">Obrigatório</mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="40">
+            <mat-label>Espécie</mat-label>
+            <mat-select name="especie" [id]="getElementId(5, 'especie')" formControlName="especie">
+              <mat-option>--</mat-option>
+              <mat-option *ngFor="let especie of especiesVeiculo" [value]="especie.id">{{especie.nome}}</mat-option>
+            </mat-select>
+            <mat-hint *ngIf="mudarObrigatoriedade('especie')">Obrigatório</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="20">
+            <mat-label>Cor</mat-label>
+            <input type="text" matInput [id]="getElementId(0, 'cor')" name="cor" formControlName="cor"
+              placeholder="Cor do véiculo" (blur)="filterData($event.target.value,'cor', true)"
+              (input)="replaceSpecialChar('cor')" [matAutocomplete]="cores">
+            <mat-autocomplete #cores="matAutocomplete">
+              <mat-option *ngFor="let cor of coresVeiculoFiltrados" [value]="cor.nome">{{ cor.nome }}</mat-option>
+            </mat-autocomplete>
+            <mat-hint *ngIf="mudarObrigatoriedade('cor')">Obrigatório</mat-hint>
+            <mat-error *ngIf="formulario.get('cor').hasError('required')">Obrigatório</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <button *ngIf="ehFrota" type="button" class="desk bold" [id]="getElementId(2, 'addveiculo')"
+      (click)="adicionarVeiculo()">Adicionar veículo <i class="fa-solid fa-circle-plus text-default pl-1"></i></button>
+  </form>
+</div>

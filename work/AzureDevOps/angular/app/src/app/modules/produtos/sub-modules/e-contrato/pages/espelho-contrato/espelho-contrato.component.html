@@ -1,0 +1,98 @@
+<a class="link-editar-resumo" [routerLink]="['/produtos/e-contrato/consultar-registro']"><i
+        class="fa-regular fa-chevron-left"></i> Voltar</a>
+
+<div class="mt-2">
+    <button mat-raised-button class="btn" (click)="printPage()" *ngIf="contrato">
+        <mat-icon aria-hidden="false" aria-label="Imprimir">print</mat-icon>
+        Imprimir
+    </button>
+</div>
+
+<section #espelhoContrato id="espelhoContrato">
+    <div [fxLayout]="contrato?.contrato.ehFrota ? 'row wrap' : 'row'" fxLayoutGap="40px" class="mt-2">
+        <div [fxFlex]="contrato?.contrato.ehFrota ? 100 : 50" class="bloco-dados">
+            <mat-card class="centralize" *ngIf="!contrato?.contrato.ehFrota">
+                <h3 class="color-primary">Dados do veículo</h3>
+                <app-espelho-dados-veiculo></app-espelho-dados-veiculo>
+            </mat-card>
+            <mat-card class="centralize mb-2" *ngIf="contrato?.contrato.ehFrota">
+                <h3 class="color-primary">Dados dos veículos</h3>
+                <app-espelho-dados-veiculos-frota></app-espelho-dados-veiculos-frota>
+            </mat-card>
+        </div>
+
+        <div [fxFlex]="contrato?.contrato.ehFrota ? 100 : 50" class="mr-4 bloco-dados">
+            <mat-card class="centralize">
+                <h3 class="color-primary">Dados do contrato</h3>
+                <app-espelho-dados-contrato></app-espelho-dados-contrato>
+            </mat-card>
+        </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+        <div fxFlex="100" class="mr-4 bloco-dados dados-complementares">
+            <mat-card class="centralize">
+                <h3 class="color-primary">Dados complementares do contrato</h3>
+                <app-espelho-dados-complementar></app-espelho-dados-complementar>
+            </mat-card>
+        </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+        <div fxFlex="50" class="bloco-dados">
+            <mat-card class="centralize">
+                <h3 class="color-primary">Dados do financiamento</h3>
+                <app-espelho-dados-financiamento></app-espelho-dados-financiamento>
+            </mat-card>
+        </div>
+
+        <div fxFlex="50" class="mr-4 bloco-dados">
+            <mat-card class="centralize">
+                <h3 class="color-primary">Para empresas administradores de consórcio</h3>
+                <app-espelho-dados-consorcio></app-espelho-dados-consorcio>
+            </mat-card>
+        </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+        <div fxFlex="50" class="bloco-dados">
+            <mat-card class="centralize">
+                <h3 class="color-primary">Dados do credor</h3>
+                <app-espelho-dados-credor></app-espelho-dados-credor>
+            </mat-card>
+        </div>
+
+        <div fxFlex="50" class="mr-4 bloco-dados">
+            <mat-card class="centralize">
+                <h3 class="color-primary">Dados do devedor</h3>
+                <app-espelho-dados-devedor></app-espelho-dados-devedor>
+            </mat-card>
+        </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutGap="40px" class="mt-2 dados-nsa">
+        <div fxFlex="50" class="mr-4" *ngIf="showTerceiroGarantidor()">
+            <mat-card class="centralize">
+                <h3 class="color-primary">Dados do terceiro garantidor</h3>
+                <app-espelho-dados-garantidor></app-espelho-dados-garantidor>
+            </mat-card>
+        </div>
+
+        <div fxFlex="50" class="bloco-dados last-row" [ngClass]="{ 'mr-4': showTerceiroGarantidor() }">
+            <mat-card class="centralize">
+                <div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+                    <div fxFlex="50">
+                        <p class="field-title">NSA</p>
+                        <p>{{ contrato?.contrato.numeroSequencial ?? '-' }}</p>
+                    </div>
+                    <div fxFlex="50">
+                        <p class="field-title">Protocolo</p>
+                        <p>{{ contrato?.contrato.protocolo ?? '-' }}</p>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+
+        <div fxFlex="50" class="mr-4" *ngIf="!showTerceiroGarantidor()"></div>
+    </div>
+</section>

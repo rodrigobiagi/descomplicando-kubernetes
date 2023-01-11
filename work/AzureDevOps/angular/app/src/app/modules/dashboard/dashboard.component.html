@@ -1,0 +1,65 @@
+<div class="dashboard-grid mb-1">
+  <section class="d-flex justify-content-between mt-2" fxLayout="row" fxLayoutGap="40px">
+    <div class="big-block" >
+
+      <div class="resume-chart">
+        <app-registros-resumo [resumoFiltroValue]="filtroGrafico"
+          (periodoChanged)="filtroPeriodoChanged($event)"></app-registros-resumo>
+      </div>
+
+      <app-botoes-filtro-resumo (filtroChanged)="filtroGraficoChanged($event)"
+        [periodo]="filtroPeriodo"></app-botoes-filtro-resumo>
+
+    </div>
+
+    <div class="block" >
+      <div class="shortcut d-flex justify-content-between">
+        <div class="shortcut-option" (click)="onClickAtalho('registrar-contrato')">
+          <mat-card class="d-flex justify-content-center align-items-center h-100 p-0 text-center">
+            <app-atalhos [icon]="'fa-regular fa-file-circle-plus'" [title]="'Registrar contrato'"></app-atalhos>
+          </mat-card>
+        </div>
+        <div class="shortcut-option" (click)="onClickAtalho('enviar-lote')">
+          <mat-card class="d-flex justify-content-center align-items-center h-100 p-0 text-center">
+            <app-atalhos [icon]="'fa-regular fa-folder-arrow-up'" [title]="'Enviar lotes'"></app-atalhos>
+          </mat-card>
+        </div>
+        <div class="shortcut-option" (click)="onClickAtalho('consultar-contrato')">
+          <mat-card class="d-flex justify-content-center align-items-center h-100 p-0 text-center">
+            <app-atalhos [icon]="'fa-regular fa-file-magnifying-glass'" [title]="'Consultar contrato'"></app-atalhos>
+          </mat-card>
+        </div>
+      </div>
+
+      <div class="help-block mt-2">
+        <app-central-ajuda></app-central-ajuda>
+      </div>
+    </div>
+  </section>
+
+  <section class="d-flex justify-content-between mt-2" fxLayout="row" fxLayoutGap="40px">
+    <div class="block" fxFlex>
+      <app-bubble-chart></app-bubble-chart>
+    </div>
+
+    <div class="block" fxFlex>
+      <app-registros-tipo-operacao></app-registros-tipo-operacao>
+    </div>
+
+    <div class="block" fxFlex>
+      <app-atividades-recentes></app-atividades-recentes>
+    </div>
+
+  </section>
+
+  <section class="d-flex justify-content-between mt-2" fxLayout="row" fxLayoutGap="40px">
+    <div class="bottom-block big">
+      <app-banner-comunicacao [slides]="bannerSlides"></app-banner-comunicacao>
+    </div>
+
+    <div class="bottom-block">
+      <app-bloco-notificacoes></app-bloco-notificacoes>
+    </div>
+  </section>
+
+</div>

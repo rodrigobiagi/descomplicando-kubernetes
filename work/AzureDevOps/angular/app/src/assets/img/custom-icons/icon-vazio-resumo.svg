@@ -1,0 +1,24 @@
+<svg width="150" height="94" viewBox="0 0 150 94" fill="none" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="74" cy="81" rx="57" ry="13" fill="#DFEEFC"/>
+<path opacity="0.5" d="M44 66H73" stroke="#5B94C7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="25.5" cy="66.5" r="4.5" fill="#DFEEFC"/>
+<circle cx="21.5" cy="21.5" r="4.5" fill="#DFEEFC"/>
+<circle cx="128.5" cy="13.5" r="4.5" fill="#DFEEFC"/>
+<circle cx="145.5" cy="72.5" r="3" stroke="#CEE8FF" stroke-width="3"/>
+<circle cx="73.5" cy="4.5" r="3" stroke="#CEE8FF" stroke-width="3"/>
+<circle cx="4.5" cy="47.5" r="3" stroke="#CEE8FF" stroke-width="3"/>
+<circle cx="131.5" cy="37.5" r="4.5" fill="#DFEEFC"/>
+<rect x="34.5" y="18.5" width="82" height="62" rx="3.5" fill="white" stroke="#5B94C7" stroke-width="3"/>
+<path opacity="0.5" d="M43 73H93" stroke="#5B94C7" stroke-width="4" stroke-linecap="round"/>
+<path opacity="0.5" d="M43 66H77" stroke="#5B94C7" stroke-width="4" stroke-linecap="round"/>
+<path d="M38 18.5H113C114.933 18.5 116.5 20.067 116.5 22V33.5H34.5V22C34.5 20.067 36.067 18.5 38 18.5Z" fill="#CEE8FF" stroke="#5B94C7" stroke-width="3"/>
+<rect x="40" y="24" width="4" height="4" rx="1" fill="#5B94C7"/>
+<rect x="46" y="24" width="4" height="4" rx="1" fill="#5B94C7"/>
+<rect x="52" y="24" width="4" height="4" rx="1" fill="#5B94C7"/>
+<path d="M45 58.3759L50.9573 54.0352C51.3115 53.7771 51.7925 53.7797 52.1438 54.0416L54.1419 55.5311C54.4875 55.7887 54.9592 55.796 55.3125 55.549L62.1908 50.7416C62.543 50.4954 63.0131 50.5018 63.3585 50.7574L67.3647 53.722C67.742 54.0012 68.2626 53.9804 68.6165 53.672L79.4291 44.2499" stroke="#5B94C7" stroke-width="3" stroke-linecap="round"/>
+<rect x="88.5" y="27.5" width="45" height="30" rx="3.5" fill="white" stroke="#5B94C7" stroke-width="3"/>
+<rect opacity="0.5" x="94" y="45" width="6" height="7" rx="2" fill="#5B94C7"/>
+<rect opacity="0.5" x="103" y="41" width="6" height="11" rx="2" fill="#5B94C7"/>
+<rect opacity="0.5" x="112" y="37" width="6" height="15" rx="2" fill="#5B94C7"/>
+<rect opacity="0.5" x="121" y="33" width="6" height="19" rx="2" fill="#5B94C7"/>
+</svg>

@@ -1,0 +1,125 @@
+@import '$settings';
+@import '$tools';
+
+.headline {
+  @include fontMontserratBold;
+  font-size: 16px;
+  color: $gray-800;
+  margin: 0;
+}
+
+.painel-resumo-contrato {
+    width: 76%;
+}
+
+.controlador-accordion {
+  margin: 1% 12% !important;
+  align-items: center !important;
+}
+
+.controlador-accordion-texto {
+  @include fontMontserratBold;
+    font-size: 14px;
+    color: $blue-600;
+    text-decoration: none
+}
+
+.titulo-revisao {
+  @include fontMontserratBold;
+  color: $gray-800;
+  font-size: 14px;
+  align-items: center;
+}
+
+.link-editar-resumo {
+    padding-right: 26px;
+    font-size: 22px;
+    color: #787779;
+}
+
+.error-cell {
+    outline-style: solid;
+    outline-color: $red-error;
+    outline-width: 2px;
+}
+
+#header-label {
+    width: 250px;
+}
+
+#header-error {
+    width: 150px;
+}
+
+.centralize-item {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.resumo-descricao {
+    width: 100%;
+}
+
+.resumo-descricao tr {
+    line-height: 30px;
+}
+
+.resumo-descricao td {
+  @include border-radius(10px);
+    @include fontFieldworkLight;
+    padding: 5px;
+    font-size: 14px;
+    background: $gray-200;
+}
+
+.resumo-inconsistencia {
+    @include border-radius(5px);
+    background-color: #f7e995;
+    margin: 0 40px 0 40px;
+    padding: 8px 22px 8px 22px;
+    color: $blue-dark;
+}
+
+.resumo-inconsistencia h3 {
+    @include fontFieldworkThin;
+    font-size: 16px;
+}
+
+.revisar-inconsistencia {
+    margin-top: 2px;
+    margin-right: 1rem;
+    color: $yellow-warning;
+}
+
+.header-warning {
+    background: #f6a6092e !important;
+}
+
+.veiculos-adicionados {
+  @include fontMontserratBold;
+  background: $blue-700;
+  color: $white;
+  padding: 9px 16px;
+  height: 33px;
+  border-radius: 30px;
+  margin-top: 13px;
+  border: none;
+  font-size: 14px;
+}
+
+.link-editar-resumo {
+  @include fontMontserratBold;
+  @include border-radius(5px);
+  cursor: pointer;
+  text-decoration: none;
+  color: #70B2E7;
+  background: #E0EFFF;
+  border: 2px solid #70B2E7;
+  padding: 5px;
+  font-size: 14px;
+  margin-right: 2rem;
+  width: 95px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}

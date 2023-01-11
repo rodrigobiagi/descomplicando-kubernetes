@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-fix-wkr-processador-ba
+  namespace: #{namespace}#
+spec:
+  replicas: #{replicas}#
+  selector:
+    matchLabels:
+      app: fix-wkr-processador-ba
+  template:
+    metadata:
+      labels:
+        app: fix-wkr-processador-ba
+    spec:
+      containers:
+      - name:  fix-wkr-processador-ba-container
+        image: #{image}#:#{imageName}#
+        resources: 
+          requests:
+            cpu: #{cpu}#
+            memory: #{memory}#
+          limits:
+            cpu: #{cpu-limits}#
+            memory: #{memory-limits}#
+        env:
+        - name: TZ
+          value: America/Sao_Paulo
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config-appsettings
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+      volumes:
+        - name: config-appsettings
+          configMap:
+            name: wkr-processador-ba-appsettings
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-fix-wkr-processador-ba
+  namespace: #{namespace}#
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: fix-wkr-processador-ba
+---
+apiVersion: v1
+data:
+  tls.crt: #{tlscert}#
+  tls.key: #{tlskey}#
+kind: Secret
+metadata:
+  name: tls-tecnobank
+  namespace: #{namespace}#
+type: kubernetes.io/tls
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-fix-wkr-processador-ba
+  namespace: #{namespace}#
+spec:
+  maxReplicas: #{max-replicas}#
+  minReplicas: #{min-replicas}#
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deploy-fix-wkr-processador-ba
+  targetCPUUtilizationPercentage: 80

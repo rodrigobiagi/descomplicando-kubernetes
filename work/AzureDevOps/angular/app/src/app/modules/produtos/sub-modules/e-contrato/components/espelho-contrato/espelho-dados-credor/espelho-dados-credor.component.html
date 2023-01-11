@@ -1,0 +1,54 @@
+<div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+    <div fxFlex="50">
+        <p class="field-title">Agente Financeiro</p>
+        <p>{{ contrato?.credor?.nomeAgenteFinanceiro ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">CNPJ</p>
+        <p>{{ credorDocumento }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Logradouro</p>
+        <p>{{ contrato?.credor?.endereco?.logradouro ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Número</p>
+        <p>{{ contrato?.credor?.endereco?.numero ?? '-' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Complemento</p>
+        <p>{{ (contrato?.credor?.endereco?.complemento == '' || contrato?.credor?.endereco?.complemento == null) ? '-' : contrato?.credor?.endereco?.complemento }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Bairro</p>
+        <p>{{ contrato?.credor?.endereco?.bairro ?? '-' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Município - UF</p>
+        <p>{{ contrato?.credor?.endereco?.municipio }} - {{ contrato?.credor?.endereco?.uf }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">CEP</p>
+        <p>{{ credorCep }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Telefone</p>
+        <p>({{ contrato?.credor?.contato?.ddd ?? '-' }}) {{ contrato?.credor?.contato?.telefone ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">E-Mail</p>
+        <p>{{ (contrato?.credor?.contato?.email == '' || contrato?.credor?.contato?.email == null) ? '-' : contrato?.credor?.contato?.email }}</p>
+    </div>
+</div>

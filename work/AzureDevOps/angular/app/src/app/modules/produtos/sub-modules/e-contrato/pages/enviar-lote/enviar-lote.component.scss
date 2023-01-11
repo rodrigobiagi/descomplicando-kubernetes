@@ -1,0 +1,77 @@
+@import '$settings';
+@import '$tools';
+
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.centralize {
+    margin-right: 40px;
+}
+
+.element__detail {
+  overflow: hidden;
+}
+
+.element__detail ul {
+  display: flex;
+  list-style: none;
+  justify-content: start;
+  padding: 0;
+}
+
+.element__detail__expand__buttons li {
+  margin-right: 15px;
+}
+
+.element__detail .element__detail__expand {
+  justify-content: space-between
+}
+
+.text-primary {
+  font-size: 12px;
+  font-weight: bold;
+  padding-right: 2rem;
+}
+
+.text-rows {
+  position: relative;
+}
+
+.text-rows .text-rows_arrow {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}
+
+.mat-cell {
+  font-size: 14px;
+}
+  
+.mat-toolbar-row {
+  justify-content: flex-end;
+}
+
+.btn-actions {
+  cursor: pointer;
+  color: rgba(0,0,0,.87);
+  line-height: 0;
+}
+
+.btn-actions:hover {
+  @include border-radius(25rem);
+  background: $white;
+  width: 25px;
+}

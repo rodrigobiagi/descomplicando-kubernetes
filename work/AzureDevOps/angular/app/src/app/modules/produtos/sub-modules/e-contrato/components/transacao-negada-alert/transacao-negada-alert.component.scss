@@ -1,0 +1,15 @@
+@import '$settings';
+@import '$tools';
+
+.content {
+  text-align: center;
+}
+
+.bold {
+  @include fontMontserratBold;
+}
+
+i {
+  color: $spotlight-500;
+  font-size: 3em;
+}

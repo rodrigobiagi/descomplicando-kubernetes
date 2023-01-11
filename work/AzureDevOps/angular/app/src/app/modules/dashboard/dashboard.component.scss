@@ -1,0 +1,62 @@
+@import '$settings';
+@import '$tools';
+
+.bold {
+  @include fontMontserratBold;
+}
+
+.block {
+  width: 32%;
+  height: 472px;
+  align-self: start;
+}
+
+.big-block {
+  width: 66.8%;
+  height: 472px;
+}
+
+.resume-chart {
+  height: 338px;
+}
+
+.resume-btn {
+  height: 114px;
+}
+
+.block,
+.resume-option {
+  width: 32%;
+}
+
+.shortcut-option {
+  width: 30%;
+
+  mat-card {
+    cursor: pointer;
+  }
+}
+
+.shortcut {
+  height: 139px;
+}
+
+.help-block {
+  height: 314px;
+}
+
+.help-block {
+  @include border-radius(10px);
+  background: linear-gradient(90deg, #69B5E0 0%, #056AB0 81.81%);
+}
+
+.bottom-block {
+  height: 192px;
+  align-self: start;
+  width: 32%;
+}
+
+.big {
+  width: 66.8%;
+}
+

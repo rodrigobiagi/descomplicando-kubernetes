@@ -1,0 +1,553 @@
+// Components
+@import '$settings';
+@import '$tools';
+
+//#region Títulos
+.title {
+  @include fontFieldworkBold;
+  border: 0;
+  color: $blue-dark;
+  font-size: 28px;
+}
+
+.page-title {
+  @include fontMontserratBold();
+  font-size: 23px;
+  color: $primary;
+  padding-left: 24px;
+  margin-bottom: 0px;
+}
+
+.text-primary {
+  color: $blue-dark;
+  font-size: 16px;
+}
+
+.text-secondary {
+  color: $gray-400;
+}
+
+.text-gray-800 {
+  color: $gray-800;
+}
+
+.description-primary {
+  @include fontFieldworkThin;
+  font-size: 16px;
+  color: $gray-dark;
+}
+
+.color-primary {
+  color: $blue-dark;
+}
+
+.label {
+  @include fontFieldworkLight;
+  color: $blue-dark;
+}
+
+//#endregion
+
+//#region Button
+.btn {
+  color: $white;
+  font-size: 16px !important;
+
+  &:disabled {
+    background-color: #d1d2d5 !important;
+    color: $gray-dark !important;
+  }
+}
+
+.btn-primary {
+  background-color: $blue !important;
+  color: $white !important;
+}
+
+.btn-secondary {
+  background-color: $red-dark !important;
+}
+
+.btn-outline-primary {
+  border: 1px solid $blue !important;
+  color: $blue;
+}
+
+.btn-outline-secondary {
+  border: 2px solid $blue-800 !important;
+  color: $blue-800;
+}
+
+.btn-lg {
+  padding: 0 45px !important;
+  line-height: 50px !important;
+}
+
+.btn-md {
+  padding: 0 30px !important;
+  line-height: 40px !important;
+}
+
+button {
+  &.mat-secondary {
+    background-color: $blue-800;
+    color: $white;
+  }
+}
+
+
+.mat-flat-button.mat-primary,
+.mat-raised-button.mat-primary,
+.mat-fab.mat-primary,
+.mat-mini-fab.mat-primary {
+  background-color: $primary;
+}
+
+button.mat-primary-list {
+  background-color: $primary;
+  height: 24px;
+  line-height: normal;
+  color: $white;
+}
+
+//#endregion
+
+//#region Button Toggle
+.mat-button-toggle-group .mat-button-toggle:hover:not([disabled]),
+.mat-button-toggle-group .mat-button-toggle-checked {
+  color: $white !important;
+  background: $primary !important;
+}
+
+.produtos-registrar-contrato {
+  .mat-button-toggle-group .mat-button-toggle {
+    color: $gray-700;
+  }
+
+  .mat-button-toggle-group .mat-button-toggle:hover:not([disabled]),
+  .mat-button-toggle-group .mat-button-toggle-checked {
+    color: $white !important;
+    background: $blue-600 !important;
+    border-radius: 6px;
+  }
+
+  .mat-button-toggle-group {
+    gap: 5px;
+  }
+
+  .mat-button-toggle-group-appearance-standard {
+    border-radius: 0;
+    border: none;
+  }
+
+  .mat-button-toggle-button {
+    border: solid 1px #D0D3D6;
+    border-radius: 5px;
+  }
+
+  .mat-button-toggle-group-appearance-standard .mat-button-toggle+.mat-button-toggle {
+    border-left: none;
+  }
+
+  .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    @include fontMontserratBold;
+    font-size: 0.9em;
+    padding: 4px 12px;
+    min-width: 70px;
+  }
+}
+
+.resumo-filter .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 2.5 !important;
+  @include fontMontserratBold;
+}
+
+
+//#region Spinner
+.mat-progress-spinner circle,
+.mat-spinner circle {
+  stroke: #4071cb;
+}
+
+//#endregion
+
+//#region Mat Hint
+.mat-form-field-subscript-wrapper {
+  position: relative !important;
+}
+
+//#endregion
+
+//#region Table
+table {
+  width: 100%
+}
+
+.mat-header-row th,
+.mat-sort-header-content {
+  @include fontMontserratExtraBold;
+  background-color: $blue-300;
+  color: $gray-900;
+}
+
+.mat-sort-header-content {
+  text-align: left !important;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: $primary;
+}
+
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-checkbox:active:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-pseudo-checkbox-checked,
+.mat-pseudo-checkbox-indeterminate,
+.mat-accent .mat-pseudo-checkbox-checked,
+.mat-accent .mat-pseudo-checkbox-indeterminate {
+  background: $primary;
+}
+
+th.mat-header-cell {
+  border-color: $blue-300;
+}
+
+.actions-column {
+  width: 120px !important;
+}
+
+//#region Table
+
+//#region Mat Paginator
+section {
+  &.text-paginator {
+    position: absolute;
+    margin-left: 23px;
+    font-size: 12px;
+    color: $gray-600;
+    letter-spacing: 0.02em;
+
+    .default-text {
+      @include fontMontserratRegular;
+      font-weight: 600;
+      margin-top: 25px;
+    }
+
+    .select-options {
+      @include fontMontserratBold;
+      color: $primary;
+      align-items: end;
+
+      .btn-wrapper {
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.mat-paginator {
+  background: transparent;
+}
+
+//#endregion
+
+//#region Input
+.input-width-2 {
+  width: 250px;
+}
+
+.input-width-3 {
+  width: 350px;
+}
+
+.input-width-4 {
+  width: 400px;
+}
+
+.input-width-8 {
+  width: 850px;
+}
+
+.input-width-full {
+  width: 100%;
+}
+
+//#endregion
+
+//#region Dialog
+.dialog {
+  padding: 8px 26px 26px 26px;
+}
+
+.dialog-form-info {
+  .dialog {
+    padding: 0;
+
+    h2 {
+      margin: 0;
+    }
+  }
+}
+
+//#endregion
+
+//#region Paragrafos
+.field-title {
+  @include fontFieldworkLight;
+  color: #A0A0A0;
+}
+
+//#endregion
+
+//#region Impressao
+@media print {
+  body * {
+    visibility: hidden !important;
+    font-family: Helvetica, sans-serif;
+  }
+
+  .content {
+    margin-top: 0px !important;
+    margin-left: 0px !important;
+  }
+
+  .mt-2 {
+    margin-top: 0px !important;
+  }
+
+  @page {
+    margin: 17mm 0 15mm 0 !important;
+  }
+}
+
+//#endregion
+
+.usuario-email {
+  line-height: 33px !important;
+  align-items: unset !important;
+}
+
+.usuario-email>.mat-option-text span {
+  display: block;
+  line-height: 0px;
+  font-size: 12px;
+  color: $gray-700;
+}
+
+//#region Mat Card
+.mat-card {
+  @include border-radius(10px);
+  @include box-shadow();
+}
+
+//#endregion
+
+//#region Listagem veiculos
+
+.listar-veiculos {
+  width: 500px;
+}
+
+//#endregion
+
+button.bold {
+  span {
+    @include fontMontserratBold;
+  }
+
+  &.font-14 {
+    span {
+      font-size: 14px
+    }
+  }
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle,
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
+.mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
+  background-color: $primary;
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: $primary;
+}
+
+.mat-progress-bar {
+  @include border-radius(5px);
+  height: 9px !important;
+}
+
+.mat-progress-bar-fill::after {
+  @include border-radius(5px);
+  background-color: $primary;
+}
+
+.mat-progress-bar-buffer {
+  @include border-radius(5px);
+  background-color: $gray-500;
+}
+
+/*-Carrossel Dashboard-*/
+
+.bottom-block {
+  .carousel {
+    @include border-radius(10px);
+    height: 192px !important;
+  }
+
+  .carousel-slide {
+    background-position: inherit !important;
+  }
+
+  .carousel-indicators {
+    left: 94% !important;
+    bottom: 35px !important;
+
+    button {
+      margin: 3px !important;
+
+      &.mat-mini-fab.mat-accent {
+        background-color: $gray-400 !important;
+        opacity: .3 !important;
+      }
+
+      &.mat-mini-fab.mat-button-disabled.mat-button-disabled {
+        background-color: $gray-400 !important;
+        opacity: 1 !important;
+      }
+    }
+  }
+}
+
+/*-Carrossel Dashboard-*/
+
+/*-Carrossel Form Info-*/
+
+.form-info {
+  .carousel {
+    height: 282px !important;
+  }
+
+  .carousel-indicators {
+    bottom: 0 !important;
+
+    button {
+      margin: 3px !important;
+
+      &.mat-mini-fab.mat-accent {
+        background-color: $gray-400 !important;
+        box-shadow: none;
+      }
+
+      &.mat-mini-fab.mat-button-disabled.mat-button-disabled {
+        background-color: $blue-600 !important;
+      }
+    }
+  }
+}
+
+/*-Carrossel Form Info-*/
+
+/*-Mat form field-*/
+
+.mat-form-field-appearance-outline.mat-form-field-disabled .mat-form-field-outline {
+  @include border-radius(5px);
+  background: rgb(170 170 170 / 10%);
+}
+
+.mat-form-field-subscript-wrapper {
+  margin-top: 0;
+  padding-left: .2em !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-wrapper {
+  margin: 0;
+}
+
+.mat-hint {
+  color: $gray-500;
+}
+
+/*-Mat form field-*/
+
+/*-Mat accordion-*/
+
+.revisao-registro {
+  .mat-expansion-indicator {
+    @include border-radius(100%);
+    background: $blue-600;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 3px;
+
+    &:after {
+      color: $white;
+    }
+  }
+
+  .mat-accordion .mat-expansion-panel:first-of-type {
+    border-top-right-radius: 5px !important;
+    border-top-left-radius: 5px !important;
+  }
+
+  .mat-expansion-panel:not([class*=mat-elevation-z]) {
+    @include border-radius(5px);
+    box-shadow: none !important;
+    border: 1px solid $gray-400;
+  }
+
+  .mat-expansion-panel {
+    margin-bottom: 1.2rem !important;
+  }
+
+  .mat-expansion-panel-header {
+    height: 70px !important;
+  }
+
+  .header-warning {
+    border: 1px solid $warning-900 !important;
+  }
+}
+
+/*-Mat accordion-*/
+
+.pulse {
+  background-color: $gray-400;
+  display: inline-block;
+  height: 36px;
+  overflow: hidden;
+  position: relative;
+  width: 150px;
+
+  &::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(90deg,
+        rgba(#fff, 0) 0,
+        rgba(#fff, 0.2) 20%,
+        rgba(#fff, 0.5) 60%,
+        rgba(#fff, 0));
+    animation: shimmer 2s infinite;
+    content: '';
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}

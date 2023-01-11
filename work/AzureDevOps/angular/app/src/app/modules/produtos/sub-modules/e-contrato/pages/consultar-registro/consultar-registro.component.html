@@ -1,0 +1,355 @@
+<section class="box__consulta" [hidden]="childstate">
+
+  <div class="default-tab pb-3">
+    <form [formGroup]="boxFiltro">
+      <app-grid-filter [filter]="filter" (pesquisar)="search($event)" (customControls)="setCustomControls($event)"
+        (redefinir)="redefinirConsultaOperacoes()" [triggerShowMore]="requiredFieldsError"
+        [showRedefinir]="showRedefinirButton">
+
+        <section class="first-row d-flex" fxLayout.sm="column">
+
+          <!--Por empresa-->
+          <app-filter-field [field]="fieldEmpresa" [control]="empresaControl" (selectAll)="selectAll($event)"
+            [searchControl]="empresaSearchControl" (searchInput)="searchFilter($event)"
+            [redefinirField]="redefinirField">
+          </app-filter-field>
+
+          <!--Por operacao-->
+          <app-filter-field [field]="fieldOperacao" [control]="operacaoControl">
+          </app-filter-field>
+
+          <!--Por status-->
+          <app-filter-field [field]="fieldStatus" [control]="statusControl">
+          </app-filter-field>
+        </section>
+
+        <!--Por UF-->
+        <app-filter-field [field]="fieldUf" [control]="ufControl">
+        </app-filter-field>
+
+        <section class="second-row d-flex" fxLayout.sm="column">
+
+          <!--Por periodo-->
+          <button mat-stroked-button [matMenuTriggerFor]="menuRadio" class="filter-button mt-2"
+            [id]="getElementId(2, 'filter', fieldPeriodo.id)" type="button"
+            [ngClass]="{  'filter-active':  (periodoControl.value || dataInicialControl.value || dataFinalControl.value) && (!dataInicialControl.invalid && !dataFinalControl.invalid), 'filter-error': (requiredFieldsError || dataInicialControl.invalid || dataFinalControl.invalid) }"
+            fxFlex>
+            <span class="filter-title">{{ fieldPeriodo.titulo }}</span>
+            <i class="fal fa-chevron-down  mr-1"></i>
+          </button>
+          <mat-menu #menuRadio="matMenu" class="mat-elevation-z8 filter">
+            <div class="filter-search" (click)="stopPropagation($event)">
+              <div class="filter-header d-flex justify-content-between pl-2 b-divider">
+                <span> Por período</span>
+                <button [id]="getElementId(2, 'filter-clean', fieldPeriodo.id)" mat-button color="primary"
+                  class="btn-redefinir" (click)="redefinir(periodoControl, fieldPeriodo)">Limpar</button>
+              </div>
+
+              <section class="filter-options  py-1 px-2">
+                <mat-radio-group [formControl]="periodoControl" [id]="getElementId(3, 'filter', fieldPeriodo.id)">
+                  <mat-radio-button *ngFor="let option of fieldPeriodo.options" [value]="option.value" class="mb-1"
+                    (change)="cleanDates()">
+                    {{ option.label }}</mat-radio-button>
+                </mat-radio-group>
+
+                <div class="row pt-1" fxLayoutGap="10">
+                  <mat-form-field appearance="outline" fxFlex="50" class="mat-field-small mr-1">
+                    <mat-label>DE</mat-label>
+                    <input [id]="getElementId(6, 'filter-de', fieldPeriodo.id)" [formControl]="dataInicialControl"
+                      matInput placeholder="dd/mm/aaaa" (dateChange)="onChangePeriodo($event.target.value, true)"
+                      [max]="maxDate" [matDatepicker]="de" (click)="de.open()" 
+                      maxlength="10" [required]="dataFinalControl.value != null && dataFinalControl.value != ''">
+                    <mat-datepicker-toggle matSuffix [for]="de" hidden>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #de></mat-datepicker>
+                    <mat-hint class="text-danger bold" *ngIf="dataInicialControl.hasError('required')">
+                      Campo obrigatório </mat-hint>
+                    <mat-hint class="text-danger bold" *ngIf="dataInicialControl.hasError('matDatepickerMax')">
+                      Data inicial não pode ser maior que hoje
+                    </mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" fxFlex="50" class="mat-field-small">
+                    <mat-label>ATÉ</mat-label>
+                    <input [id]="getElementId(6, 'filter-ate', fieldPeriodo.id)" [formControl]="dataFinalControl"
+                      matInput placeholder="dd/mm/aaaa" (dateChange)="onChangePeriodo($event.target.value, false)"
+                      [min]="minDate" [matDatepicker]="ate" (click)="ate.open()" maxlength="10"
+                      [required]="dataInicialControl.value != null && dataInicialControl.value != ''">
+                    <mat-datepicker-toggle matSuffix [for]="ate" hidden>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #ate></mat-datepicker>
+                    <mat-error class="text-danger bold"
+                      *ngIf="erroDataFinal || dataFinalControl.hasError('matDatepickerMin')">
+                      Data final deve ser maior que a data inicial </mat-error>
+                    <mat-hint class="text-danger bold" *ngIf="dataFinalControl.hasError('required')">
+                      Campo obrigatório
+                    </mat-hint>
+                    <mat-hint class="text-danger bold" *ngIf="dataFinalControl.hasError('matDatepickerMax')">
+                      Data final não pode ser maior que hoje
+                    </mat-hint>
+                  </mat-form-field>
+                </div>
+              </section>
+            </div>
+          </mat-menu>
+
+          <!--Outras opcoes-->
+          <section>
+            <button mat-stroked-button [matMenuTriggerFor]="menuOpcoes" class="filter-button mt-2"
+              [id]="getElementId(2, 'filter', fieldOpcoes.id)" type="button"
+              [ngClass]="{  'filter-active':  (opcoesControl.value), 'filter-error': (requiredFieldsError || opcoesControl.invalid || boxFiltro.get('inputChave').invalid) }"
+              fxFlex>
+              <span class="filter-title">{{ fieldOpcoes.titulo }}</span>
+              <i class="fal fa-chevron-down  mr-1"></i>
+            </button>
+            <mat-menu #menuOpcoes="matMenu" class="mat-elevation-z8 filter">
+              <div class="filter-search" (click)="stopPropagation($event)">
+                <div class="filter-header d-flex justify-content-between pl-2 b-divider">
+                  <span> {{ fieldOpcoes.titulo }}</span>
+                  <button [id]="getElementId(2, 'filter-clean', fieldOpcoes.id)" mat-button color="primary"
+                    class="btn-redefinir" (click)="redefinir(opcoesControl, fieldOpcoes)">Limpar</button>
+                </div>
+
+                <section class="filter-options  py-1 px-2">
+                  <div class="row" fxLayoutGap="10">
+                    <mat-form-field appearance="outline" fxFlex="auto">
+                      <mat-label>Escolha uma chave</mat-label>
+                      <mat-select [id]="getElementId(5, 'filter', 'chave')" [formControl]="opcoesControl"
+                        (selectionChange)="selecionarChave($event)">
+                        <mat-option>Selecione</mat-option>
+                        <mat-option *ngFor="let chave of chavesPesquisa" [value]="chave?.id">
+                          {{chave?.valor}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="row" fxLayoutGap="10">
+                    <mat-form-field appearance="outline" fxFlex="auto">
+                      <mat-label>Chave</mat-label>
+                      <input [id]="getElementId(0, 'filter', 'chave')" formControlName="inputChave" matInput
+                        placeholder="Digite a chave" [mask]="masks" [attributes]="attributes"
+                        [required]="opcoesControl.value != null">
+                      <mat-hint class="text-danger bold" *ngIf="boxFiltro.get('inputChave').hasError('required')">
+                        Campo obrigatório
+                      </mat-hint>
+                      <mat-hint class="text-danger bold" *ngIf="boxFiltro.get('inputChave').hasError('maxlength')">
+                        Digite no máximo {{ attributes.maxlength }} caracteres
+                      </mat-hint>
+                    </mat-form-field>
+                  </div>
+                </section>
+              </div>
+            </mat-menu>
+          </section>
+
+        </section>
+
+      </app-grid-filter>
+    </form>
+
+  </div>
+
+  <mat-card class="centralize">
+    <div class="loading-shade" *ngIf="loading$ | async as loading">
+      <mat-spinner *ngIf="loading"></mat-spinner>
+      <div class="error"></div>
+    </div>
+    <table mat-table multiTemplateDataRows aria-describedby="lista-registros" [dataSource]="items$ | async">
+      <ng-container matColumnDef="semRegistro">
+        <th class="text-center feedBack" mat-cell *matFooterCellDef colspan="11">
+          <mat-icon class="feedBack__icon">report</mat-icon>
+          <p class="feedBack__text">
+            Não há registros!
+          </p>
+        </th>
+      </ng-container>
+      <ng-container matColumnDef="{{ column }}" *ngFor="let column of columnsToDisplay">
+        <th mat-header-cell *matHeaderCellDef class="text-primary">
+          {{ column }}
+        </th>
+        <td mat-cell class="text-rows" *matCellDef="let element">
+          <ng-container [ngSwitch]="column">
+            <ng-container *ngSwitchCase="'Empresa'">
+              {{ element.empresa }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Data / Hora'">
+              {{ element.criadoEm | date:'d/MM/yyyy h:mm a' }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'UF'">
+              {{ element.uf }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Chassi'">
+              {{ element.ehFrota ? '-' : element.chassi }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'N° Contrato'">
+              <span class="icon-contrato icon-frota" *ngIf="element.ehFrota">F</span>
+              <span class="icon-contrato icon-cancelado" *ngIf="element.baixadoCancelado == 'C'" matTooltip="Cancelado">C</span>
+              <span class="icon-contrato icon-baixado" *ngIf="element.baixadoCancelado == 'B'" matTooltip="Baixado">B</span>
+              {{ element.numeroContrato }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Status'">
+              {{ element.statusTransacao }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Imagem'">
+              <div *ngIf="element.iconeStatusImagem == 1" class="success">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div *ngIf="element.iconeStatusImagem == 0" class="warning">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <div *ngIf="element.iconeStatusImagem == 2" class="text-secondary">
+                <i class="fa-solid fa-ban "></i>
+              </div>
+              <mat-icon class="text-rows_arrow">
+                {{ expandedElement !== element ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
+              </mat-icon>
+            </ng-container>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+          <section class="element__detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+            <ul class="element__detail__expand__buttons">
+              <li>
+                <button mat-raised-button class="btn" (click)="carregarEspelhoContrato(element)">
+                  <mat-icon aria-hidden="false" aria-label="Espelho">insert_drive_file</mat-icon>
+                  Espelho
+                </button>
+              </li>
+              <!-- Skeleton loading para 2 botões -->
+              <li *skeleton="
+									isLoading;
+									className: 'mr-1';
+									repeat: 2;
+									height: '36px';
+									width: '180px';
+								"></li>
+              <li *ngIf="transacaoDetalhes.codigoRetorno == 30">
+                <button mat-raised-button class="btn" (click)="onClickImagem()">
+                  <mat-icon aria-hidden="false" aria-label="Imagem">add_photo_alternate</mat-icon>
+                  Imagem
+                </button>
+              </li>
+              <li *ngIf="transacaoDetalhes.existeInconsistencia">
+                <button mat-raised-button class="btn btn_warning" (click)="onClickVisualizarInconsistencias(element)">
+                  <mat-icon aria-hidden="false" aria-label="Verificar inconsistência">error</mat-icon>
+                  Verificar inconsistência
+                </button>
+              </li>
+
+              <!-- BOTAO BAIXAR CONTRATO -->
+              <li *ngIf="element.uf == 'BA' && transacaoDetalhes.ultimoProtocolo">
+                <button mat-raised-button class="btn btn_error" *ngIf="enableButton(transacaoDetalhes, 'baixa')" [disabled]="!liberaBaixar"
+                  (click)="openDialog('baixar', element)">
+                  Baixar contrato
+                </button>
+
+                <button mat-raised-button class="btn btn_error" *ngIf="enableButton(transacaoDetalhes, 'acompanhamento-baixa')" [disabled]="!liberaBaixar"
+                  [matMenuTriggerFor]="baixarMenu">
+                  Baixar contrato &nbsp; <i class="fa-sharp fa-solid fa-chevron-down"></i>
+                </button>
+                <mat-menu #baixarMenu="matMenu">
+                  <button mat-menu-item (click)="consultarStatus('baixar', element, transacaoDetalhes)">Acompanhar solicitação</button>
+                </mat-menu>
+              </li>
+
+              <!-- BOTAO CANCELAR CONTRATO -->
+              <li *ngIf="element.uf == 'BA' && transacaoDetalhes.ultimoProtocolo">
+                <button mat-raised-button class="btn btn_cancelar-contrato" *ngIf="enableButton(transacaoDetalhes, 'cancelamento')"
+                  [disabled]="!liberaCancelar" (click)="openDialog('cancelar', element)">
+                  Cancelar contrato
+                </button>
+
+                <button mat-raised-button class="btn btn_cancelar-contrato" *ngIf="enableButton(transacaoDetalhes, 'acompanhamento-cancelamento')"
+                  [disabled]="!liberaCancelar" [matMenuTriggerFor]="cancelarMenu">
+                  Cancelar contrato &nbsp; <i class="fa-sharp fa-solid fa-chevron-down"></i>
+                </button>
+                <mat-menu #cancelarMenu="matMenu">
+                  <button mat-menu-item (click)="consultarStatus('cancelar', element, transacaoDetalhes)">Acompanhar solicitação</button>
+                </mat-menu>
+              </li>
+            </ul>
+
+            <section class="details">
+              <table class="data-detail">
+                <tr>
+                  <td>
+                    <h3 class="detail-title contrato">Dados do Contrato</h3>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td colspan="2"><span class="data-title">Usuário:</span>&nbsp; <span>{{
+                      transacaoDetalhes.nomeUsuario }}</span>
+                  </td>
+                  <td><span class="data-title">CNPJ:</span>&nbsp; <span>{{ transacaoDetalhes.documento
+                      }}</span></td>
+                  <td><span class="data-title">Tipo Restrição:</span>&nbsp; <span>{{
+                      transacaoDetalhes.tipoRestricaoDescricao }}</span></td>
+                </tr>
+                <tr>
+                  <td *ngIf="element.ehFrota" [attr.colspan]="element.ehFrota ? 2 : 1"><span class="data-title">Quant.
+                      de veículos:</span>&nbsp; <span>
+                      {{transacaoDetalhes.quantidadeVeiculos}}
+                    </span></td>
+                  <td *ngIf="!element.ehFrota"><span class="data-title">Renavam:</span>&nbsp; <span>{{
+                      transacaoDetalhes.renavam == "" ? '-' : transacaoDetalhes.renavam
+                      }}</span></td>
+                  <td *ngIf="!element.ehFrota"><span class="data-title">Gravame:</span>&nbsp; <span>{{
+                      transacaoDetalhes.gravame
+                      }}</span></td>
+                  <td *ngIf="!element.ehFrota"><span class="data-title">Placa:</span>&nbsp; <span>{{
+                      transacaoDetalhes.placa ==
+                      "" ? '-' : transacaoDetalhes.placa?.toUpperCase()
+                      }}</span></td>
+                  <td><span class="data-title">Operação:</span>&nbsp; <span>{{ element.tipoOperacao
+                      }}</span>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="data-detail processamento">
+                <tr>
+                  <td>
+                    <h3 class="detail-title processamento">Dados de Processamento</h3>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td><span class="data-title">Código do Retorno:</span>&nbsp; <span>{{
+                      transacaoDetalhes.codigoRetorno?? '-' }}</span></td>
+                  <td colspan="3"><span class="data-title">Descrição do Retorno:</span>&nbsp; <span>{{
+                      transacaoDetalhes.descricaoRetorno?? '-' }}</span></td>
+                </tr>
+              </table>
+            </section>
+          </section>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" class="example-element-row"
+        [class.example-expanded-row]="expandedElement === element"
+        (click)="expandedElement = expandedElement === element ? null : element; expandDetail(element.protocolo, expandedElement === element)">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+      <tr mat-row *matFooterRowDef="['semRegistro']"
+        [ngClass]="{'d-none': !(totalRegistros == 0 || totalRegistros == undefined) }"></tr>
+    </table>
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <span class="flex-spacer"></span>
+        <mat-paginator [pageSizeOptions]="[25, 50, 75, 100]" [length]="totalRegistros"></mat-paginator>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  </mat-card>
+</section>
+
+<router-outlet></router-outlet>

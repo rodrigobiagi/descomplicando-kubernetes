@@ -1,0 +1,28 @@
+@import '$settings';
+@import '$tools';
+
+p {
+    color: $blue-dark;
+    margin: 7px 0;
+}
+
+p.field-title {
+    color: #A0A0A0;
+    @include fontFieldworkLight;
+}
+
+div {
+    word-wrap: break-word;
+}
+
+@media print {
+    *{
+        visibility: visible !important;
+        font-family: Helvetica, sans-serif;
+    }
+
+    p {
+
+        font-size: 8pt !important;
+    }
+}

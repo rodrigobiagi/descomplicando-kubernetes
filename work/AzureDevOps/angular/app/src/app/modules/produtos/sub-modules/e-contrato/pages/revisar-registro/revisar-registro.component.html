@@ -1,0 +1,97 @@
+<div fxLayout="column" fxLayoutWrap>
+  <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="space-between" class="mt-1">
+    <h6 class="headline">Revisão</h6>
+    <a [id]="getElementId(8, 'revisar-expandir')" (click)="accordion.openAll()" *ngIf="!panelOpenState">
+      <span class="controlador-accordion-texto">Expandir todos</span>
+    </a>
+    <a [id]="getElementId(8, 'revisar-recolher')" (click)="accordion.closeAll()" *ngIf="panelOpenState">
+      <span class="controlador-accordion-texto">Recolher todos</span>
+    </a>
+  </div>
+  <div class="revisao-registro mt-1" fxFlex="auto">
+    <mat-accordion class="painel-resumo-contrato" #accordion="matAccordion" multi="true">
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header [id]="getElementId(9, 'revisar-veiculo')">
+          <a [id]="getElementId(8, 'revisar-editar-veiculo')" class="link-editar-resumo" (click)="onEditarEtapa(0)">
+            <i class="fa-regular fa-pen"></i> Editar
+          </a>
+          <mat-panel-title class="titulo-revisao">Dados do veículo
+            <label class="veiculos-adicionados mt-0 ml-1" *ngIf="qtdVeiculos > 1" type="button">{{ qtdVeiculos }}
+              veículo{{ qtdVeiculos > 1 ? 's' : '' }} adicionado{{ qtdVeiculos > 1 ? 's' : '' }}</label>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-revisao-rascunho-veiculo [identifier]="identifier" (qtdVeiculos)="setQuantidadeVeiculos($event)"
+            *ngIf="panelOpenState"></app-revisao-rascunho-veiculo>
+        </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header [id]="getElementId(9, 'revisar-contrato')">
+          <a [id]="getElementId(8, 'revisar-editar-contrato')" class="link-editar-resumo" (click)="onEditarEtapa(1)">
+            <i class="fa-regular fa-pen"></i> Editar
+          </a>
+          <mat-panel-title class="titulo-revisao">Dados do contrato</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-revisao-rascunho-contrato [identifier]="identifier"
+            *ngIf="panelOpenState"></app-revisao-rascunho-contrato>
+        </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header [id]="getElementId(9, 'revisar-complementar')">
+          <a [id]="getElementId(8, 'revisar-editar-complementar')" class="link-editar-resumo"
+            (click)="onEditarEtapa(1)">
+            <i class="fa-regular fa-pen"></i> Editar
+          </a>
+          <mat-panel-title class="titulo-revisao">Dados complementares</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-revisao-rascunho-complementar [identifier]="identifier" [uf]="uf"
+            *ngIf="panelOpenState"></app-revisao-rascunho-complementar>
+        </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header [id]="getElementId(9, 'revisar-financiamento')">
+          <a [id]="getElementId(8, 'revisar-editar-financiamento')" class="link-editar-resumo"
+            (click)="onEditarEtapa(2)">
+            <i class="fa-regular fa-pen"></i> Editar
+          </a>
+          <mat-panel-title class="titulo-revisao">Dados do financiamento</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-revisao-rascunho-financiamento [identifier]="identifier"
+            *ngIf="panelOpenState"></app-revisao-rascunho-financiamento>
+        </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header [id]="getElementId(9, 'revisar-credor')">
+          <a [id]="getElementId(8, 'revisar-editar-credor')" class="link-editar-resumo" (click)="onEditarEtapa(3)">
+            <i class="fa-regular fa-pen"></i> Editar
+          </a>
+          <mat-panel-title class="titulo-revisao">Dados do credor</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-revisao-rascunho-credor [identifier]="identifier" *ngIf="panelOpenState"></app-revisao-rascunho-credor>
+        </ng-template>
+      </mat-expansion-panel>
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header [id]="getElementId(9, 'revisar-devedor')">
+          <button [id]="getElementId(8, 'revisar-editar-devedor')" class="link-editar-resumo"
+            (click)="onEditarEtapa(4)">
+            <i class="fa-regular fa-pen"></i> Editar
+          </button>
+          <mat-panel-title class="titulo-revisao">Dados do devedor</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-revisao-rascunho-devedor [identifier]="identifier" *ngIf="panelOpenState"></app-revisao-rascunho-devedor>
+        </ng-template>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+  <div fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="center" *ngIf="habilitaBotao">
+    <button mat-raised-button (click)="enviarRegistro()" class="btn btn-primary bold"
+      [id]="getElementId(2, 'enviar-registro')">Enviar
+      registro</button>
+  </div>
+</div>

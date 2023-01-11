@@ -1,0 +1,774 @@
+trigger:
+
+  tags:
+    include:
+    - 'v*.*.00'
+
+  branches:
+    include:
+    - refs/heads/feature/*
+    - refs/heads/develop
+    - refs/heads/release
+#    - refs/tags/*
+
+    exclude:
+    - master
+    - fix-develop
+    - fix-release
+    
+  paths:
+    include:
+    - app
+
+pr:
+  - develop
+
+variables:
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') }}:
+    featBranchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/feature/', '') ]
+    namespace_temp: $[ replace(variables['Build.SourceBranch'], 'refs/heads/feature/', '') ]
+    namespace: 'comunicacao-venda-api-$(namespace_temp)'
+    imageName: '$(Build.BuildId)'
+    image: 'tbkacrdev250.azurecr.io/comunicacao-venda-api'
+    rota: 'comunicacao-venda-api-$(namespace_temp)'
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    namespace_temp: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/feature/', '') ]
+    namespace: 'comunicacao-venda-api-$(namespace_temp)'
+    image: 'tbkacrdev250.azurecr.io/comunicacao-venda-api'
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags') }}:
+    imageName: $[ replace(variables['Build.SourceBranch'], 'refs/tags/', '') ]
+    image: 'tbkacrprd001.azurecr.io/comunicacao-venda-api'
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    imageName: '$(Build.BuildId)'
+    image: 'tbkacrhml001.azurecr.io/comunicacao-venda-api'
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release') }}:
+    imageName: '$(Build.BuildId)'
+    image: 'tbkacrhml001.azurecr.io/comunicacao-venda-api'
+
+pool:
+  vmImage: ubuntu-latest
+#=====================================================================================================
+stages:
+- stage: 'CI'
+  displayName: 'App Build'
+  condition:  ne(variables['Build.Reason'], 'PullRequest')
+  jobs:
+  - job: "App_build" 
+    displayName: 'App Build'
+    steps:    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet clean'
+      inputs:
+        command: custom
+        projects: '**/ComunicacaoVenda.App.csproj'
+        custom: clean
+        workingDirectory: $(Build.SourcesDirectory)/app/
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: restore
+        projects: '**/ComunicacaoVenda.App.csproj'
+        restoreArguments: '--interactive'
+    #    nugetConfigPath: $(Build.SourcesDirectory)/app/nuget.config
+        workingDirectory: $(Build.SourcesDirectory)/app/
+
+    #- task: DotNetCoreCLI@2
+    #  displayName: 'dotnet restore'
+    #  inputs:
+    #    command: restore
+    #    projects: '**/*.sln'
+    #    restoreArguments: '--interactive'
+    #    feedsToUse: config
+    #    nugetConfigPath: $(Build.SourcesDirectory)/app/nuget.config
+    #    externalFeedCredentials: 'Feed-FrameworkPortal'
+    #    workingDirectory: $(Build.SourcesDirectory)/app/
+    #    feedRestore: d9077a02-57ae-48a2-ba8c-740d35c29b10/d61592b0-d08d-4a55-a692-295fac988013
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        projects: '**/ComunicacaoVenda.App.csproj'
+        arguments: '--configuration Release'
+        workingDirectory: $(Build.SourcesDirectory)/app/
+
+    #- task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+    #  displayName: 'Prepare analysis on SonarCloud'
+    #  inputs:
+    #    SonarCloud: SonarCloud
+    #    organization: 'tecnobanksa-interno'
+    #    scannerMode: CLI
+    #    configMode: manual
+    #    cliProjectKey: 'tecnobanksa-interno_backoffice-crm'
+    #    cliProjectName: 'backoffice-crm'
+
+    #- task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+    #  displayName: 'Run Code Analysis'
+
+    #- task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+    #  displayName: 'Publish Quality Gate Result'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet publish'
+      inputs:
+        command: publish
+        arguments: '--configuration Release --no-restore /property:PublishWithAspNetCoreTargetManifest=false'
+        zipAfterPublish: false
+        modifyOutputPath: false
+        workingDirectory: $(Build.SourcesDirectory)/app/
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: ls -R $(Build.SourcesDirectory)
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish files'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/infra/'
+        artifactName: kubernetes-files
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish files'
+      continueOnError: true
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/app/ComunicacaoVendaAPI/Teckey_KeyReport.Application/bin/Release/net6.0/publish'
+        artifactName: artifact-to-container
+#=====================================================================================================
+- stage: 'DockerBuildFeat'
+  displayName: 'Feature: Docker Build'
+  condition: and(succeeded(), ne(variables['featBranchName'], ''))
+  dependsOn: CI
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/ComunicacaoVendaAPI/Teckey_KeyReport.Application/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: rm -rf $(Pipeline.Workspace)/dockerapp/App_Data/dataSettings.json
+
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrdev250'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t $(image):$(imageName) .
+          docker image push $(image):$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+#=====================================================================================================
+- stage: 'Feature_Deploys'
+  displayName: 'Feature: Deploy AKS'
+  condition: and(succeeded(), ne(variables['featBranchName'], ''))
+  dependsOn: 'DockerBuildFeat'
+  variables:
+  - group: comunicacao-venda-api-feat
+  - group: DbCredentials
+  - group: cert
+  - group: resources-dev-tst-hml
+  jobs:
+  - deployment: 'deploy_feature'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: comunicacao-venda-api-feat
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis configmap"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)/configmap'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'create configmap'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              namespace: '$(namespace)'
+              command: 
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              configMapName: 'comunicacao-venda-api-appsettings'
+              forceUpdateConfigMap: true
+              useConfigMapFile: true
+              configMapFile: '$(Agent.BuildDirectory)/configmap/appsettings.json'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/dev-deployment.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+#=====================================================================================================
+- stage: 'Feature_Destroy'
+  displayName: 'Feature: Destroy Feature PR Develop'
+  condition: and (eq(variables['System.PullRequest.TargetBranch'], 'refs/heads/develop') , eq(variables['Build.Reason'], 'PullRequest'))
+  jobs:
+  - deployment: 'destroy_feature'
+    displayName: 'Destroy Feature PR Develop'
+    environment: comunicacao-venda-api-feat
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            continueOnError: true
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+              command: 'delete'
+              arguments: 'namespace $(namespace)'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          #- task: Bash@3
+          #  condition: failed() 
+          #  continueOnError: true
+          #  inputs:
+          #    targetType: 'inline'
+          #    script: 'kubectl delete namespace $(namespace)'
+#=====================================================================================================
+  - job: 
+    displayName: "Deploy DEV"
+    variables:
+    - group: comunicacao-venda-api-dev
+    - group: DbCredentials
+    - group: cert
+    - group: resources-dev-tst-hml
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'echo "##vso[task.setvariable variable=namespace]atpve-dev"'
+    
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'echo "##vso[task.setvariable variable=rota]cve-dev"'
+    
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Microsoft Azure (ee6fe381-276f-4841-a137-013a36a53279)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          env=$(az acr repository show-tags --name tbkacrdev250 --repository comunicacao-venda-api --top 1 --orderby time_desc)
+          env=$(echo $env |  sed "s/\]//g" | sed "s/\[//g" | sed "s/\"//g")
+          echo "##vso[task.setvariable variable=imageName]$env"
+
+    - task: replacetokens@3
+      displayName: "Substituir variaveis deployment e namespace"
+      inputs:
+        rootDirectory: '$(Build.SourcesDirectory)/infra'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: replacetokens@3
+      displayName: "Substituir variaveis configmap"
+      inputs:
+        rootDirectory: '$(Build.SourcesDirectory)/infra/configmap'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+
+    - task: Kubernetes@1
+      displayName: 'create configmap'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+        namespace: '$(namespace)'
+        command: 
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+        configMapName: 'comunicacao-venda-api-appsettings'
+        forceUpdateConfigMap: true
+        useConfigMapFile: true
+        configMapFile: '$(Build.SourcesDirectory)/infra/configmap/appsettings.json'
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Build.SourcesDirectory)/infra/namespace.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          cat $(Build.SourcesDirectory)/infra/dev-deployment.yaml | sed 's/-api: /-api:/' > $(Build.SourcesDirectory)/infra/deploy.yaml
+          cat $(Build.SourcesDirectory)/infra/deploy.yaml
+
+    - task: Kubernetes@1
+      displayName: 'apply deployment'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'tbk-aks-dev-250'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(Build.SourcesDirectory)/infra/deploy.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+#=====================================================================================================
+- stage: 'DockerBuild'
+  displayName: 'Develop/Release: Docker Build'
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), eq(variables['Build.SourceBranch'], 'refs/heads/release')))
+  dependsOn: CI
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/ComunicacaoVendaAPI/Teckey_KeyReport.Application/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: rm -rf $(Pipeline.Workspace)/dockerapp/App_Data/dataSettings.json
+
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrhml001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t $(image):$(imageName) .
+          docker image push $(image):$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+# Deploy Develop =============================================================================================
+- stage: 'Develop_Deploys'
+  displayName: 'Develop: Deploy AKS'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  dependsOn: 'DockerBuild'
+  variables:
+  - group: comunicacao-venda-api-tst
+  - group: DbCredentials
+  - group: cert
+  - group: resources-dev-tst-hml
+  jobs:
+  - deployment: 'deploy_feature'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: comunicacao-venda-api-tst
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis configmap"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)/configmap'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'create configmap'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              namespace: '$(namespace)'
+              command: 
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              configMapName: 'comunicacao-venda-api-appsettings'
+              forceUpdateConfigMap: true
+              useConfigMapFile: true
+              configMapFile: '$(Agent.BuildDirectory)/configmap/appsettings.json'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/deployment.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+#=====================================================================================================
+- stage: 'Release_Deploys'
+  displayName: 'Release: Deploy AKS'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/release'))
+  dependsOn: 'DockerBuild'
+  variables:
+  - group: comunicacao-venda-api-hml
+  - group: DbCredentials
+  - group: cert
+  - group: resources-dev-tst-hml
+  jobs:
+  - deployment: 'deploy_feature'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: comunicacao-venda-api-hml
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis configmap"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)/configmap'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'create configmap'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              namespace: '$(namespace)'
+              command: 
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              configMapName: 'comunicacao-venda-api-appsettings'
+              forceUpdateConfigMap: true
+              useConfigMapFile: true
+              configMapFile: '$(Agent.BuildDirectory)/configmap/appsettings.json'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-hml-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/deployment.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+#=====================================================================================================
+- stage: 'DockerBuildMaster'
+  displayName: 'Master: Docker Build'
+  condition:  and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+  dependsOn: CI
+  jobs:
+  - job: "Docker_build" 
+    displayName: 'Docker Build'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: | 
+          mkdir $(Pipeline.Workspace)/dockerapp
+          cp $(Pipeline.Workspace)/s/app/ComunicacaoVendaAPI/Teckey_KeyReport.Application/Dockerfile $(Pipeline.Workspace)/dockerapp
+      
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'artifact-to-container'
+        targetPath: '$(Pipeline.Workspace)/dockerapp'
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: rm -rf $(Pipeline.Workspace)/dockerapp/App_Data/dataSettings.json
+  
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrprd001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -t $(image):$(imageName) .
+          docker image push $(image):$(imageName)
+        workingDirectory: '$(Pipeline.Workspace)/dockerapp'
+#=====================================================================================================
+- stage: 'Master_Deploys'
+  displayName: 'Master: Deploy AKS'
+  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+  dependsOn: 'DockerBuildMaster'
+  variables:
+  - group: comunicacao-venda-api-prd
+  - group: DbCredentials
+  - group: cert
+  - group: resources-prd
+  jobs:
+  - deployment: 'deploy_feature'
+    displayName: 'Create Deployment Azure Kubernetes Service'
+    environment: comunicacao-venda-api-prd
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'kubernetes-files'
+              targetPath: '$(Pipeline.Workspace)'
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis deployment e namespace"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: replacetokens@3
+            displayName: "Substituir variaveis configmap"
+            inputs:
+              rootDirectory: '$(Agent.BuildDirectory)/configmap'
+              targetFiles: '*.*'
+              encoding: 'auto'
+              writeBOM: true
+              actionOnMissing: 'warn'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTransforms: false
+              enableTelemetry: true
+          
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/namespace.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+          - task: Kubernetes@1
+            displayName: 'create configmap'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              namespace: '$(namespace)'
+              command: 
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              configMapName: 'comunicacao-venda-api-appsettings'
+              forceUpdateConfigMap: true
+              useConfigMapFile: true
+              configMapFile: '$(Agent.BuildDirectory)/configmap/appsettings.json'
+
+          - task: Kubernetes@1
+            displayName: 'apply deployment'
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              command: 'apply'
+              useConfigurationFile: true
+              configuration: '$(Agent.BuildDirectory)/deployment.yaml'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+
+#=====================================================================================================
+- stage: 'Master_Rollback'
+  displayName: 'Master: Rollback'
+  condition: and(succeeded(), startsWith(variables['build.sourceBranch'], 'refs/tags/'))
+  jobs:
+  - deployment: 'master_rollback'
+    displayName: 'Rollback Deployment Azure Kubernetes Service'
+    timeoutInMinutes: 15
+    variables: 
+    - group: comunicacao-venda-api-prd
+    - group: DbCredentials
+    - group: cert
+    - group: resources-prd
+    environment: comunicacao-venda-api-rollback
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            name: rollback
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: 'tbk-aks-prd-250'
+              command: 'rollout'
+              arguments: 'undo deployment/deploy-comunicacao-venda-api'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Azure Container Registry'
+              namespace: atpve-prd
+#=====================================================================================================
+
+

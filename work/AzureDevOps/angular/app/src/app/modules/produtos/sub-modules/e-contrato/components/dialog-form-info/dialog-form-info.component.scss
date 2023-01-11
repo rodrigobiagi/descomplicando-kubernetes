@@ -1,0 +1,20 @@
+@import '$settings';
+@import '$tools';
+
+.form-info {
+  .img {
+    @include border-radius(10px);
+    background: $gray-200;
+    height: 142px;
+
+    img {
+      margin-left: 2rem;
+    }
+  }
+
+  h5,
+  p {
+    font-size: 14px;
+    color: $gray-800;
+  }
+}

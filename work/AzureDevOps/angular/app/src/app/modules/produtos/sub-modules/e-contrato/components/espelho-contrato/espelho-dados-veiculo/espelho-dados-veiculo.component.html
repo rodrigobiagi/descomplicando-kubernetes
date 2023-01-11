@@ -1,0 +1,63 @@
+<div fxLayout="row" fxLayoutGap="40px" class="mt-2">
+    <div fxFlex="50">
+        <p class="field-title">Chassi</p>
+        <p>{{ contrato?.veiculo[0].chassi ?? '-' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Remarcado</p>
+        <p>{{ contrato?.veiculo[0].remarcado ? 'Sim' : 'Não' }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Emplacado</p>
+        <p>{{ contrato?.veiculo[0]?.emplacado ? 'Sim' : 'Não' }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Nº Renavam</p>
+        <p>{{ contrato?.veiculo[0]?.renavam == '' || contrato?.veiculo[0]?.renavam == null ? '-' : contrato?.veiculo[0]?.renavam }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Nº do Gravame</p>
+        <p>{{ contrato?.veiculo[0]?.numeroRestricao }}</p>
+    </div>
+    <div fxFlex="50"></div>
+  </div>
+  
+  <div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">UF / Placa</p>
+        <p>{{ contrato?.veiculo[0]?.ufPlaca == '' || contrato?.veiculo[0]?.ufPlaca == null ? '--' : contrato?.veiculo[0]?.ufPlaca }} / {{
+            contrato?.veiculo[0]?.placa == '' || contrato?.veiculo[0]?.placa == null ? '-' : contrato?.veiculo[0]?.placa?.toUpperCase() }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Ano Fabricação / Ano Modelo</p>
+        <p>{{ contrato?.veiculo[0].anoFabricacao }} / {{ contrato?.veiculo[0].anoModelo }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Marca</p>
+        <p>{{ (contrato?.veiculo[0].marca == '' || contrato?.veiculo[0].marca == null) ? '-' : contrato?.veiculo[0].marca }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Modelo</p>
+        <p>{{ (contrato?.veiculo[0].modelo == '' || contrato?.veiculo[0].modelo == null) ? '-' : contrato?.veiculo[0].modelo }}</p>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutGap="40px">
+    <div fxFlex="50">
+        <p class="field-title">Espécie</p>
+        <p>{{ especie }}</p>
+    </div>
+    <div fxFlex="50">
+        <p class="field-title">Cor</p>
+        <p>{{ (contrato?.veiculo[0]?.cor == '' || contrato?.veiculo[0]?.cor == null) ? '-' : contrato?.veiculo[0]?.cor }}</p>
+    </div>
+</div>

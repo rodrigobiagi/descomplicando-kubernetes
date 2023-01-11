@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  tls.crt: #{tlscert}#
+  tls.key: #{tlskey}#
+kind: Secret
+metadata:
+  name: tls-tecnobank
+  namespace: #{namespace}#
+type: kubernetes.io/tls

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8">
+  <title>Portal Tecnobank | Solução tem a nossa digital</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/61cfa45e1d.js" crossorigin="anonymous"
+    data-auto-replace-svg="false"></script>
+
+  <!-- Hotjar Tracking Code for Portal Tecnobank -->
+  <script>
+    (function (h, o, t, j, a, r) {
+      h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
+      h._hjSettings = { hjid: 3259682, hjsv: 6 };
+      a = o.getElementsByTagName('head')[0];
+      r = o.createElement('script'); r.async = 1;
+      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+      a.appendChild(r);
+    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+  </script>
+  <script src="https://wchat.freshchat.com/js/widget.js"></script>
+
+
+</head>
+
+<body>
+  <app-root></app-root>
+  <script>
+    var usuarioInfo = JSON.parse(window.localStorage.getItem('usuarioinfo'));
+    var usuarioGuid = window.sessionStorage.getItem('userGuid');
+
+    window.fcWidget.init({
+      token: "13831cd9-9180-4a3f-a2d3-79c6649bfb79",
+      host: "https://wchat.freshchat.com",
+      siteId: "57d54825-8aeb-4fe5-bb33-baddba17fcbd",
+      locale: "pt-BR",
+      firstName: usuarioInfo.nomeUsuario,
+      email: usuarioInfo.email,
+      phone: usuarioInfo.telefone,
+      "Empresa": usuarioInfo.nomeEmpresa,
+      "CNPJ da Empresa": usuarioInfo.cnpjEmpresa,
+      "Id da Empresa": usuarioInfo.empresaId,
+      externalId: usuarioGuid,
+      status: "Active",
+      config: {
+        headerProperty: {
+          appName: 'Tecnobank',
+          backgroundColor: '#094E8C',
+          foregroundColor: '#FFFFFF',
+        },
+      }
+    });
+
+    window.fcWidget.user.get(function (resp) {
+      var status = resp && resp.status,
+        data = resp && resp.data;
+      if (status !== 200) {
+        window.fcWidget.user.setProperties({
+          firstName: usuarioInfo.nomeUsuario,
+          email: usuarioInfo.email,
+          phone: usuarioInfo.telefone,
+          "Empresa": usuarioInfo.nomeEmpresa,
+          "CNPJ da Empresa": usuarioInfo.cnpjEmpresa,
+          "Id da Empresa": usuarioInfo.empresaId,
+          externalId: usuarioGuid,
+          status: "Active",               // user's meta property 2
+        });
+        window.fcWidget.on('user:created', function (resp) {
+          var status = resp && resp.status,
+            data = resp && resp.data;
+          if (status === 200) {
+            if (data.restoreId) {
+              // Update restoreId in your database
+            }
+          }
+        });
+      }
+    });
+
+    window.fcWidget.on("widget:opened", function (resp) {
+      window.fcWidget.user.setProperties({
+        firstName: usuarioInfo.nomeUsuario,
+        email: usuarioInfo.email,
+        phone: usuarioInfo.telefone,
+        "Empresa": usuarioInfo.nomeEmpresa,
+        "CNPJ da Empresa": usuarioInfo.cnpjEmpresa,
+        "Id da Empresa": usuarioInfo.empresaId,
+        externalId: usuarioGuid,
+        status: "Active",               // user's meta property 2
+      });
+    });
+
+  </script>
+</body>
+
+</html>

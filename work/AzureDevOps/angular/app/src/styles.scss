@@ -1,0 +1,380 @@
+@import '../node_modules/@fortawesome/fontawesome-pro/css/fontawesome.css';
+@import '../node_modules/@fortawesome/fontawesome-pro/css/all.css';
+
+// Settings
+@import './scss/$settings';
+
+// Tools
+@import './scss/$tools';
+
+// Generic
+@import './scss/$generic';
+
+// Base
+@import './scss/$base';
+
+// Objects
+@import './scss/$objects';
+
+// Components
+@import './scss/$components';
+
+// Trumps
+@import './scss/$trumps';
+
+button.mat-menu-item {
+  text-align: right !important;
+}
+
+.mat-menu-panel {
+  min-height: fit-content !important;
+}
+
+.mat-menu-panel.filter {
+  @include border-radius(8px);
+  max-width: 304px;
+}
+
+.fix-prefix.mat-form-field-appearance-outline .mat-form-field-prefix {
+  top: -2px;
+}
+
+/*Filter select multiple*/
+
+.filter-multiple-select .mat-select-trigger {
+  top: -30px;
+}
+
+.grid-filter-panel {
+  @include border-radius(8px);
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 20px !important;
+  max-height: 400px !important;
+  margin-top: 13px;
+}
+
+.filter-multiple-select mat-label {
+  @include fontMontserratBold;
+  font-size: 14px;
+}
+
+.mat-menu-panel.filter {
+  @include border-radius(8px);
+  max-width: 304px;
+}
+
+.mat-menu-panel {
+  max-width: 500px !important;
+  @include border-radius(10px);
+}
+
+.mat-menu-content {
+  padding: 0 !important;
+}
+
+mat-radio-button {
+  margin-right: 23px;
+}
+
+.filter-options .mat-radio-outer-circle {
+  width: 17px !important;
+  height: 17px !important;
+  border: 1px solid $gray-500 !important;
+}
+
+.filter-options .mat-radio-inner-circle {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+.filter-options .mat-radio-container {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+.filter-options .mat-option {
+  background: none;
+}
+
+.filter-multiple-select .mat-select-arrow {
+  border: none !important;
+}
+
+.filter-search .mat-form-field-outline-gap {
+  min-width: 24% !important;
+}
+
+.mat-optgroup-label {
+  @include fontMontserratBold;
+}
+
+/* paginator*/
+.mat-paginator-page-size .mat-form-field-appearance-outline .mat-form-field-outline-start,
+.mat-paginator-page-size .mat-form-field-appearance-outline .mat-form-field-outline-gap,
+.mat-paginator-page-size .mat-form-field-appearance-outline .mat-form-field-outline-end {
+  border: 0;
+}
+
+.mat-form-field-wrapper {
+  padding-bottom: 7px;
+}
+
+.mat-paginator-page-size-select .mat-form-field-label-wrapper {
+  @include border-radius(10px);
+  border: 1px solid #E8E8EA !important;
+  padding-top: 0;
+  margin-top: 10px;
+}
+
+.mat-paginator-page-size-select .mat-select-trigger .mat-select-value .mat-select-value-text .mat-select-min-line {
+  @include fontMontserratBold;
+}
+
+.mat-paginator-page-size-select .mat-select-trigger {
+  left: 10px;
+  top: -1px;
+}
+
+.mat-paginator-page-size-select .mat-form-field-underline {
+  height: 0 !important;
+}
+
+.mat-paginator-range-label {
+  @include fontMontserratBold;
+  color: #1D1929;
+}
+
+.mat-paginator-range-actions button {
+  width: 20px;
+}
+
+.mat-paginator-range-actions {
+  margin-right: 20px;
+}
+
+.mat-paginator-page-size-select .mat-select-arrow:before {
+  font-family: "Font Awesome 6 Pro";
+  content: "\f078";
+  font-weight: 900;
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  color: #1D1929;
+  font-size: 10px;
+}
+
+.mat-paginator-page-size-select .mat-select-arrow {
+  border: 0;
+}
+
+.mat-paginator-range-label {
+  margin-left: 5px;
+}
+
+section.text-paginator {
+  margin-left: 23px;
+  font-size: 12px;
+  color: $gray-600;
+  letter-spacing: 0.02em;
+  position: absolute;
+
+  .default-text {
+    @include fontMontserratRegular;
+    font-weight: 600;
+    margin-top: 25px;
+  }
+
+  .select-options {
+    @include fontMontserratBold;
+    color: $primary;
+    align-items: end;
+
+    .btn-wrapper {
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  }
+}
+
+.mat-form-field.mat-focused .mat-form-field-ripple {
+  height: 0px !important;
+}
+
+.mat-paginator .mat-form-field-infix {
+  padding: 1em 0 0.5em 0 !important;
+}
+
+/* Grid */
+
+tr:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr:not(.example-expanded-row):active {
+  background: $gray-200;
+}
+
+/* Breadcrumb */
+.xng-breadcrumb-trail {
+  @include fontMontserratBold;
+}
+
+.xng-breadcrumb-list {
+  font-size: 14px;
+}
+
+/* Mat slide toggle */
+.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
+  background-color: $primary;
+}
+
+.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: $gray-200;
+}
+
+.mat-slide-toggle.mat-checked .mat-ripple-element {
+  background-color: $primary;
+}
+
+.grupo-permissoes .mat-expansion-panel-body {
+  padding: 0;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @include border-radius(10px);
+  background: $gray-200
+}
+
+::-webkit-scrollbar-thumb {
+  @include border-radius(10px);
+  background: $gray-400
+}
+
+/* Tab labels */
+
+.listar-usuarios {
+  .mat-tab-label {
+    background-color: #fff;
+    margin-right: 10px;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0px 12px 17px rgba(0, 0, 0, 0.08), 0px 5px 22px rgba(0, 0, 0, 0.08), 0px 7px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .mat-tab-header {
+    margin: 0 20px;
+    border-bottom: none;
+
+  }
+
+  .empresas-default-tab {
+    .mat-tab-label {
+      background-color: unset;
+      box-shadow: none;
+      border-radius: unset;
+      margin-right: 0;
+    }
+
+    .mat-tab-body-wrapper {
+      box-shadow: none;
+    }
+  }
+}
+
+.mat-tab-group.mat-primary .mat-ink-bar,
+.mat-tab-nav-bar.mat-primary .mat-ink-bar {
+  background-color: $blue-800;
+  height: 4px;
+}
+
+.mat-tab-label-content {
+  span {
+    @include fontMontserratBold;
+  }
+}
+
+.mat-button.mat-primary,
+.mat-icon-button.mat-primary,
+.mat-stroked-button.mat-primary {
+  color: $primary;
+}
+
+.tooltip-relatorio {
+  white-space: pre-line;
+}
+
+/*Dashboard chart tooltip*/
+.tooltip-box {
+  @include border-radius(3px);
+  padding: 10px 12px;
+
+  p,
+  span {
+    @include fontMontserratBold;
+    color: $white;
+    font-size: 12px;
+  }
+
+  .labels {
+    @include fontMontserratBold;
+    color: $gray-500 !important;
+    font-size: 12px;
+  }
+
+  .tooltip-value {
+    @include border-radius(5px);
+    background-color: #596267;
+    width: 30px;
+    text-align: center;
+    padding: 2px 5px;
+  }
+}
+
+/*Dashboard chart tooltip*/
+
+.shortcut-option {
+  mat-card {
+    &:hover {
+      background-color: $blue-600;
+
+      .btn-atalho-icon {
+        background-color: $white;
+        box-shadow: 0px 12px 17px rgba(0, 0, 0, 0.08), 0px 5px 22px rgba(0, 0, 0, 0.08), 0px 7px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      p {
+        color: $white;
+
+        i {
+          display: inline;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+button.bold {
+  span {
+    @include fontMontserratBold;
+    font-size: 14px;
+  }
+}
+
+.button-wrapper {
+  .mat-mini-fab .mat-button-wrapper {
+    display: contents;
+  }
+}

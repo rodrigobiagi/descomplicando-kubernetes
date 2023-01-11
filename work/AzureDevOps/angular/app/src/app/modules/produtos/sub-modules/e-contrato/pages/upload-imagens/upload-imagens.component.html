@@ -1,0 +1,111 @@
+<div class="d-flex justify-content-end my-2 top-options" style="gap: 10px">
+  <button mat-flat-button class="box__btn--btn btn btn-outline-600" routerLink="/produtos/e-contrato/uploads-realizados">
+    Consultar uploads
+  </button>
+</div>
+
+<mat-card class="mat-elevation-z8 mt-2 px-2 py-2">
+  <form [formGroup]="formulario">
+    <mat-form-field class="empresa-select">
+      <mat-label>Procure pelo CNPJ ou nome da empresa</mat-label>
+      <input type="text" matInput required formControlName="empresa" [matAutocomplete]="auto" />
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+        <mat-option *ngFor="let empresa of (filteredOptions | async)" [value]="empresa">
+          {{ empresa.nome }} | {{ formatCnpj(empresa.cnpj) }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <input type="file" hidden multiple #fileDropRef id="fileDropRef" (change)="fileBrowseHandler($event.target.files)"
+      [accept]="acceptedTypes" [disabled]="!formulario.get('empresa').value.id" />
+
+    <div class="dropzone disabled" [ngClass]="{disabled: !formulario.get('empresa').value.id}" appDragAndDrop
+      (fileDropped)="onFileDropped($event)" (click)="onClickFile(fileDropRef)">
+      <i class="fa-duotone fa-cloud-arrow-up"></i>
+      <h3>Arraste para fazer o upload das imagens.</h3>
+      <p>Ou procure no seu dispositivo.</p>
+
+      <br />
+      <span *ngIf="fileError !== null" class="file-error">
+        <mat-icon>warning</mat-icon> {{ fileError }}
+      </span>
+    </div>
+  </form>
+
+  <div class="files-list mt-3" fxLayout="column">
+    <div class="single-file" *ngFor="let file of files; let i = index">
+      <div class="d-flex justify-content-between" fxLayout="row">
+        <div class="file-name">
+          <div [ngSwitch]="getExtension(file)">
+            <div class="icon" *ngSwitchCase="'PDF'">
+              <img src="./../../../../assets/img/custom-icons/icon-file-pdf.svg" />
+            </div>
+            <div class="icon" *ngSwitchCase="'PNG'">
+              <img src="./../../../../assets/img/custom-icons/icon-file-png.svg" />
+            </div>
+            <div class="icon" *ngSwitchCase="'JPG'">
+              <img src="./../../../../assets/img/custom-icons/icon-file-jpg.svg" />
+            </div>
+            <div class="icon" *ngSwitchCase="'JPEG'">
+              <img src="./../../../../assets/img/custom-icons/icon-file-jpg.svg" />
+            </div>
+            <div class="icon" *ngSwitchCase="'TIFF'">
+              <img src="./../../../../assets/img/custom-icons/icon-file-tiff.png" />
+            </div>
+            <div class="icon" *ngSwitchCase="'JFIF'">
+              <img src="./../../../../assets/img/custom-icons/icon-file-tiff.png" />
+            </div>
+
+            <div class="icon" *ngSwitchDefault>
+              <img src="./../../../../assets/img/custom-icons/icon-file-none.svg" />
+            </div>
+          </div>
+          <div class="info">
+            <h4 class="name">
+              {{ file.nome }} &nbsp;
+              <span [ngSwitch]="file.statusArquivo">
+                <i *ngSwitchCase="5" class="fas fa-check-circle text-success"></i>
+                <i *ngSwitchCase="1" class="fas fa-times-circle text-danger"></i>
+                <i *ngSwitchCase="2" class="fa-solid fa-circle-exclamation text-warning"></i>
+                <i *ngSwitchCase="3" class="fa-solid fa-circle-exclamation text-warning"></i>
+                <i *ngSwitchCase="4" class="fas fa-times-circle text-danger"></i>
+              </span>
+            </h4>
+            <p class="size" *ngIf="file.statusArquivo == 5">
+              {{ formatDate(file.dataEnvio) }} tamanho
+              {{ formatBytes(file.tamanho, 2) }}
+            </p>
+            <div [ngSwitch]="file.statusArquivo">
+              <div *ngSwitchCase="1" class="error text-danger">Falha no upload, o formato é incompatível.</div>
+              <div *ngSwitchCase="2" class="error text-warning">Falha no upload, o tamanho é superior ao permitido.
+              </div>
+              <div *ngSwitchCase="3" class="error text-warning">Falha no upload, o nome do arquivo é inválido.</div>
+              <div *ngSwitchCase="4" class="error text-danger">Falha no upload, tente novamente.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="file-actions">
+          <button mat-stroked-button class="btn-tentar-novamente" *ngIf="file.statusArquivo == 4"
+            (click)="onClickTenteNovamente(file)">
+            <i class="fa-solid fa-arrow-rotate-right"></i>
+            tente novamente
+          </button>
+          <div class="left-info">
+            <div class="d-flex justify-content-end">
+              <div *ngIf="file.statusArquivo !== 5" class="file-delete" (click)="onClickDelete(file)"
+                matTooltip="Deletar arquivo" title="Deletar arquivo">
+                <i class="fa-solid fa-trash-alt"></i>
+              </div>
+            </div>
+            <p class="porcentagem" *ngIf="file.statusArquivo == 0">{{ file.progresso }}%</p>
+          </div>
+
+        </div>
+      </div>
+      <div class="progress-bar" fxLayout="row" *ngIf="file.statusArquivo == 0">
+        <mat-progress-bar mode="determinate" [value]="file.progresso"></mat-progress-bar>
+      </div>
+    </div>
+  </div>
+</mat-card>

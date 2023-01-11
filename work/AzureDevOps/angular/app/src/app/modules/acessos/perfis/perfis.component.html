@@ -1,0 +1,16 @@
+<!-- <div [hidden]="childstate" class="pb-3"> -->
+<div class="pb-3" [hidden]="childstate">
+    <div class="box__btn">
+        <button mat-flat-button class="box__btn--btn" color="secondary" (click)="incluirPerfil()" [disabled]="!permissoesPerfil.admin">
+            Incluir perfil
+        </button>
+    </div>
+    <app-grid-filter [filter]="filter" (pesquisar)="search($event)" (redefinir)="redefinirFiltro()" [showRedefinir]="showRedefinirPerfilBtn"></app-grid-filter>
+    <mat-card class="mat-elevation-z8 mt-2 px-0">
+        <app-table-perfis [refreshGrid]="refreshPerfilGrid" (clickEditar)="obterPerfilPorId($event)" [filtro]="filtroPerfil"></app-table-perfis>
+    </mat-card>
+</div>
+
+<div class="px-2">
+    <router-outlet></router-outlet>
+</div>

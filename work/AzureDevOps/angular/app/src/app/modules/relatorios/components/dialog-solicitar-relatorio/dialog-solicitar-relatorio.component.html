@@ -1,0 +1,54 @@
+<h3 class="bold">Solicitar relatório</h3>
+
+<form [formGroup]="formulario">
+  <mat-form-field class="input-width-4">
+    <mat-label>Selecione um modelo de relatório</mat-label>
+  <mat-select [id]="getElementId(5, 'modelo-relatorio')" name="modelo-relatorio" formControlName="modeloRelatorio"
+      required>
+      <mat-option *ngFor="let modelo of modelos; index as i" [value]="modelo.id"> {{ modelo.valor }} </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <p>
+    Escolha um período de sua preferência:
+    <i class="fa-regular fa-circle-info info"
+      matTooltip="• Último dia: irá trazer as informações das últimas 24 horas, com base na data de solicitação.
+      &#13;
+      • Últimos 15 dias: irá trazer as informações dos últimos 15 dias, com base na data de solicitação."
+      matTooltipClass="tooltip-relatorio"
+    ></i>
+
+  </p>
+  <mat-button-toggle-group formControlName="periodo" aria-label="Font Style" class="relatorio-buttons">
+    <mat-button-toggle [value]="1">Último dia</mat-button-toggle>
+    <mat-button-toggle [value]="2">Últimos 15 dias</mat-button-toggle>
+    <mat-button-toggle [value]="3">Personalizado</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <p class="mt-2">Ou, personalize com uma data específica:
+    <i class="fa-regular fa-circle-info info"
+    matTooltip="Período máximo de 6 meses."
+    matTooltipClass="tooltip-relatorio"
+  ></i>
+  </p>
+
+  <div>
+
+    <mat-form-field appearance="outline" fxFlex="50" class=" mr-1">
+      <mat-label>Data inicial</mat-label>
+      <input [id]="getElementId(6, 'data-inicial')" formControlName="dataInicial" matInput
+        placeholder="dd/mm/aaaa" [min]="addMonths(dataFinal, -6)" [max]="addMonths(dataFinal, 0)"
+        [matDatepicker]="de" (click)="de.open()">
+        <mat-datepicker-toggle matSuffix [for]="de"></mat-datepicker-toggle>
+      <mat-datepicker #de></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" fxFlex="50" class="mat-field-small">
+      <mat-label>Data final</mat-label>
+      <input [id]="getElementId(6, 'data-final')" formControlName="dataFinal" matInput
+        placeholder="dd/mm/aaaa" [min]="addMonths(dataInicial, 0)" [max]="addMonths(dataInicial, 6)"
+        [matDatepicker]="ate" (click)="ate.open()">
+      <mat-datepicker-toggle matSuffix [for]="ate"></mat-datepicker-toggle>
+      <mat-datepicker #ate></mat-datepicker>
+    </mat-form-field>
+  </div>
+</form>

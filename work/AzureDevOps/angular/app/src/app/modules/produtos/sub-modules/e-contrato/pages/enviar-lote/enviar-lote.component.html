@@ -1,0 +1,109 @@
+<div [hidden]="childstate">
+  <section class="element__detail">
+    <ul class="element__detail__expand__buttons">
+        <li>
+          <button mat-raised-button class="btn" color="secondary" (click)="onClickEnviarLote()" [disabled]="!permissoesV020.editar && !permissoesV040.editar && !permissoesFuncao.editar ">
+              <mat-icon>upload_file</mat-icon>
+              Enviar contratos
+          </button>
+        </li>
+    </ul>
+  </section>
+
+  <mat-card class="centralize px-0">
+    <section class="text-paginator">
+      <div class="row d-flex">
+        <section class="default-text" *ngIf="paginator">
+          Mostrando {{ paginator?.pageSize > totalItems ? totalItems : paginator?.pageSize }} de {{
+          totalItems }} resultados
+        </section>
+      </div>
+    </section>
+    <mat-paginator [pageSizeOptions]="[25, 50, 75, 100]" [length]="totalItems" #paginator></mat-paginator>
+
+    <table mat-table multiTemplateDataRows aria-describedby="lista-registros" [dataSource]="items$ | async"
+      (matSortChange)="sortData($event)" matSort>
+      <ng-container matColumnDef="semRegistro">
+        <th class="text-center feedBack" mat-cell *matFooterCellDef colspan="11">
+          <mat-icon class="feedBack__icon">report</mat-icon>
+          <p class="feedBack__text">
+            Não há registros!
+          </p>
+        </th>
+      </ng-container>
+      <ng-container matColumnDef="{{ column }}" *ngFor="let column of columnsToDisplay">
+        <th mat-header-cell *matHeaderCellDef class="text-primary"  mat-sort-header>
+          {{ column }}
+        </th>
+        <td mat-cell class="text-rows" *matCellDef="let element"
+          [matTooltip]="column == 'Registrados' ? getInconsistencias(element.registrados) : ''">
+          <ng-container [ngSwitch]="column">
+            <ng-container *ngSwitchCase="'Protocolo do lote'">
+              {{ element.numeroLote }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Data da solicitação'">
+              {{ element.dataSolicitacao }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Data do processamento'">
+              {{ element.dataProcessamento }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Status'">
+              {{ element.status }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Versão do arquivo'">
+              {{ element.versaoArquivo }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Usuário'">
+              {{ element.usuario }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Tipo de arquivo'">
+              {{ element.tipoDoArquivo }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Registrados'">
+              <span
+                [ngClass]="{ 'text-danger bold': getRegistrosSucesso(element.registrados) < getRegistrosTotal(element.registrados) }">{{
+                getRegistrosSucesso(element.registrados) }}</span> de {{
+              getRegistrosTotal(element.registrados) }}
+            </ng-container>
+            <ng-container *ngSwitchCase="'Ações'">
+              <button mat-button [matMenuTriggerFor]="menu" [id]="getElementId(2, 'acoes', element.numeroLote)">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item [id]="getElementId(2, 'visualizar-lote', element.numeroLote)"
+                  (click)="goToConsulta(element.numeroLote)"> Visualizar lote
+                </button>
+              <button mat-menu-item [id]="getElementId(2, 'baixar-arquivo-original', element.numeroLote)" (click)="onClickDownload(element.numeroLote)"> Baixar
+                  Arquivo Original </button>
+                <button mat-menu-item [id]="getElementId(2, 'baixar-arquivo-retorno-csv', element.numeroLote)" (click)="onClickDownloadRetorno(element.numeroLote, 'CSV')"> Baixar
+                  Arquivo de Retorno CSV </button>
+                <button mat-menu-item [id]="getElementId(2, 'baixar-arquivo-retorno-txt', element.numeroLote)" (click)="onClickDownloadRetorno(element.numeroLote, 'TXT')"> Baixar
+                  Arquivo de Retorno TXT </button>
+              </mat-menu>
+            </ng-container>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" class="example-element-row">
+      </tr>
+      <tr mat-row *matFooterRowDef="['semRegistro']"
+        [ngClass]="{'d-none': !(totalItems == 0 || totalItems == undefined) }"></tr>
+    </table>
+
+    <section class="text-paginator">
+      <div class="row d-flex">
+        <section class="default-text">
+          Mostrando {{ paginator?.pageSize > totalItems ? totalItems : paginator?.pageSize }} de {{
+          totalItems }} resultados
+        </section>
+      </div>
+    </section>
+    <mat-paginator (page)="syncPrimaryPaginator($event)" [pageSize]="paginator?.pageSize"
+      [pageIndex]="paginator?.pageIndex" [length]="paginator?.length" [pageSizeOptions]="paginator?.pageSizeOptions">
+    </mat-paginator>
+  </mat-card>
+</div>
+
+<router-outlet></router-outlet>

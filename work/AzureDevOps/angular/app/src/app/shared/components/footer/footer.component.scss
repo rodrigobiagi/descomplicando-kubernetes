@@ -1,0 +1,20 @@
+@import '$tools';
+
+footer {
+    position: fixed;
+    bottom: 0;
+    height: 25px;
+    width: 100%;
+    background-color: #FFF;
+    z-index: 10;
+}
+
+.footer-text {
+    @include fontFieldworkThin;
+    font-size: 15px;
+    text-align: center;
+    padding: 5px;
+    background: -webkit-linear-gradient(1800deg, #E32B51 0%, #056AB0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

@@ -1,0 +1,60 @@
+<div class="content">
+  <h3 class="bold">Acompanhar solicitação de {{ data.type == 'baixar' ? 'baixa' : 'cancelamento' }}</h3>
+
+  <div class="box-status">
+    <i class="fa-solid fa-arrow-turn-down-right"></i>
+    <div class="box-status-text">
+      <div class="bold">Status atual</div>
+      <span *ngIf="step == 'processando'"> Processando</span>
+      <span *ngIf="step == 'negado'"> Transação negada</span>
+      <span *ngIf="step == 'processado'"> Processado</span>
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step">
+      <i class="fa-solid fa-circle-check color-green"></i>
+      <div class="step-status">
+        Solicitação realizada
+      </div>
+    </div>
+
+    <div class="timeline-link">
+
+    </div>
+
+    <!-- Em processamento -->
+    <div class="step" *ngIf="step == 'processando'">
+      <i class="fa-light fa-circle-2 color-green"></i>
+      <div class="step-status">
+        Em processamento
+      </div>
+    </div>
+
+    <!-- Solicitação processada -->
+    <div class="step" *ngIf="step == 'processado'">
+      <i class="fa-solid fa-circle-check color-green"></i>
+      <div class="step-status">
+        Solicitação processada
+      </div>
+    </div>
+
+    <!-- Negado -->
+    <div class="step" *ngIf="step == 'negado'">
+      <i class="fa-solid fa-circle-exclamation color-red"></i>
+      <div class="step-status">
+        Informamos que o contrato <span class="color-red">{{data.transacao.numeroContrato}}</span> não pode
+        ser {{data.type == 'baixar' ? 'baixado' : 'cancelado'}}, devido a inconsistência abaixo:
+      </div>
+
+    </div>
+    <div class="box-negado" *ngIf="step == 'negado'">
+      {{ data.transacaoDetalhes.detalheBaixarCancelarContrato.mensagensInconsistencias }}
+    </div>
+
+
+  </div>
+
+
+</div>

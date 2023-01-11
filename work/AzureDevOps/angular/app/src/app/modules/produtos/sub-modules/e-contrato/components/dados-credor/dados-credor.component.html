@@ -1,0 +1,116 @@
+<div fxLayout="column" fxLayoutWrap>
+  <form [formGroup]="formulario" novalidate>
+    <div>
+      <div fxLayout="row" fxLayoutGap="10px">
+        <h6 class="headline">Dados do credor</h6>
+      </div>
+
+      <div fxLayout="row" fxLayoutGap="10px">
+        <mat-form-field fxFlex="50">
+          <mat-label>Agente financeiro</mat-label>
+          <input [id]="getElementId(0, 'agente-financeiro')" type="text" matInput name="agenteFinanceiro"
+            formControlName="agenteFinanceiro" required>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('agenteFinanceiro').hasError('required')">Obrigatório</mat-error>
+
+        </mat-form-field>
+
+        <mat-form-field fxFlex="30">
+          <mat-label>CNPJ</mat-label>
+          <input type="text" matInput name="cnpj" formControlName="cnpj" mask="00.000.000/0000-00" required  [id]="getElementId(0, 'credor-cnpj')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('cnpj').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+
+        <input type="hidden" name="agenteFinanceiroId" formControlName="agenteFinanceiroId">
+        <mat-form-field fxFlex="20">
+          <mat-label>CEP</mat-label>
+          <input type="text" matInput name="cep" formControlName="cep" mask="00000-000" [validation]="false"
+            placeholder="Digite o CEP" maxlength="9" required [id]="getElementId(0, 'credor-cep')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('cep').hasError('required')">Obrigatório</mat-error>
+          <mat-error *ngIf="formulario.get('cep').hasError('minlength')">CEP inválido</mat-error>
+          <mat-icon matSuffix>
+            <mat-spinner *ngIf="loading" [diameter]="25"></mat-spinner>
+          </mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutGap="10px">
+
+        <mat-form-field fxFlex="50">
+          <mat-label>Logradouro</mat-label>
+          <input type="text" matInput #logradouroCredor name="logradouro" formControlName="logradouro"
+            placeholder="Digite o logradouro" required [id]="getElementId(0, 'credor-logradouro')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('logradouro').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="20">
+          <mat-label>Número</mat-label>
+          <input type="text" matInput alphanumerics-only name="numero" formControlName="numero"
+            placeholder="Digite o número" maxlength="5" required [id]="getElementId(0, 'credor-numero')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('numero').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex="30">
+          <mat-label>Complemento</mat-label>
+          <input type="text" matInput name="complemento" formControlName="complemento"
+            placeholder="Digite o complemento" maxlength="20" [id]="getElementId(0, 'credor-complemento')">
+          <mat-hint *ngIf="mudarObrigatoriedade('complemento')">Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('complemento').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutGap="10px">
+
+        <mat-form-field fxFlex="50">
+          <mat-label>Bairro</mat-label>
+          <input type="text" matInput name="bairro" formControlName="bairro" placeholder="Digite o bairro"
+            maxlength="20" [alphanumerics-only]="['acento', 'espaco']" required [id]="getElementId(0, 'credor-bairro')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('bairro').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="20">
+          <mat-label>UF</mat-label>
+          <mat-select [id]="getElementId(5, 'credor-uf')" name="uf" formControlName="uf" required>
+            <mat-option>Selecione</mat-option>
+            <mat-option *ngFor="let uf of ufsLicenciamento" [value]="uf">{{ uf }}</mat-option>
+          </mat-select>
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('uf').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="30">
+          <mat-label>Município</mat-label>
+          <input type="text" matInput (keypress)=keyPressLetras($event) name="municipio" formControlName="municipio"
+            placeholder="Digite o município" maxlength="30" required [id]="getElementId(0, 'credor-municipio')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('municipio').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout="row" fxLayoutGap="10px">
+        <mat-form-field fxFlex="30">
+          <mat-label>Telefone</mat-label>
+          <input type="text" matInput name="telefone" formControlName="telefone"
+            mask="(00) 0000-0000 || (00) 0 0000-0000" [showMaskTyped]="false" [validation]="false"
+            placeholder="Digite o telefone" required [id]="getElementId(0, 'credor-telefone')">
+          <mat-hint>Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('telefone').hasError('required')">Obrigatório</mat-error>
+        </mat-form-field>
+
+        <mat-form-field fxFlex="70">
+          <mat-label>E-mail</mat-label>
+          <input type="email" matInput name="email" formControlName="email" placeholder="Digite o e-mail"
+            [maxlength]="uf === 'PR' ? 40 : 255" email [id]="getElementId(0, 'credor-email')">
+          <mat-hint *ngIf="mudarObrigatoriedade('email')">Obrigatório</mat-hint>
+          <mat-error *ngIf="formulario.get('email').hasError('required')">Obrigatório</mat-error>
+          <mat-error *ngIf="formulario.get('email').hasError('email')">E-mail inválido
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</div>

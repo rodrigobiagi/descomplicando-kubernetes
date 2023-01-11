@@ -1,0 +1,34 @@
+@import '$settings';
+@import '$tools';
+
+.user-image {
+  @include fontFieldworkBold;
+  @include border-radius(50px);
+  background-color: $blue-400;
+  color: $primary;
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.info {
+  width: 85%;
+  
+  p {
+    font-size: 14px;
+
+    strong {
+      @include fontMontserratBold;
+    }
+  }
+
+  span {
+    @include fontMontserratBold;
+    font-size: 12px;
+    color: $gray-500;
+  }
+}

@@ -1,0 +1,147 @@
+@import '$settings';
+@import '$tools';
+
+.mat-stepper-horizontal,
+.mat-stepper-vertical {
+    background: transparent;
+    min-height: 600px;
+}
+
+.mat-horizontal-stepper-header-container {
+  background: #FFF;
+  border-radius: 10px;
+  box-shadow: 0px 12px 17px rgba(0, 0, 0, 0.08), 0px 5px 22px rgba(0, 0, 0, 0.08), 0px 7px 8px rgba(0, 0, 0, 0.05);
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+.mat-step-header .mat-step-label.mat-step-label-active {
+  color: $gray-400;
+  font-size: 13px!important;
+  @include fontMontserratBold;
+}
+
+.mat-step-text-label {
+  @include fontMontserratBold;
+  color: $primary;
+}
+
+.mat-step-header .mat-step-label-selected .mat-step-text-label {
+  color: #FFF;
+}
+
+.mat-step-header:hover .mat-step-text-label {
+  color: #FFF;
+}
+
+.mat-step-header {
+  height: 66px!important;
+  border-radius: 10px;
+
+  &:hover {
+    background-color: $gray-300!important;
+
+    .mat-step-text-label  {
+      color: $primary;
+    }
+
+  }
+
+  &[aria-selected=true] {
+    background-color: $primary;
+    color: #FFF;
+
+    &:hover {
+      background-color: darken($primary, 0.9)!important;
+
+      .mat-step-text-label {
+        color: #FFF;
+      }
+    }
+  }
+
+  &[aria-disabled=true] {
+    background-color: #FFF;
+    color: $gray-400!important;
+
+    &:hover {
+      background-color: #FFF!important;
+    }
+
+    .mat-step-text-label {
+      color: $gray-400;
+    }
+  }
+
+
+
+  .mat-step-icon-selected,
+  .mat-step-icon-state-done,
+  .mat-step-icon-state-edit {
+    background-color: transparent;
+
+  }
+
+  .mat-step-icon i {
+    font-size: .8em;
+    padding: 2px;
+  }
+}
+
+.mat-horizontal-stepper-header {
+  padding: 0 12px!important;
+}
+
+.mat-step-header .mat-step-label.mat-step-label-active {
+  color: $gray-400;
+  font-size: 14px;
+  @include fontMontserratBold;
+}
+
+.mat-step-header {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+
+  .mat-step-icon {
+    color: $gray-400;
+    border: solid 2px $gray-400;
+    background-color: #FFF;
+  }
+
+  .mat-step-icon-state-done,
+  .mat-step-icon-state-edit {
+    color: $primary;
+    border: solid 2px $primary;
+  }
+
+  .mat-step-icon-selected {
+    background-color: $primary;
+    color: #FFF;
+    border: solid 2px #FFF;
+  }
+}
+
+.mat-stepper-horizontal-line {
+  border-top: transparent;
+}
+
+.form-stepper__plus-5 {
+    .mat-horizontal-stepper-header-container {
+        background-size: 100% 40px;
+    }
+}
+
+.loading {
+  @include border-radius(10px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #e1e7ec80;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9;
+}

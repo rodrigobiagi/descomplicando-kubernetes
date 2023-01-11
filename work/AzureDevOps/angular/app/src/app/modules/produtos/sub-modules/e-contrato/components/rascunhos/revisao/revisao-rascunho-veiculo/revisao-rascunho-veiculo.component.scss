@@ -1,0 +1,52 @@
+@import '$settings';
+@import '$tools';
+
+.property-row {
+  @include border-radius(10px);
+  background: $gray-200;
+  padding: 10px 20px;
+
+  div {
+    @include fontMontserratBold;
+    color: $gray-800;
+
+    &.nome-exibicao {
+      @include fontMontserratRegular;
+      color: $gray-600;
+    }
+  }
+}
+
+.veiculo {
+  @include border-radius(10px);
+  border: 1px solid $gray-400;
+
+  p {
+    @include fontMontserratBold;
+    color: $gray-600;
+    margin-top: 5px;
+  }
+
+  .row {
+    @include border-radius(10px);
+    background: $gray-200;
+    padding: 10px 20px;
+  }
+
+  .nome,
+  .valor {
+    font-size: 14px;
+    letter-spacing: 0.25px;
+    padding: 0;
+  }
+
+  .nome {
+    color: $gray-600;
+  }
+
+  .valor {
+    @include fontMontserratBold;
+    color: $gray-800;
+    text-align: end;
+  }
+}

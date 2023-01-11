@@ -1,0 +1,28 @@
+<section class="form-info">
+  <mat-carousel timings="250ms ease-in" [autoplay]="false" interval="5000" color="accent" maxWidth="auto" slides="2"
+    [loop]="true" [hideArrows]="true" [hideIndicators]="false" [useKeyboard]="false" [useMouseWheel]="false"
+    orientation="ltr">
+    <mat-carousel-slide matCarouselSlide [hideOverlay]="true">
+      <div class="mat_caro_content">
+        <div class="img d-flex justify-content-center pt-2 pb-1">
+          <img src="./../../../../assets/img/e-contrato/stepper.gif" alt="Formulário Stepper">
+        </div>
+        <h5 class="bold mb-0">O que é um formulário stepper?</h5>
+        <p>Neste formato seja informado sobre seu progresso no processo de preenchimento, visualizando as informações do
+          formulário em etapas.
+        </p>
+      </div>
+    </mat-carousel-slide>
+
+    <mat-carousel-slide matCarouselSlide [hideOverlay]="true">
+      <div class="mat_caro_content">
+        <div class="img d-flex justify-content-center pt-2 pb-1">
+          <img src="./../../../../assets/img/e-contrato/onepage.gif" alt="Formulário One Page">
+        </div>
+        <h5 class="bold mb-0">O que é um formulário onepage?</h5>
+        <p>Neste formato tenha todas as informações do formulário visíveis em uma única página. Ideal para empresas que
+          automatizam esses processos. </p>
+      </div>
+    </mat-carousel-slide>
+  </mat-carousel>
+</section>
