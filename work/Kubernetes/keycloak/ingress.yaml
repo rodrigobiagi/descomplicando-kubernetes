@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-keycloak
+  namespace: keycloak
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    nginx.org/server-snippets: |
+      location /auth {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+      }
+  
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: auth.tecnobank.com.br
+    http:
+      paths:
+      - backend:
+          service:
+            name: keycloak
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - auth.tecnobank.com.br
+    secretName: tls-tecnobank
+

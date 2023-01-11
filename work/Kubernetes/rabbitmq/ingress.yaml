@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-rabbit-dev
+  namespace: rabbitmq-dev
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: dev-management-broker.tecnobank.com.br
+    http:
+      paths:
+      - backend:
+          service:
+            name: rabbitmq-dev
+            port:
+              number: 15672
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - dev-management-broker.tecnobank.com.br
+    secretName: tls-tecnobank

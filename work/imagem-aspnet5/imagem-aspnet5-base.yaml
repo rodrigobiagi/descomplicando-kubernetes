@@ -1,0 +1,26 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: 'BASE'
+  displayName: 'BASE'
+  jobs:
+  - job: "BASE" 
+    displayName: 'BASE'
+    steps:
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrbase001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -f Dockerfile -t tbkacrbase001.azurecr.io/aspnet5-tecnobank .
+          docker image push tbkacrbase001.azurecr.io/aspnet5-tecnobank

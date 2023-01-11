@@ -1,0 +1,26 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: 'PRD'
+  displayName: 'PRD'
+  jobs:
+  - job: "PRD" 
+    displayName: 'PRD'
+    steps:
+    - task: Docker@2
+      displayName: 'Docker Login'
+      inputs:
+        containerRegistry: 'tbkacrprd001'
+        command: 'login'
+
+    - task: Bash@3
+      displayName: 'Docker Build e Push'
+      inputs:
+        targetType: 'inline'
+        script: |
+          docker build -f Dockerfile -t tbkacrprd001.azurecr.io/aspnet5-tecnobank .
+          docker image push tbkacrprd001.azurecr.io/aspnet5-tecnobank

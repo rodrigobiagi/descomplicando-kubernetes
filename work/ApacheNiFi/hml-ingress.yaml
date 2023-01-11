@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-apachenifi-hml
+  namespace: apachenifi-hml
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/upstream-vhost: "localhost:8443"
+    ingress.kubernetes.io/rewrite-target: /nifi
+    nginx.ingress.kubernetes.io/proxy-redirect-to: "https://hml-batch-dataflow.tecnobank.com.br"
+    nginx.ingress.kubernetes.io/proxy-redirect-from: "https://localhost:8443"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/affinity: cookie
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: hml-batch-dataflow.tecnobank.com.br
+    http:
+      paths:
+      - backend:
+          service:
+            name: apachenifi-hml
+            port:
+              number: 8443
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - hml-batch-dataflow.tecnobank.com.br
+    secretName: tls-tecnobank
+

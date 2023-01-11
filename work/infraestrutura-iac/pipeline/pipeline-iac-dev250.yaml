@@ -1,0 +1,91 @@
+trigger:
+  branches:
+    include:
+    - '*'
+  paths:
+    include:
+    - terraform/dev250
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: 'Plan'
+  displayName: 'Terraform Plan'
+  variables:
+  - group: iac-dev250
+  jobs:
+  - job: "terraform_plan" 
+    displayName: 'Terraform Plan'
+    steps:
+    - task: replacetokens@3
+      displayName: "Substituir variaveis"
+      inputs:
+        rootDirectory: '$(Build.SourcesDirectory)/terraform/dev250'
+        targetFiles: '*.*'
+        encoding: 'auto'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        useLegacyPattern: false
+        enableTransforms: false
+        enableTelemetry: true
+        
+    - task: Bash@3
+      displayName: "Terraform Init"
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(Build.SourcesDirectory)/terraform/dev250
+          terraform init 
+          cat terraform.tfvars
+                    
+    - task: Bash@3
+      displayName: "Terraform Validate"
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(Build.SourcesDirectory)/terraform/dev250
+          terraform validate 
+
+    - task: Bash@3
+      displayName: "Terraform Plan"
+      inputs:
+        targetType: 'inline'
+        script: |          
+          cd $(Build.SourcesDirectory)/terraform/dev250
+          terraform plan -var-file=terraform.tfvars
+    
+        
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish files'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/terraform/dev250'
+        artifactName: terraform-files
+
+- stage: 'Apply'
+  displayName: 'Terraform Apply'
+  condition: succeeded('Plan')
+  dependsOn: 'Plan'
+  jobs:
+  - deployment: 'terraform_apply'
+    displayName: 'Terraform apply dev250'
+    variables: 
+    - group: 'iac-dev250'
+    environment: 'apply-dev250'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Bash@3
+            displayName: "Terraform Apply"
+            inputs:
+              targetType: 'inline'
+              script: |
+                cd $(Pipeline.Workspace)/terraform-files
+                ls -al
+                rm -rf .terraform.lock.hcl 2> /dev/null
+                rm -rf .terraform 2> /dev/null
+                terraform init && terraform apply -auto-approve -var-file=terraform.tfvars
