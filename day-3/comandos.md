@@ -43,12 +43,14 @@
 - kubectl apply -f .\temp2.yaml
 - kubectl delete -f .\temp2.yaml
 - kubectl exec -it deploy-nginx-deployment-6c645ccd66-2gwfj -- bash
-* cat /proc/1/cmdline
+
+> cat /proc/1/cmdline
 
 - kubectl exec -it deploy-nginx-deployment-6c87d47484-2fdjc -- nginx -v
-* nginx version: nginx/1.16.0
-- kubectl rollout status deployment -n elysium deploy-nginx-deployment
 
+> nginx version: nginx/1.16.0
+
+- kubectl rollout status deployment -n elysium deploy-nginx-deployment
 - kubectl exec -it deploy-nginx-deployment-6c87d47484-2fdjc -- nginx -v
 - kubectl get po
 - kubectl exec -it deploy-nginx-deployment-6ffb954b9c-7c87x -- nginx -v
