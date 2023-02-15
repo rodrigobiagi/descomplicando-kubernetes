@@ -2,30 +2,28 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: nginx-deployment
-  # nome do deployment
-  name: deploy-nginx-deployment
-  namespace: elysium
+    app: nginx-girus
+    opa: sensacional-juvenal
+  name: nginx-girus
 spec:
-  replicas: 10
+  replicas: 5
   selector:
     matchLabels:
-      app: nginx-deployment
-# definindo a estrategia de update
+      app: nginx-girus
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: nginx-deployment
+        app: nginx-girus
     spec:
       containers:
-      - image: nginx:1.15.0
+      - image: nginx:1.16.0
         name: nginx
         resources:
           limits:
             cpu: "0.5"
             memory: 256Mi
           requests:
-            cpu: "0.3"
+            cpu: "0.5"
             memory: 64Mi
