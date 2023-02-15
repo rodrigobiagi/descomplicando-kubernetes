@@ -8,7 +8,9 @@ metadata:
   name: deploy-nginx-deployment
   namespace: elysium
 spec:
-  replicas: 15
+  replicas: 10
+  # numero maximo de revisoes
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: nginx-deployment
@@ -17,9 +19,9 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       # quantos a mais pode ser atualizado
-      maxSurge: 1
+      maxSurge: 0
       # quantos pods indisponiveis
-      maxUnavailable: 3
+      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -30,8 +32,8 @@ spec:
         name: nginx
         resources:
           limits:
-            cpu: "0.9"
+            cpu: "0.5"
             memory: 256Mi
           requests:
-            cpu: "0.4"
+            cpu: "0.3"
             memory: 64Mi
