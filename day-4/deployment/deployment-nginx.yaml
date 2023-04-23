@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-deployment
+    fruta: banana
+  # nome do deployment
+  name: deploy-nginx-deployment
+  namespace: elysium
+spec:
+  replicas: 5
+  # numero maximo de revisoes
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nginx-deployment
+# definindo a estrategia de update
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # quantos a mais pode ser atualizado
+      maxSurge: 0
+      # quantos pods indisponiveis
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-deployment
+    spec:
+      containers:
+      - image: nginx:1.19.1
+        name: nginx
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: 256Mi
+          requests:
+            cpu: "0.3"
+            memory: 64Mi

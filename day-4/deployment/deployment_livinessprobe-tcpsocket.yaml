@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-deployment
+    fruta: banana
+  # nome do deployment
+  name: deploy-nginx-deployment
+  namespace: elysium
+spec:
+  replicas: 1
+  # numero maximo de revisoes
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: nginx-deployment
+# definindo a estrategia de update
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # quantos a mais pode ser atualizado
+      maxSurge: 0
+      # quantos pods indisponiveis
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: nginx-deployment
+    spec:
+      containers:
+      - image: nginx:1.17.0
+        name: nginx
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: 256Mi
+          requests:
+            cpu: "0.3"
+            memory: 64Mi
+        livenessProbe: # Aqui é onde vamos adicionar a nossa livenessProbe
+          tcpSocket: # Aqui vamos utilizar o tcpSocket, onde vamos se conectar ao container através do protocolo TCP
+            port: 80 # Qual porta TCP vamos utilizar para se conectar ao container
+          initialDelaySeconds: 10 # Quantos segundos vamos esperar para executar a primeira verificação
+          periodSeconds: 10 # A cada quantos segundos vamos executar a verificação
+          timeoutSeconds: 5 # Quantos segundos vamos esperar para considerar que a verificação falhou
+          failureThreshold: 3 # Quantos falhas consecutivas vamos aceitar antes de reiniciar o container
