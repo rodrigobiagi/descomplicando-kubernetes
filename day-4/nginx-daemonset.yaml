@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  labels:
-    app: node-exporter-daemonset
-  name: node-exporter-daemonset
+  labels: 
+    app: nginx-daemonset
+  name: nginx-daemonset
 spec:
   selector:
-    matchLabels:
-      app: node-exporter-daemonset
-  template:
+    matchLabels: 
+      app: nginx-daemonset
+  template: 
     metadata:
       labels:
-        app: node-exporter-daemonset
-    spec:
+        app: nginx-daemonset
+    spec: 
       hostNetwork: true
       containers:
       - name: node-exporter
-        image: prom/node-exporter:v1.4.1
-        ports:
+        image: prom/node-exporter:latest
+        ports: 
         - containerPort: 9100
           hostPort: 9100
         volumeMounts:
@@ -28,9 +28,10 @@ spec:
           mountPath: /host/sys
           readOnly: true
       volumes:
-      - name: proc
-        hostPath:
-          path: /proc
-      - name: sys
-        hostPath:
-          path: /sys
+        - name: proc
+          hostPath: 
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+            
