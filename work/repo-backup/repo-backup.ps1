@@ -36,9 +36,9 @@ foreach ($proj in $projObjs.value.name) {
     Set-Location -Path $path\$date\$proj
     foreach ($repo in $RepoObjs) {
         write-host "  " $repo.name
-        git clone --mirror https://$pat@dev.azure.com/$organization/$proj/_git/$($repo.name)
-        Compress-Archive -Path $path\$date\$proj\$($repo.name).git -DestinationPath $path\$date\$proj\$($repo.name).zip -CompressionLevel Optimal
-        Remove-Item -Path $path\$date\$proj\$($repo.name).git -Force -Recurse
+        git clone https://$pat@dev.azure.com/$organization/$proj/_git/$($repo.name)
+        #Compress-Archive -Path $path\$date\$proj\$($repo.name) -DestinationPath $path\$date\$proj\$($repo.name).zip -CompressionLevel Optimal
+        #Remove-Item -Path $path\$date\$proj\$($repo.name) -Force -Recurse
     }
     azcopy copy "$path\$date\$proj" ("$containerUrl"+"/$date"+"$containerToken") --recursive=true
 }
