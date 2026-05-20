@@ -1,0 +1,63 @@
+image:
+  repository: ${image_repository}
+  tag: ${jsonencode(image_tag)}
+
+config:
+  dnsDomain: ${jsonencode(dns_domain)}
+  dnsServer: ${jsonencode(dnsserver)}
+  localDns: ${jsonencode(localdbs)}
+  customUpstreamsvc: ${jsonencode(custom_upstreamsvc)}
+  upstreamServiceSelector:
+${indent(4, upstream_service_selector_yaml)}
+  bindIp: ${bind_ip}
+  commProtocol: ${jsonencode(comm_protocol)}
+  enableLogging: ${enable_logging}
+  noIPv6Lookups: ${no_ipv6_lookups}
+  prefetch:
+${indent(4, prefetch_yaml)}
+  healthPort: ${health_port}
+  setupInterface: ${setup_interface}
+  setupIptables: ${setup_iptables}
+  skipTeardown: ${skip_teardown}
+  extraServerBlocks: ${jsonencode(extra_server_blocks)}
+  customConfig: ${jsonencode(custom_config)}
+  port:
+    number: 53
+    tcp: dns-tcp
+    udp: dns
+  upstreamServers: ${jsonencode(upstream_servers)}
+  upstreamForwardConfig:
+${indent(4, upstream_forward_config_yaml)}
+
+serviceAccount:
+${indent(2, service_account_yaml)}
+
+service:
+${indent(2, service_yaml)}
+
+podAnnotations:
+${indent(2, pod_annotations_yaml)}
+
+podLabels:
+${indent(2, pod_labels_yaml)}
+
+updateStrategy:
+${indent(2, update_strategy_yaml)}
+
+serviceMonitor:
+${indent(2, service_monitor_yaml)}
+
+dashboard:
+${indent(2, dashboard_yaml)}
+
+resources:
+${indent(2, resources_yaml)}
+
+affinity:
+${indent(2, affinity_yaml)}
+
+prometheusScraping:
+  enabled: ${prometheus_scraping_enabled}
+
+tolerations:
+${indent(2, tolerations_yaml)}
